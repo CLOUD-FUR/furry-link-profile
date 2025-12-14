@@ -192,12 +192,22 @@ export async function DELETE(req: Request) {
   });
 
   // compact orders
-  const links = await prisma.link.findMany({ where: { userId }, orderBy: { order: "asc" } });
+  const links = await prisma.link.findMany({
+    where: { userId },
+    orderBy: { order: "asc" },
+  });
+
   for (let i = 0; i < links.length; i++) {
     if (links[i].order !== i) {
-      await prisma.link.update({ where: { id: links[i].id } }, { data: { order: i } } as any).catch(() => {});
+      await prisma.link
+        .update({
+          where: { id: links[i].id },
+          data: { order: i },
+        })
+        .catch(() => {});
     }
   }
+
 
   const updated = await prisma.link.findMany({ where: { userId }, orderBy: { order: "asc" } });
   return Response.json({ links: updated });
