@@ -159,15 +159,27 @@ export async function PUT(req: Request) {
   const handle = input.patch.handle;
   if (input.patch.platform || typeof handle === "string") {
     try {
-      if (nextPlatform === "x" || nextPlatform === "instagram" || nextPlatform === "bluesky") {
-        nextUrl = buildUrl(nextPlatform as any, handle, undefined);
+      if (nextPlatform === "x" || nextPlatform === "instagram") {
+        // ✅ handle을 수정했을 때만 URL 재생성
+        if (typeof handle === "string") {
+          nextUrl = buildUrl(nextPlatform as any, handle, undefined);
+        }
+        // handle 없으면 기존 nextUrl 그대로 유지
       } else {
-        nextUrl = buildUrl(nextPlatform as any, undefined, input.patch.url ?? link.url);
+        // ✅ X/Instagram 이외 플랫폼은 URL 직접 사용
+        nextUrl = buildUrl(
+          nextPlatform as any,
+          undefined,
+          input.patch.url ?? link.url
+        );
       }
     } catch (e: any) {
-      return Response.json({ error: e?.message ?? "invalid" }, { status: 400 });
+      return Response.json(
+        { error: e?.message ?? "invalid" },
+        { status: 400 }
+      );
     }
-  }
+}
 
   const updated = await prisma.link.update({
     where: { id: input.id },
