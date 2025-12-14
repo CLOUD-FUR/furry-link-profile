@@ -6,7 +6,7 @@ function platformEmoji(platform: string) {
   const map: Record<string, string> = {
     x: "𝕏",
     instagram: "📸",
-    youtube: "▶️",
+    youtube: "🎬",
     discord_server: "💬",
     bluesky: "🦋",
     other: "🔗",
@@ -107,7 +107,7 @@ export default async function PublicProfile({ params }: { params: { handle: stri
               ))}
               {links.length === 0 ? (
                 <div className={`rounded-2xl border border-white/40 bg-white/20 px-4 py-6 text-sm ${isDark ? "text-white/70" : "text-slate-700"}`}>
-                  아직 공개된 링크가 없어.
+                  아직 설정된 링크가 없어요!
                 </div>
               ) : null}
             </div>

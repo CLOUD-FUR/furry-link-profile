@@ -127,7 +127,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     setDraftLinks(savedUser.links as DraftLink[]);
     setDirty(false);
     setHandleError("");
-    showToast("info", "변경사항을 되돌렸어.");
+    showToast("info", "✅ 변경사항을 되돌렸어요!");
   }
 
   async function refreshFromServer() {
@@ -163,10 +163,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     if (!resU.ok) {
       setSaving(false);
       if (resU.status === 409) {
-        setHandleError((dataU as any)?.error ?? "이미 있는 핸들이야.");
-        showToast("error", (dataU as any)?.error ?? "핸들 저장 실패");
+        setHandleError((dataU as any)?.error ?? "❌ 이미 있는 핸들이에요!");
+        showToast("error", (dataU as any)?.error ?? "❌ 핸들 저장을 실패했어요");
       } else {
-        showToast("error", (dataU as any)?.error ?? "프로필 저장 실패");
+        showToast("error", (dataU as any)?.error ?? "❌ 프로필 저장을 실패했어요");
       }
       return;
     }
@@ -194,7 +194,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       const d = await safeJson(r);
       if (!r.ok) {
         setSaving(false);
-        showToast("error", (d as any)?.error ?? "링크 저장 실패");
+        showToast("error", (d as any)?.error ?? "❌ 링크 저장을 실패했어요!");
         return;
       }
     }
@@ -210,7 +210,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
     setSaving(false);
     setDirty(false);
-    showToast("success", "저장 완료!");
+    showToast("success", "✅ 저장을 완료했어요!");
   }
 
   async function addLink() {
@@ -226,14 +226,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       setSavedUser((u) => ({ ...u, links: data.links }));
       setDraftLinks(updated);
       setDirty(true);
-      showToast("success", "링크를 추가했어. 저장을 눌러 적용해!");
+      showToast("success", "✅ 링크를 추가했어요! 저장을 눌러 적용해주세요!");
     } else {
-      showToast("error", (data as any)?.error ?? "링크 추가 실패");
+      showToast("error", (data as any)?.error ?? "❌ 링크 추가를 실패했어요");
     }
   }
 
   async function deleteLink(id: string) {
-    if (!confirm("삭제할까?")) return;
+    if (!confirm("정말로 삭제 하시겠습니까?")) return;
     const res = await fetch("/api/links", {
       method: "DELETE",
       headers: { "content-type": "application/json" },
@@ -244,9 +244,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       setSavedUser((u) => ({ ...u, links: data.links }));
       setDraftLinks((data.links as Link[]).map((x) => ({ ...x })));
       setDirty(true);
-      showToast("success", "삭제했어. 저장을 눌러 적용해!");
+      showToast("success", "✅ 삭제를 완료했어요! 저장을 눌러 적용해주세요!");
     } else {
-      showToast("error", (data as any)?.error ?? "링크 삭제 실패");
+      showToast("error", (data as any)?.error ?? "❌ 링크 삭제를 실패했어요");
     }
   }
 
@@ -279,14 +279,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     const dataUrl = await resizeImageToDataUrl(file, 256, 256, 0.92);
     setDraftUser((u) => ({ ...u, image: dataUrl }));
     markDirty();
-    showToast("info", "프로필 이미지 적용(초안)됨. 저장을 눌러 적용해!");
+    showToast("info", "✅ 프로필 이미지가 적용되었어요! 저장을 눌러 적용해주세요!");
   }
 
   async function onBannerFile(file: File) {
     const dataUrl = await resizeImageToDataUrl(file, 1400, 500, 0.9);
     setDraftUser((u) => ({ ...u, bannerUrl: dataUrl }));
     markDirty();
-    showToast("info", "배너 적용(초안)됨. 저장을 눌러 적용해!");
+    showToast("info", "✅ 배너가 적용되었어요! 저장을 눌러 적용해주세요!");
   }
 
   async function onThemeBgFile(file: File) {
@@ -294,7 +294,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     const obj = { bgImage: dataUrl };
     setDraftUser((u) => ({ ...u, theme: "custom", themeJson: JSON.stringify(obj) }));
     markDirty();
-    showToast("info", "사진 테마 적용(초안)됨. 저장을 눌러 적용해!");
+    showToast("info", "✅ 사진 테마가 적용되었어요! 저장을 눌러 적용해주세요!");
   }
 
   function parseThemeBg(): string {
@@ -309,7 +309,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   function resetBannerToDefault() {
     setDraftUser((u) => ({ ...u, bannerUrl: "" }));
     markDirty();
-    showToast("info", "배너를 기본으로 변경했어. 저장을 눌러 적용해!");
+    showToast("info", "✅ 배너를 기본으로 변경했어요! 저장을 눌러 적용해주세요!");
   }
 
   function resetAvatarToDiscord() {
@@ -317,13 +317,13 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     // If user has Discord image at login, it is stored in DB. We'll request refresh and use savedUser.image from server after save.
     setDraftUser((u) => ({ ...u, image: (savedUser.discordImage ?? savedUser.image ?? "") }));
     markDirty();
-    showToast("info", "프로필을 디스코드 프로필로 변경(초안)했어. 저장을 눌러 적용해!");
+    showToast("info", "✅ 프로필이 기본으로 변경되었어요! 저장을 눌러 적용해주세요!");
   }
 
   function resetCustomThemeToPastel() {
     setDraftUser((u) => ({ ...u, theme: "pastel", themeJson: "" }));
     markDirty();
-    showToast("info", "사진 테마를 기본(Pastel Paw)로 변경했어. 저장을 눌러 적용해!");
+    showToast("info", "✅ 사진 테마를 기본으로 변경했어요! 저장을 눌러 적용해주세요!");
   }
 
   return (
@@ -339,9 +339,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       <div className="relative mx-auto w-full max-w-6xl px-4 py-10">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className={clsx("text-xl font-black tracking-tight", uiText)}>🐾 Dashboard</div>
+            <div className={clsx("text-xl font-black tracking-tight", uiText)}>🐾 Dashboard | 프로필 수정하기</div>
             <div className={clsx("text-sm", uiSub)}>
-              공개 페이지:{" "}
+              프로필 페이지 바로가기: https://fluff-link.netlify.app/{" "}
               <a className="underline" href={publicPath} target="_blank" rel="noreferrer">
                 {publicPath}
               </a>
@@ -365,7 +365,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               )}
               title={dirty ? "저장" : "변경 사항 없음"}
             >
-              {saving ? "저장중..." : dirty ? "저장" : "저장됨"}
+              {saving ? "저장중.." : dirty ? "저장" : "저장됨"}
             </button>
 
             <button
@@ -446,10 +446,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         onClick={resetAvatarToDiscord}
                         className={clsx("shrink-0 rounded-xl px-3 py-2 text-xs font-bold", isDark ? "bg-white/15 text-white hover:bg-white/20" : "bg-white/60 hover:bg-white/75")}
                       >
-                        디스코드로
+                        Reset
                       </button>
                     </div>
-                    <p className={clsx("mt-1 text-xs", uiSub)}>권장: 256×256 (자동 리사이즈)</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>권장 사이즈는 256×256이에요!</p>
                   </Field>
 
                   <Field label="배너 이미지 (파일)">
@@ -468,13 +468,13 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         onClick={resetBannerToDefault}
                         className={clsx("shrink-0 rounded-xl px-3 py-2 text-xs font-bold", isDark ? "bg-white/15 text-white hover:bg-white/20" : "bg-white/60 hover:bg-white/75")}
                       >
-                        기본으로
+                        Reset
                       </button>
                     </div>
-                    <p className={clsx("mt-1 text-xs", uiSub)}>권장: 1400×500 (자동 리사이즈)</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>권장 사이즈는 1400×500이에요!</p>
                   </Field>
 
-                  <Field label="핸들 (@handle)">
+                  <Field label="핸들 (@handle_name)">
                     <input
                       value={draftUser.handle}
                       maxLength={20}
@@ -488,9 +488,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         isDark ? "bg-white/10 text-white border-white/15 placeholder:text-white/40" : "bg-white/60 border-white/50",
                         handleError ? "border-red-500 ring-2 ring-red-500/40" : ""
                       )}
-                      placeholder="Cloud"
+                      placeholder="CLOUD"
                     />
-                    <p className={clsx("mt-1 text-xs", uiSub)}>최대 20자</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>최대 20자까지 영어와 언더바만 적을 수 있어요!</p>
                     {handleError ? <p className="mt-1 text-xs text-red-300 font-semibold">{handleError}</p> : null}
                   </Field>
 
@@ -506,9 +506,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         "min-h-[90px] w-full rounded-xl border px-3 py-2",
                         isDark ? "bg-white/10 text-white border-white/15 placeholder:text-white/40" : "border-white/50 bg-white/60"
                       )}
-                      placeholder="퍼리 링크를 한 곳에 ✨"
+                      placeholder="여러 링크를 한 곳에 ✨"
                     />
-                    <p className={clsx("mt-1 text-xs", uiSub)}>최대 500자</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>최대 500자까지 적을 수 있어요!</p>
                   </Field>
                 </div>
               ) : null}
@@ -519,7 +519,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     onClick={addLink}
                     className={clsx("w-full rounded-2xl px-4 py-2 font-semibold", isDark ? "bg-white text-slate-900" : "bg-slate-900 text-white")}
                   >
-                    + 링크 추가
+                    링크 추가
                   </button>
 
                   <div className="mt-4 space-y-3">
@@ -594,7 +594,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                                 setLink(l.id, { handleInput, url: buildUrlForPlatform(l.platform, handleInput) });
                               }}
                               className={clsx("rounded-xl border px-3 py-2 text-sm", isDark ? "border-white/15 bg-white/10 text-white placeholder:text-white/40" : "border-white/50 bg-white/60")}
-                              placeholder={l.platform === "bluesky" ? "예: cloud.bsky.social" : "예: cloud (@ 없이)"}
+                              placeholder={l.platform === "bluesky" ? "예시) cloud.bsky.social" : "예시) CLOUD (@ 없이)"}
                             />
                           ) : (
                             <input
@@ -615,14 +615,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                           </label>
 
                           <div className={clsx("text-xs", uiSub)}>
-                            방문: <b className={uiText}>{counts[l.id] ?? 0}</b>
+                            방문자 수: <b className={uiText}>{counts[l.id] ?? 0}명</b>
                           </div>
                         </div>
                       </div>
                     ))}
                     {draftLinks.length === 0 ? (
                       <div className={clsx("rounded-2xl border p-4 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/35 text-slate-700")}>
-                        아직 링크가 없어. 위에서 “+ 링크 추가” 눌러봐!
+                        아직 링크가 없어요! “링크 추가” 버튼을 눌러주세요!
                       </div>
                     ) : null}
                   </div>
@@ -632,25 +632,33 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               {tab === "theme" ? (
                 <div className="space-y-3">
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/50 bg-white/40")}>
-                    <div className={clsx("font-black", uiText)}>사진 테마 (제일 상단)</div>
-                    <div className={clsx("mt-1 text-xs", uiSub)}>권장: 1920×1080 (자동 리사이즈)</div>
-                    <div className="mt-3 flex items-center gap-2">
+                    <div className={clsx("font-black", uiText)}>커스텀 테마</div>
+                    <div className={clsx("mt-1 text-xs", uiSub)}>권장 사이즈는 1920×1080 이에요!</div>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
                       <input
                         type="file"
                         accept="image/*"
+                        className="min-w-0 flex-1 text-xs"
                         onChange={(e) => {
                           const f = e.target.files?.[0];
                           if (f) onThemeBgFile(f);
                         }}
                       />
+
                       <button
                         type="button"
                         onClick={resetCustomThemeToPastel}
-                        className={clsx("rounded-xl px-3 py-2 text-xs font-bold", isDark ? "bg-white/15 text-white hover:bg-white/20" : "bg-white/60 hover:bg-white/75")}
+                        className={clsx(
+                          "shrink-0 rounded-xl px-3 py-2 text-xs font-bold",
+                          isDark
+                            ? "bg-white/15 text-white hover:bg-white/20"
+                            : "bg-white/60 hover:bg-white/75"
+                        )}
                       >
-                        기본 테마로
+                        Reset
                       </button>
                     </div>
+
 
                     {draftUser.theme === "custom" && parseThemeBg() ? (
                       <div className={clsx("mt-3 overflow-hidden rounded-2xl border", isDark ? "border-white/15" : "border-white/50")}>
@@ -691,10 +699,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               {tab === "stats" ? (
                 <div className="space-y-3">
                   <div className={clsx("rounded-2xl border p-4 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/40 text-slate-800")}>
-                    * 같은 브라우저/세션(쿠키)에서는 링크 클릭이 중복 카운트되지 않아.
+                    * 같은 브라우저 또는 세션에서는 링크 클릭이 중복 카운트되지 않아요.
                   </div>
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
-                    <div className={clsx("font-bold", uiText)}>링크별 방문</div>
+                    <div className={clsx("font-bold", uiText)}>링크별 방문자 수</div>
                     <div className={clsx("mt-3 space-y-2 text-sm", uiSub)}>
                       {draftLinks.map((l) => (
                         <div key={l.id} className="flex items-center justify-between">
@@ -712,7 +720,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   <label className={clsx("flex items-center justify-between gap-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div>
                       <div className={clsx("font-bold", uiText)}>페이지 공개</div>
-                      <div className={clsx("text-xs", uiSub)}>OFF면 프로필이 404로 보여.</div>
+                      <div className={clsx("text-xs", uiSub)}>OFF로 되있으면 프로필 링크가 비공개로 변경돼요</div>
                     </div>
                     <input
                       type="checkbox"
@@ -725,7 +733,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   </label>
 
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
-                    <div className={clsx("font-bold", uiText)}>공유 링크</div>
+                    <div className={clsx("font-bold", uiText)}>프로필 링크</div>
                     <input
                       readOnly
                       value={typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath}
@@ -735,7 +743,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                       onClick={() => {
                         const url = typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath;
                         navigator.clipboard.writeText(url);
-                        showToast("success", "복사했어!");
+                        showToast("success", "✅ 프로필 링크를 복사했어요!");
                       }}
                       className={clsx("mt-2 w-full rounded-2xl px-4 py-2 font-semibold", isDark ? "bg-white text-slate-900" : "bg-slate-900 text-white")}
                     >
@@ -782,7 +790,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                               : l.platform === "instagram"
                               ? "📸"
                               : l.platform === "youtube"
-                              ? "▶️"
+                              ? "🎬"
                               : l.platform === "discord_server"
                               ? "💬"
                               : l.platform === "bluesky"
@@ -799,7 +807,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     ))}
                     {draftLinks.filter((l) => l.enabled).length === 0 ? (
                       <div className={clsx("rounded-2xl border px-4 py-6 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/40 bg-white/30 text-slate-700")}>
-                        아직 공개된 링크가 없어
+                        아직 설정된 링크가 없어요!
                       </div>
                     ) : null}
                   </div>
@@ -807,7 +815,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               </div>
 
               <div className={clsx("mt-4 rounded-2xl border backdrop-blur-glass p-4 text-xs", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/35 text-slate-700")}>
-                변경사항은 우측 상단 <b>저장</b> 버튼을 눌러야 실제로 적용돼.
+                변경사항은 우측 상단 <b>저장</b> 버튼을 눌러야 실제로 적용돼요!
               </div>
             </div>
           </div>

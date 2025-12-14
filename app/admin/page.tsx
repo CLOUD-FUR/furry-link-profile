@@ -20,12 +20,12 @@ export default async function AdminPage({ searchParams }: { searchParams: { err?
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="mx-auto max-w-6xl px-4 py-10">
-        <h1 className="text-2xl font-black">Admin</h1>
-        <p className="mt-1 text-sm text-white/70">유저/링크 관리 + 로그</p>
+        <h1 className="text-2xl font-black">Admin Pannel</h1>
+        <p className="mt-1 text-sm text-white/70">유저 정보를 수정하거나 삭제할 수 있어요!</p>
 
         {err ? (
           <div className="mt-4 rounded-xl border border-rose-400/30 bg-rose-600/20 px-4 py-3 text-sm">
-            오류: {err}
+            Error: {err}
           </div>
         ) : null}
 
@@ -116,7 +116,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { err?
           </table>
         </div>
 
-        <h2 className="mt-10 text-lg font-bold">Logs (최근 200)</h2>
+        <h2 className="mt-10 text-lg font-bold">Logs</h2>
         <div className="mt-3 overflow-auto rounded-xl border border-white/10">
           <table className="w-full text-sm">
             <thead className="bg-white/5">
@@ -145,7 +145,7 @@ export default async function AdminPage({ searchParams }: { searchParams: { err?
         </div>
 
         <p className="mt-10 text-xs text-white/60">
-          * 접속/생성/수정 로그가 자동으로 쌓여.
+          접속로그, 수정로그 등 각종 로그가 여기에 표시돼요
         </p>
       </div>
     </div>

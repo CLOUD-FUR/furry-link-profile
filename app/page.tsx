@@ -6,13 +6,13 @@ export default function HomePage() {
       <div className="absolute inset-0 noise opacity-40" />
       <Container className="relative py-12">
         <header className="flex items-center justify-between gap-4">
-          <div className="font-black tracking-tight text-xl">🐾 Furry Links</div>
+          <div className="font-black tracking-tight text-xl">🐾 Fluffy Link</div>
           <nav className="flex items-center gap-2">
             <ButtonLink href="/login" className="bg-white/70 border-white/60 hover:bg-white/85">
               Discord 로그인
             </ButtonLink>
             <ButtonLink href="/dev" className="bg-slate-900 text-white border-slate-900">
-              개발자
+              개발자 프로필
             </ButtonLink>
           </nav>
         </header>
@@ -20,28 +20,29 @@ export default function HomePage() {
         <section className="mt-12 grid gap-8 lg:grid-cols-2">
           <div>
             <h1 className="text-5xl font-black tracking-tight leading-[1.05]">
-              Your furry links,
-              <span className="block">in one paw.</span>
+              All your links,
+              <span className="block">in one link.</span>
             </h1>
             <p className="mt-4 text-slate-700 text-lg">
-              Discord로 로그인하고, 퍼리용 링크 프로필 페이지를 1분 만에 만들자.
+              Discord로 로그인하고 프로필 페이지를 바로 만들 수 있어요!
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink href="/login" className="bg-slate-900 text-white border-slate-900">
                 Discord로 시작하기
               </ButtonLink>
-              <ButtonLink href="/dev" className="bg-white/70 border-white/60 hover:bg-white/85">
-                개발자 페이지
+              <ButtonLink href="/CLOUD" className="bg-white/70 border-white/60 hover:bg-white/85">
+                개발자 프로필
               </ButtonLink>
             </div>
 
             <ul className="mt-8 space-y-3 text-slate-800">
               {[
-                "🌈 파스텔/다크네온/스카이블루 테마",
-                "🔗 링크 버튼 무제한 (추가/비활성화)",
+                "🌈 여러가지 테마 및 커스텀 테마 제공",
+                "🔗 바로가기 버튼 링크 설정 가능",
                 "🔐 Discord 로그인으로 누구나 이용 가능",
-                "📱 모바일 최적화 (중앙 카드)",
+                "📱 PC 및 모바일 최적화",
+                "😺 실시간 지원 및 문의 처리 가능",
               ].map((t) => (
                 <li key={t} className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-slate-900/70" />
@@ -58,11 +59,11 @@ export default function HomePage() {
                 <div className="h-20 w-20 rounded-full border-4 border-white/70 bg-white/60 shadow-glow" />
               </div>
               <div className="mt-3 text-center">
-                <div className="text-xl font-black">@demo</div>
-                <div className="mt-1 text-sm text-slate-700">퍼리 링크를 한 곳에 ✨</div>
+                <div className="text-xl font-black">@handle_name</div>
+                <div className="mt-1 text-sm text-slate-700">여러개의 링크를 한 곳에 ✨</div>
               </div>
               <div className="mt-4 grid gap-3">
-                {["Twitter", "Commission", "Goods Shop", "Discord"].map((t) => (
+                {["Twitter", "Commission", "Instagram", "Discord"].map((t) => (
                   <div
                     key={t}
                     className="rounded-2xl border border-white/50 bg-white/55 px-4 py-3 font-semibold text-slate-900 hover:bg-white/70"
@@ -74,7 +75,7 @@ export default function HomePage() {
             </div>
 
             <p className="mt-4 text-xs text-slate-700">
-              * 이 프리뷰는 예시야. 로그인하면 네 Discord 프로필로 자동 세팅돼!
+              * 해당 프리뷰는 예시에요. 로그인하면 프로필을 직접 세팅할 수 있어요!
             </p>
           </GlassCard>
         </section>

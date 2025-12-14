@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { SessionProvider } from "@/components/session-provider";
 
 export const metadata: Metadata = {
-  title: "Furry Links",
-  description: "Your furry links, in one paw.",
+  title: "Fluffy Link",
+  description: "여러개의 링크를 하나의 링크로!",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
