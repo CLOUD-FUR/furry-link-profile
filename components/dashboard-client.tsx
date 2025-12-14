@@ -185,18 +185,44 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         },
       };
 
-      const r = await fetch("/api/links", {
-        method: "PUT",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const d = await safeJson(r);
-      if (!r.ok) {
-        setSaving(false);
-        showToast("error", (d as any)?.error ?? "❌ 링크 저장을 실패했어요!");
-        return;
-      }
+  try {
+    setSaving(true);
+
+    const r = await fetch("/api/links/bulk", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        links: draftLinks.map((l, i) => ({
+          id: l.id,
+          title: l.title,
+          url: l.url,
+          platform: l.platform,
+          subtitle: l.subtitle,
+          enabled: l.enabled,
+          order: i,
+        })),
+      }),
+    });
+
+    const d = await safeJson(r);
+
+    if (!r.ok) {
+      showToast("error", (d as any)?.error ?? "❌ 링크 저장을 실패했어요!");
+      return;
     }
+
+    // ✅ 저장 성공 시 draft / saved 동기화 (중요)
+    if (d?.links) {
+      setSavedUser((u) => ({ ...u, links: d.links }));
+      setDraftLinks(d.links.map((x) => ({ ...x })));
+      setDirty(false);
+      showToast("success", "✅ 저장 완료!");
+    }
+  } finally {
+    // ✅ 성공 / 실패 상관없이 버튼 상태 복구
+    setSaving(false);
+  }
+
 
     // Persist order
     await fetch("/api/links/reorder", {
