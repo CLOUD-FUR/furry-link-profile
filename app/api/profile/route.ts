@@ -49,12 +49,12 @@ export async function PUT(req: Request) {
 
   if (typeof patch.handle === "string") {
     const normalized = normalizeHandleDisplay(patch.handle);
-    if (!normalized) return Response.json({ error: "핸들이 비어있어." }, { status: 400 });
+    if (!normalized) return Response.json({ error: "❌ 핸들이 비어있어요!" }, { status: 400 });
 
     const handleLower = normalized.toLowerCase();
     const exists = await prisma.user.findUnique({ where: { handleLower } });
     if (exists && exists.id !== userId) {
-      return Response.json({ error: "이미 있는 핸들이야." }, { status: 409 });
+      return Response.json({ error: "❌ 이미 있는 핸들이에요!" }, { status: 409 });
     }
 
     data.handle = normalized;

@@ -213,24 +213,42 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     showToast("success", "✅ 저장을 완료했어요!");
   }
 
-  async function addLink() {
-    const res = await fetch("/api/links", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ platform: "other", title: "New Link", url: "https://example.com" }),
+async function addLink() {
+  const res = await fetch("/api/links", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      platform: "other",
+      title: "New Link",
+      url: "https://example.com",
+    }),
+  });
+
+  const data = await safeJson(res);
+
+  if (res.ok && data?.links) {
+    setSavedUser((u) => ({ ...u, links: data.links }));
+
+    setDraftLinks((prev) => {
+      const prevIds = new Set(prev.map((l) => l.id));
+
+      const merged = [
+        ...prev,
+        ...(data.links as Link[])
+          .filter((l) => !prevIds.has(l.id))
+          .map((l) => ({ ...l })),
+      ];
+
+      return merged.sort((a, b) => a.order - b.order);
     });
 
-    const data = await safeJson(res);
-    if (res.ok && data?.links) {
-      const updated: DraftLink[] = (data.links as Link[]).map((x) => ({ ...x }));
-      setSavedUser((u) => ({ ...u, links: data.links }));
-      setDraftLinks(updated);
-      setDirty(true);
-      showToast("success", "✅ 링크를 추가했어요! 저장을 눌러 적용해주세요!");
-    } else {
-      showToast("error", (data as any)?.error ?? "❌ 링크 추가를 실패했어요");
-    }
+    setDirty(true);
+    showToast("success", "✅ 링크를 추가했어요! 저장을 눌러 적용해주세요!");
+  } else {
+    showToast("error", (data as any)?.error ?? "❌ 링크 추가를 실패했어요");
   }
+}
+
 
   async function deleteLink(id: string) {
     if (!confirm("정말로 삭제 하시겠습니까?")) return;
@@ -565,19 +583,30 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         <div className="mt-2 grid gap-2">
                           <div className="grid grid-cols-3 gap-2">
                             <select
+                              style={{ colorScheme: isDark ? "dark" : "light" }}
                               value={l.platform}
                               onChange={(e) => {
                                 const platform = e.target.value;
                                 setLink(l.id, { platform: platform as any });
                               }}
-                              className={clsx("col-span-1 rounded-xl border px-2 py-2 text-sm", isDark ? "border-white/15 bg-white/10 text-white" : "border-white/50 bg-white/60")}
-                            >
-                              {platformOptions().map(([v, label]) => (
-                                <option value={v} key={v}>
-                                  {label}
-                                </option>
-                              ))}
-                            </select>
+                              className={clsx(
+                              "w-full rounded-xl px-3 py-2 text-sm",
+                              isDark
+                                ? "bg-white/10 text-white border border-white/20"
+                                : "bg-white text-black border border-black/10"
+                            )}
+                          >
+                            {platformOptions().map(([value, label]) => (
+                              <option
+                                key={value}
+                                value={value}
+                                className="bg-white text-black"
+                              >
+                                {label}
+                              </option>
+                            ))}
+                          </select>
+
 
                             <input
                               value={l.title}
