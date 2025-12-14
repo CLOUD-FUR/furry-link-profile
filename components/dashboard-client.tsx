@@ -326,7 +326,12 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     showToast("info", "✅ 사진 테마를 기본으로 변경했어요! 저장을 눌러 적용해주세요!");
   }
 
+  // ✅ 여기 추가 (return 위)
+  const cleanPath = publicPath.trim();
+  const fullUrl = `https://fluff-link.netlify.app${cleanPath}`;
+
   return (
+
     <div className={clsx("min-h-screen relative overflow-hidden", theme.bg)}>
       <div className="absolute inset-0 noise opacity-30" />
       {draftUser.theme === "custom" && parseThemeBg() ? (
@@ -341,9 +346,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
           <div>
             <div className={clsx("text-xl font-black tracking-tight", uiText)}>🐾 Dashboard | 프로필 수정하기</div>
             <div className={clsx("text-sm", uiSub)}>
-              프로필 페이지 바로가기: https://fluff-link.netlify.app/{" "}
-              <a className="underline" href={publicPath} target="_blank" rel="noreferrer">
-                {publicPath}
+              프로필 페이지 바로가기:
+              <a
+                href={fullUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="ml-1 underline break-all"
+              >
+                {fullUrl}
               </a>
             </div>
           </div>

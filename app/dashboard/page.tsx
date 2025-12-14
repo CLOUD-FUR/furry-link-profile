@@ -8,7 +8,8 @@ export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
-  const userId = (session.user as any).id as string;
+  const userId = (session.user as any).id as string | undefined;
+  if (!userId) redirect("/login");
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -19,3 +20,4 @@ export default async function DashboardPage() {
 
   return <DashboardClient initialUser={user} />;
 }
+

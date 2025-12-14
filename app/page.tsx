@@ -8,10 +8,10 @@ export default function HomePage() {
         <header className="flex items-center justify-between gap-4">
           <div className="font-black tracking-tight text-xl">🐾 Fluffy Link</div>
           <nav className="flex items-center gap-2">
-            <ButtonLink href="/login" className="bg-white/70 border-white/60 hover:bg-white/85">
+            <ButtonLink href="/dashboard" className="bg-white/70 border-white/60 hover:bg-white/85">
               Discord 로그인
             </ButtonLink>
-            <ButtonLink href="/dev" className="bg-slate-900 text-white border-slate-900">
+            <ButtonLink href="/@CLOUD" className="bg-slate-900 text-white border-slate-900">
               개발자 프로필
             </ButtonLink>
           </nav>
@@ -28,10 +28,10 @@ export default function HomePage() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/login" className="bg-slate-900 text-white border-slate-900">
+              <ButtonLink href="/dashboard" className="bg-slate-900 text-white border-slate-900">
                 Discord로 시작하기
               </ButtonLink>
-              <ButtonLink href="/CLOUD" className="bg-white/70 border-white/60 hover:bg-white/85">
+              <ButtonLink href="/@CLOUD" className="bg-white/70 border-white/60 hover:bg-white/85">
                 개발자 프로필
               </ButtonLink>
             </div>
