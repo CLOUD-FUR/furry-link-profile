@@ -142,101 +142,70 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     setSaving(true);
     setHandleError("");
 
-    const userPatch: Partial<User> = {
-      handle: draftUser.handle,
-      bio: draftUser.bio,
-      theme: draftUser.theme,
-      themeJson: draftUser.themeJson,
-      bannerUrl: draftUser.bannerUrl,
-      image: draftUser.image,
-      isPublic: draftUser.isPublic,
-    };
-
-    const resU = await fetch("/api/profile", {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(userPatch),
-    });
-
-    const dataU = await safeJson(resU);
-    if (!resU.ok) {
-      setSaving(false);
-      if (resU.status === 409) {
-        setHandleError((dataU as any)?.error ?? "❌ 이미 있는 핸들이에요!");
-        showToast("error", (dataU as any)?.error ?? "❌ 핸들 저장을 실패했어요");
-      } else {
-        showToast("error", (dataU as any)?.error ?? "❌ 프로필 저장을 실패했어요");
-      }
-      return;
-    }
-
-    // Update links (simple per-link PUT). Create is immediate when adding.
-    for (const l of draftLinks) {
-      const payload: any = {
-        id: l.id,
-        patch: {
-          platform: l.platform as any,
-          title: l.title,
-          url: l.url,
-          subtitle: l.subtitle ?? "",
-          enabled: l.enabled,
-          order: l.order,
-          handle: l.handleInput ?? undefined,
-        },
+    try {
+      // 1️⃣ 프로필 저장
+      const userPatch: Partial<User> = {
+        handle: draftUser.handle,
+        bio: draftUser.bio,
+        theme: draftUser.theme,
+        themeJson: draftUser.themeJson,
+        bannerUrl: draftUser.bannerUrl,
+        image: draftUser.image,
+        isPublic: draftUser.isPublic,
       };
 
-  try {
-    setSaving(true);
+      const resU = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(userPatch),
+      });
 
-    const r = await fetch("/api/links/bulk", {
-      method: "PUT",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        links: draftLinks.map((l, i) => ({
-          id: l.id,
-          title: l.title,
-          url: l.url,
-          platform: l.platform,
-          subtitle: l.subtitle,
-          enabled: l.enabled,
-          order: i,
-        })),
-      }),
-    });
+      const dataU = await safeJson(resU);
+      if (!resU.ok) {
+        if (resU.status === 409) {
+          setHandleError((dataU as any)?.error ?? "❌ 이미 있는 핸들이에요!");
+        }
+        showToast("error", (dataU as any)?.error ?? "❌ 프로필 저장 실패");
+        return;
+      }
 
-    const d = await safeJson(r);
+      // 2️⃣ 링크 bulk 저장 (🔥 핵심)
+      const r = await fetch("/api/links/bulk", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          links: draftLinks.map((l, i) => ({
+            id: l.id,
+            platform: l.platform,
+            title: l.title,
+            url: l.url,
+            subtitle: l.subtitle,
+            enabled: l.enabled,
+            order: i,
+            handle: l.handleInput ?? undefined,
+          })),
+        }),
+      });
 
-    if (!r.ok) {
-      showToast("error", (d as any)?.error ?? "❌ 링크 저장을 실패했어요!");
-      return;
-    }
+      const d = await safeJson(r);
+      if (!r.ok) {
+        showToast("error", (d as any)?.error ?? "❌ 링크 저장 실패");
+        return;
+      }
 
-    // ✅ 저장 성공 시 draft / saved 동기화 (중요)
-    if (d?.links) {
-      setSavedUser((u) => ({ ...u, links: d.links }));
-      setDraftLinks(d.links.map((x) => ({ ...x })));
-      setDirty(false);
+      // 3️⃣ 상태 동기화 (🔥 중요)
+      if (d?.links) {
+        setSavedUser((u) => ({ ...u, links: d.links }));
+        setDraftLinks(d.links.map((x) => ({ ...x })));
+        setDirty(false);
+      }
+
       showToast("success", "✅ 저장 완료!");
+    } finally {
+      setSaving(false);
     }
-  } finally {
-    // ✅ 성공 / 실패 상관없이 버튼 상태 복구
-    setSaving(false);
   }
 
-
-    // Persist order
-    await fetch("/api/links/reorder", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ orders: draftLinks.map((l) => ({ id: l.id, order: l.order })) }),
-    }).catch(() => {});
-
-    await refreshFromServer();
-
-    setSaving(false);
-    setDirty(false);
-    showToast("success", "✅ 저장을 완료했어요!");
-  }
 
 async function addLink() {
   const res = await fetch("/api/links", {
