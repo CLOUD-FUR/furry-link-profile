@@ -48,7 +48,6 @@ function platformOptions() {
     ["discord_server", "Discord 서버"],
     ["x", "Twitter (X)"],
     ["youtube", "YouTube"],
-    ["bluesky", "Bluesky"],
     ["instagram", "Instagram"],
     ["other", "기타 링크"],
   ] as const;
@@ -252,21 +251,31 @@ async function addLink() {
 
   async function deleteLink(id: string) {
     if (!confirm("정말로 삭제 하시겠습니까?")) return;
+
     const res = await fetch("/api/links", {
       method: "DELETE",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ id }),
     });
+
     const data = await safeJson(res);
-    if (res.ok && data?.links) {
-      setSavedUser((u) => ({ ...u, links: data.links }));
-      setDraftLinks((data.links as Link[]).map((x) => ({ ...x })));
-      setDirty(true);
-      showToast("success", "✅ 삭제를 완료했어요! 저장을 눌러 적용해주세요!");
+
+    if (res.ok) {
+      // ✅ savedUser는 서버 기준으로 갱신
+      if (data?.links) {
+        setSavedUser((u) => ({ ...u, links: data.links }));
+      }
+
+      // ✅ draftLinks는 현재 상태에서 해당 id만 제거
+      setDraftLinks((prev) => prev.filter((l) => l.id !== id));
+
+      markDirty();
+      showToast("success", "✅ 링크를 삭제했어요! 저장을 눌러 적용해주세요!");
     } else {
       showToast("error", (data as any)?.error ?? "❌ 링크 삭제를 실패했어요");
     }
   }
+
 
   function moveLink(id: string, dir: -1 | 1) {
     const idx = draftLinks.findIndex((l) => l.id === id);

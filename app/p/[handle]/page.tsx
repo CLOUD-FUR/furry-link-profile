@@ -8,7 +8,6 @@ function platformEmoji(platform: string) {
     instagram: "📸",
     youtube: "🎬",
     discord_server: "💬",
-    bluesky: "🦋",
     other: "🔗",
   };
   return map[platform] ?? "🔗";

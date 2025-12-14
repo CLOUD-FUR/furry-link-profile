@@ -4,6 +4,29 @@ import { prisma } from "@/lib/prisma";
 import { writeLog } from "@/lib/log";
 import { z } from "zod";
 
+function normalizeUrl(platform: string, url: string) {
+  const raw = url.trim();
+
+  // Instagram
+  if (platform === "instagram") {
+    return raw.startsWith("http")
+      ? raw
+      : `https://instagram.com/${raw.replace(/^@/, "")}`;
+  }
+
+  // Twitter (X)
+  if (platform === "x") {
+    return raw.startsWith("http")
+      ? raw
+      : `https://x.com/${raw.replace(/^@/, "")}`;
+  }
+
+  // 그 외 플랫폼은 그대로
+  return raw;
+}
+
+
+
 const PatchSchema = z.object({
   handle: z.string().min(1).max(20).optional(),
   bio: z.string().max(500).optional(),
