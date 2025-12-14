@@ -196,7 +196,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       // 3️⃣ 상태 동기화 (🔥 중요)
       if (d?.links) {
         setSavedUser((u) => ({ ...u, links: d.links }));
-        setDraftLinks(d.links.map((x) => ({ ...x })));
+        setDraftLinks((d.links as DraftLink[]).map((x: DraftLink) => ({ ...x })));
         setDirty(false);
       }
 
