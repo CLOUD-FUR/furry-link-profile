@@ -328,7 +328,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
   // ✅ 여기 추가 (return 위)
   const cleanPath = publicPath.trim();
-  const fullUrl = `https://fluff-link.netlify.app${cleanPath}`;
+  const fullUrl = `https://fluffy-link.xyz${cleanPath}`;
 
   return (
 
