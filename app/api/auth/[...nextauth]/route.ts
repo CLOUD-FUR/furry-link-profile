@@ -11,7 +11,23 @@ const handler = NextAuth({
   ],
 
   callbacks: {
-    // ✅ 로그인할 때 DB에 유저 없으면 자동 생성
+    // ✅ JWT에 Discord ID 저장
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+
+    // ✅ session.user.id 주입 (이게 핵심)
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as any).id = token.id;
+      }
+      return session;
+    },
+
+    // ✅ 로그인 시 유저 자동 생성
     async signIn({ user }) {
       const discordId = user.id;
 
@@ -40,7 +56,7 @@ const handler = NextAuth({
       return true;
     },
 
-    // ✅ 로그인 후 항상 dashboard로
+    // ✅ 로그인 후 dashboard로
     async redirect({ baseUrl }) {
       return `${baseUrl}/dashboard`;
     },
