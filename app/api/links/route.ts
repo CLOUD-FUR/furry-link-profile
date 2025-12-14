@@ -157,29 +157,26 @@ export async function PUT(req: Request) {
   let nextUrl = input.patch.url ?? link.url;
 
   const handle = input.patch.handle;
-  if (input.patch.platform || typeof handle === "string") {
-    try {
-      if (nextPlatform === "x" || nextPlatform === "instagram") {
-        // ✅ handle을 수정했을 때만 URL 재생성
-        if (typeof handle === "string") {
-          nextUrl = buildUrl(nextPlatform as any, handle, undefined);
-        }
-        // handle 없으면 기존 nextUrl 그대로 유지
-      } else {
-        // ✅ X/Instagram 이외 플랫폼은 URL 직접 사용
-        nextUrl = buildUrl(
-          nextPlatform as any,
-          undefined,
-          input.patch.url ?? link.url
+
+  // ✅ SNS 플랫폼일 때만 handle 기반 처리
+  if (nextPlatform === "x" || nextPlatform === "instagram") {
+    // 이미 URL이면 그대로 둠 (중요)
+    if (typeof nextUrl === "string" && nextUrl.startsWith("http")) {
+      // 그대로 사용
+    } 
+    // handle이 들어온 경우만 새로 생성
+    else if (typeof handle === "string") {
+      try {
+        nextUrl = buildUrl(nextPlatform, handle, undefined);
+      } catch (e: any) {
+        return Response.json(
+          { error: e?.message ?? "invalid" },
+          { status: 400 }
         );
       }
-    } catch (e: any) {
-      return Response.json(
-        { error: e?.message ?? "invalid" },
-        { status: 400 }
-      );
     }
-}
+  }
+
 
   const updated = await prisma.link.update({
     where: { id: input.id },
