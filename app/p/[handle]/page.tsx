@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { getThemeById } from "@/lib/themes";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { notFound } from "next/navigation";
+import { PLATFORM_ICONS } from "@/lib/platform-icons";
+
 
 /* ---------- utils ---------- */
 
@@ -147,8 +149,17 @@ export default async function PublicProfile({
                 >
                   <span className="flex items-center gap-3">
                     <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/35">
-                      {platformEmoji(l.platform)}
+                      {PLATFORM_ICONS[l.platform] ? (
+                        <img
+                          src={PLATFORM_ICONS[l.platform]!}
+                          alt={l.platform}
+                          className="h-5 w-5 object-contain"
+                        />
+                      ) : (
+                        <span className="text-lg">🔗</span>
+                      )}
                     </span>
+
                     <span className="text-left">
                       <span className="block">{l.title}</span>
                       {l.subtitle ? (

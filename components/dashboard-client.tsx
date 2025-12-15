@@ -7,6 +7,7 @@ import type { Link as DbLink, User } from "@prisma/client";
 import { themes, getThemeById } from "@/lib/themes";
 import clsx from "clsx";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
+import { PLATFORM_ICONS } from "@/lib/platform-icons";
 
 type UserWithLinks = User & { links: DbLink[] };
 type DraftLink = DbLink & { handleInput?: string };
@@ -922,17 +923,15 @@ async function addLink() {
                       >
                         <span className="flex items-center gap-3">
                           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/35">
-                            {l.platform === "x"
-                              ? "𝕏"
-                              : l.platform === "instagram"
-                              ? "📸"
-                              : l.platform === "youtube"
-                              ? "🎬"
-                              : l.platform === "discord_server"
-                              ? "💬"
-                              : l.platform === "bluesky"
-                              ? "🦋"
-                              : "🔗"}
+                            {PLATFORM_ICONS[l.platform] ? (
+                              <img
+                                src={PLATFORM_ICONS[l.platform]!}
+                                alt={l.platform}
+                                className="h-5 w-5 object-contain"
+                              />
+                            ) : (
+                              <span className="text-lg">🔗</span>
+                            )}
                           </span>
                           <span className="text-left">
                             <span className={clsx("block", uiText)}>{l.title}</span>
