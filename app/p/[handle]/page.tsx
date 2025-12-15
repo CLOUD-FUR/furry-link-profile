@@ -21,38 +21,43 @@ function parseThemeJson(themeJson: string) {
   }
 }
 
-export default async function PublicProfile({ params }: { params: { handle: string } }) {
+import { PROFILE_TAGS } from "@/lib/profile-tags";
+
+export default async function PublicProfile({
+  params,
+}: {
+  params: { handle: string };
+}) {
   const handleLower = params.handle.toLowerCase();
 
   const user = await prisma.user.findUnique({
     where: { handleLower },
-    include: { links: { orderBy: { order: "asc" } } },
+    include: {
+      links: { orderBy: { order: "asc" } },
+    },
   });
 
-  if (!user || !user.isPublic) return notFound();
+  if (!user || !user.isPublic) notFound();
 
-  const theme = getThemeById(user.theme);
-  const isDark = user.theme !== "custom" ? theme.isDark : false;
-
-  const tjson = parseThemeJson(user.themeJson);
-  const bgImage: string | undefined = typeof (tjson as any)?.bgImage === "string" ? (tjson as any).bgImage : undefined;
-
-  const links = user.links.filter((l) => l.enabled);
+  const activeTag = user.profileTag
+    ? PROFILE_TAGS.find((t) => t.id === user.profileTag)
+    : null;
 
   return (
-    <div className={`min-h-screen ${theme.bg} relative overflow-hidden`}>
-      <div className="absolute inset-0 noise opacity-30" />
-      {bgImage ? (
-        <div
-          className="absolute inset-0 opacity-35"
-          style={{
-            backgroundImage: `url(${bgImage})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-      ) : null}
+    <>
+      <div className="text-2xl font-black">@{user.handle}</div>
 
+      {activeTag ? (
+        <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+          <img
+            src={activeTag.image}
+            alt={activeTag.label}
+            className="h-4 w-4"
+          />
+          {activeTag.label}
+        </div>
+      ) : null}
+      
       <div className="relative mx-auto w-full max-w-md px-4 py-10">
         <div className={`rounded-[2rem] border ${theme.card} backdrop-blur-glass shadow-soft overflow-hidden`}>
           <div
