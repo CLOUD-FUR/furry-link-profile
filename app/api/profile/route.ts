@@ -51,9 +51,23 @@ export async function GET(req: Request) {
   const userId = (session.user as any).id as string;
 
   const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: { links: { orderBy: { order: "asc" } } },
+    where: { handle },
+    select: {
+      id: true,
+      handle: true,
+      bio: true,
+      image: true,
+      bannerUrl: true,
+      theme: true,
+      themeJson: true,
+      profileTag: true, // ✅ 추가
+      links: {
+        where: { enabled: true },
+        orderBy: { order: "asc" },
+      },
+    },
   });
+
 
   return Response.json({ user });
 }

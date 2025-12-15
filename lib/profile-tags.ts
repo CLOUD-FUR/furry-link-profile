@@ -8,16 +8,16 @@ export const PROFILE_TAGS: ProfileTag[] = [
   {
     id: "furry",
     label: "퍼슈터",
-    image: "/tags/furry.png",
+    image: "/tags/FURSUITER.png",
   },
   {
     id: "artist",
     label: "아티스트",
-    image: "/tags/artist.png",
+    image: "/tags/ARTIST.png",
   },
   {
     id: "developer",
     label: "개발자",
-    image: "/tags/developer.png",
+    image: "/tags/GITHUB.png",
   },
 ];
