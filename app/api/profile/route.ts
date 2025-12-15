@@ -32,14 +32,20 @@ const PatchSchema = z.object({
   handle: z.string().min(1).max(20).optional(),
   bio: z.string().max(500).optional(),
   theme: z.string().max(32).optional(),
-  themeJson: z.string().max(200000).optional(),
-  bannerUrl: z.string().max(200000).optional(),
-  image: z.string().max(200000).optional(),
+
+  // ⬇️ 커스텀 테마 배경 (base64)
+  themeJson: z.string().max(600_000).optional(),
+
+  // ⬇️ 배너 이미지 (base64)
+  bannerUrl: z.string().max(600_000).optional(),
+
+  // ⬇️ 프로필 이미지 (base64)
+  image: z.string().max(300_000).optional(),
+
   isPublic: z.boolean().optional(),
-  profileTag: z
-    .string()
-    .optional()
-    .nullable(), // ✅ 추가
+
+  // ⬇️ 프로필 태그
+  profileTag: z.string().optional().nullable(),
 });
 
 
