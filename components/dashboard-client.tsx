@@ -5,6 +5,7 @@ import { signOut } from "next-auth/react";
 import type { Link, User } from "@prisma/client";
 import { themes, getThemeById } from "@/lib/themes";
 import clsx from "clsx";
+import { PROFILE_TAGS } from "@/lib/profile-tags";
 
 type UserWithLinks = User & { links: Link[] };
 type DraftLink = Link & { handleInput?: string };
@@ -81,6 +82,11 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const [toast, setToast] = useState<{ kind: ToastKind; message: string } | null>(null);
   const toastTimer = useRef<number | null>(null);
 
+  const activeTag = PROFILE_TAGS.find(
+  (t) => t.id === draftUser.profileTag
+);
+
+
   function showToast(kind: ToastKind, message: string) {
     setToast({ kind, message });
     if (toastTimer.current) window.clearTimeout(toastTimer.current);
@@ -140,6 +146,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         bannerUrl: draftUser.bannerUrl,
         image: draftUser.image,
         isPublic: draftUser.isPublic,
+        profileTag: draftUser.profileTag, // ✅ 추가
       };
 
       const resU = await fetch("/api/profile", {
@@ -530,6 +537,38 @@ async function addLink() {
                     />
                     <p className={clsx("mt-1 text-xs", uiSub)}>최대 500자까지 적을 수 있어요!</p>
                   </Field>
+                  <Field label="프로필 태그">
+                  <select
+                    value={draftUser.profileTag ?? ""}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setDraftUser((u) => ({
+                        ...u,
+                        profileTag: v === "" ? null : v,
+                      }));
+                      markDirty();
+                    }}
+                    className={clsx(
+                      "w-full rounded-xl border px-3 py-2",
+                      isDark
+                        ? "bg-white/10 text-white border-white/15"
+                        : "bg-white/60 border-white/50"
+                    )}
+                  >
+                    <option value="">선택 안함</option>
+
+                    {PROFILE_TAGS.map((tag) => (
+                      <option key={tag.id} value={tag.id}>
+                        {tag.label}
+                      </option>
+                    ))}
+                  </select>
+
+                  <p className={clsx("mt-1 text-xs", uiSub)}>
+                    프로필에 표시할 태그를 1개 선택할 수 있어요
+                  </p>
+                </Field>
+
                 </div>
               ) : null}
 
@@ -807,8 +846,27 @@ async function addLink() {
                   />
                 </div>
                 <div className="px-6 pb-8 pt-4 text-center">
-                  <div className={clsx("text-2xl font-black", uiText)}>@{draftUser.handle}</div>
-                  {draftUser.bio ? <p className={clsx("mt-1 text-sm whitespace-pre-wrap", uiSub)}>{draftUser.bio}</p> : null}
+                  <div className={clsx("text-2xl font-black", uiText)}>
+                    @{draftUser.handle}
+                  </div>
+
+                  {activeTag ? (
+                    <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+                      <img
+                        src={activeTag.image}
+                        alt={activeTag.label}
+                        className="h-4 w-4"
+                      />
+                      {activeTag.label}
+                    </div>
+                  ) : null}
+
+                  {draftUser.bio ? (
+                    <p className={clsx("mt-1 text-sm whitespace-pre-wrap", uiSub)}>
+                      {draftUser.bio}
+                    </p>
+                  ) : null}
+
                   <div className="mt-5 grid gap-3">
                     {draftLinks.filter((l) => l.enabled).map((l) => (
                       <div

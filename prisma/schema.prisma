@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model User { 
   id            String   @id // Discord user id
   name          String?
   image         String   @default("") // current avatar shown on profile (can be custom)
@@ -19,6 +19,12 @@ model User {
   themeJson     String   @default("")       // optional custom theme JSON
   bannerUrl     String   @default("")       // can be data URL or hosted URL
   isPublic      Boolean  @default(true)
+
+  /// 🔥 프로필 태그 (뱃지)
+  /// null = 선택 안함
+  /// 값 = profile-tags.ts 에 정의된 tag id
+  profileTag    String?  @default(null)
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -26,6 +32,7 @@ model User {
   logsAsActor   Log[]    @relation("ActorLogs")
   logsAsTarget  Log[]    @relation("TargetLogs")
 }
+
 
 model Link {
   id              String   @id @default(cuid())

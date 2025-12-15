@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Script from "next/script";
 import { SessionProvider } from "@/components/session-provider";
+import LegalButtons from "@/components/LegalButtons";
 
 export const metadata: Metadata = {
   title: "Fluffy Link",
@@ -18,6 +19,7 @@ export default function RootLayout({
       <body>
         <SessionProvider>
           {children}
+          <LegalButtons />
         </SessionProvider>
 
         {/* Channel.io */}
