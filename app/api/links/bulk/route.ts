@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { writeLog } from "@/lib/log";
 import { z } from "zod";
+import { buildUrl } from "@/lib/links/url";
 
 const PlatformEnum = z.enum([
   "discord_server",
@@ -18,8 +19,9 @@ const BulkSchema = z.object({
     z.object({
       id: z.string().min(1),
       title: z.string().min(1).max(60),
-      url: z.string().min(1).max(2048), // 🔥 이미 완성된 URL
       platform: PlatformEnum,
+      url: z.string().optional(),          // 기타용
+      handle: z.string().optional(),       // 🔥 SNS용
       subtitle: z.string().max(80).optional(),
       enabled: z.boolean().optional(),
       order: z.number().int().nonnegative(),
@@ -55,20 +57,31 @@ export async function PUT(req: Request) {
 
   // 🔁 트랜잭션 저장 (URL 가공 ❌)
   await prisma.$transaction(
-    input.links.map((l) =>
-      prisma.link.update({
+    input.links.map((l) => {
+      let finalUrl = l.url ?? "";
+
+      // 🔥 SNS 플랫폼이면 handle 기준으로 URL 생성
+      if (l.platform === "x" || l.platform === "instagram" || l.platform === "bluesky") {
+        finalUrl = buildUrl(
+          l.platform,
+          l.handle ?? l.url ?? ""
+        );
+      }
+
+      return prisma.link.update({
         where: { id: l.id },
         data: {
           title: l.title,
-          url: l.url, // ✅ 그대로 저장
+          url: finalUrl,
           platform: l.platform,
           subtitle: l.subtitle ?? "",
           enabled: l.enabled ?? true,
           order: l.order,
         },
-      })
-    )
+      });
+    })
   );
+
 
   await writeLog({
     type: "LINK_BULK_UPDATE",
