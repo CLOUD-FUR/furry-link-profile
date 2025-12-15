@@ -4,20 +4,6 @@ import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { notFound } from "next/navigation";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
 
-
-/* ---------- utils ---------- */
-
-function platformEmoji(platform: string) {
-  const map: Record<string, string> = {
-    x: "𝕏",
-    instagram: "📸",
-    youtube: "🎬",
-    discord_server: "💬",
-    other: "🔗",
-  };
-  return map[platform] ?? "🔗";
-}
-
 function parseThemeJson(themeJson?: string) {
   try {
     return themeJson ? JSON.parse(themeJson) : {};
@@ -116,7 +102,11 @@ export default async function PublicProfile({
 
             {/* Profile Tag */}
             {activeTag ? (
-              <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+              <div
+                className={`mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold ${
+                  isDark ? "text-white" : "text-slate-900"
+                }`}
+              >
                 <img
                   src={activeTag.image}
                   alt={activeTag.label}
@@ -124,6 +114,7 @@ export default async function PublicProfile({
                 />
                 {activeTag.label}
               </div>
+
             ) : null}
 
             {/* Bio */}

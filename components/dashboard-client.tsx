@@ -899,7 +899,11 @@ async function addLink() {
                   </div>
 
                   {activeTag ? (
-                    <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+                    <div
+                      className={`mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold ${
+                        isDark ? "text-white" : "text-slate-900"
+                      }`}
+                    >
                       <img
                         src={activeTag.image}
                         alt={activeTag.label}
