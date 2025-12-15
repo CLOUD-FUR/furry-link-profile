@@ -250,7 +250,7 @@ async function addLink() {
 
       const merged = [
         ...prev,
-        ...(data.links as Link[])
+        ...(data.links as DbLink[])
           .filter((l) => !prevIds.has(l.id))
           .map((l) => ({ ...l })),
       ];
