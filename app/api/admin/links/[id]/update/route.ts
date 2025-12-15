@@ -23,7 +23,12 @@ export async function POST(
   const title = String(formData.get("title") ?? "").trim();
   const url = String(formData.get("url") ?? "").trim();
 
-  // title만 왔거나 url만 왔을 수도 있어서, 빈 값은 기존 값으로 채우는 방식이 안전함
+  // ✅ 반드시 여기 (객체 밖)
+  const ip =
+    req.headers.get("x-forwarded-for") ||
+    req.headers.get("x-real-ip") ||
+    undefined;
+
   try {
     const before = await prisma.link.findUnique({
       where: { id: params.id },
@@ -31,30 +36,35 @@ export async function POST(
     });
 
     if (!before) {
-      return NextResponse.redirect(new URL("/admin?err=Link not found", req.url));
+      return NextResponse.redirect(
+        new URL("/admin?err=Link not found", req.url)
+      );
     }
 
     const nextTitle = title || before.title;
     const nextUrl = url || before.url;
 
     if (!nextTitle || !nextUrl) {
-      return NextResponse.redirect(new URL("/admin?err=Invalid input", req.url));
+      return NextResponse.redirect(
+        new URL("/admin?err=Invalid input", req.url)
+      );
     }
 
     await prisma.link.update({
       where: { id: params.id },
-      data: { title: nextTitle, url: nextUrl },
+      data: {
+        title: nextTitle,
+        url: nextUrl,
+      },
     });
 
+    // ✅ 여기서는 key: value만
     await prisma.log.create({
       data: {
         type: "ADMIN_LINK_UPDATE",
         actorUserId: actorId,
         targetUserId: before.userId,
-        const ip =
-        req.headers.get("x-forwarded-for") ||
-        req.headers.get("x-real-ip") ||
-        undefined;
+        ip,
         message: `Link updated (@${before.user.handle}) "${before.title}" -> "${nextTitle}"`,
       },
     });
@@ -62,6 +72,8 @@ export async function POST(
     return NextResponse.redirect(new URL("/admin", req.url));
   } catch (e) {
     console.error(e);
-    return NextResponse.redirect(new URL("/admin?err=Update failed", req.url));
+    return NextResponse.redirect(
+      new URL("/admin?err=Update failed", req.url)
+    );
   }
 }
