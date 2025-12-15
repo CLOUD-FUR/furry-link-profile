@@ -23,7 +23,7 @@ model User {
   /// 🔥 프로필 태그 (뱃지)
   /// null = 선택 안함
   /// 값 = profile-tags.ts 에 정의된 tag id
-  profileTag    String?  @default(null)
+  profileTag    String?
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
