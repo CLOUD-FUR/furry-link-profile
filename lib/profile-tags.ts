@@ -16,8 +16,33 @@ export const PROFILE_TAGS: ProfileTag[] = [
     image: "/tags/ARTIST.png",
   },
   {
+    id: "maker",
+    label: "메이커",
+    image: "/tags/MAKER.png",
+  },
+  {
     id: "developer",
     label: "개발자",
     image: "/tags/GITHUB.png",
+  },
+    {
+    id: "photo",
+    label: "사진사",
+    image: "/tags/PHOTO.png",
+  },
+    {
+    id: "musician",
+    label: "뮤지션",
+    image: "/tags/MUSICIAN.png",
+  },
+    {
+    id: "supporter",
+    label: "서포터",
+    image: "/tags/SUPPORTER.png",
+  },
+    {
+    id: "youtuber",
+    label: "유튜버",
+    image: "/tags/YOUTUBE.png",
   },
 ];
