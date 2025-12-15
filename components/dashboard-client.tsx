@@ -1,14 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
-import type { Link, User } from "@prisma/client";
+import type { Link as DbLink, User } from "@prisma/client";
 import { themes, getThemeById } from "@/lib/themes";
 import clsx from "clsx";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 
 type UserWithLinks = User & { links: Link[] };
-type DraftLink = Link & { handleInput?: string };
+type DraftLink = DbLink & { handleInput?: string };
 
 type ToastKind = "success" | "error" | "info";
 
@@ -97,8 +98,13 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const toastTimer = useRef<number | null>(null);
 
   const activeTag = PROFILE_TAGS.find(
-  (t) => t.id === draftUser.profileTag
-);
+    (t) => t.id === draftUser.profileTag
+  );
+  
+  // ✅ 최초 마운트 시 서버 기준으로 다시 동기화
+  useEffect(() => {
+    refreshFromServer();
+  }, []);
 
 
   function showToast(kind: ToastKind, message: string) {
@@ -382,7 +388,16 @@ async function addLink() {
       <div className="relative mx-auto w-full max-w-6xl px-4 py-10">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <div className={clsx("text-xl font-black tracking-tight", uiText)}>🐾 Dashboard | 프로필 수정하기</div>
+          <Link
+            href="/"
+            className={clsx(
+              "text-xl font-black tracking-tight cursor-pointer",
+              uiText ?? ""
+            )}
+          >
+            🐾 Dashboard | 프로필 수정하기
+          </Link>
+
             <div className={clsx("text-sm", uiSub)}>
               프로필 페이지 바로가기:
               <a
