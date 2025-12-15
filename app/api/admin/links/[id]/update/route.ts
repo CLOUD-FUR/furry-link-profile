@@ -51,10 +51,10 @@ export async function POST(
         type: "ADMIN_LINK_UPDATE",
         actorUserId: actorId,
         targetUserId: before.userId,
-        ip:
-          req.headers.get("x-forwarded-for") ??
-          req.headers.get("x-real-ip") ??
-          null,
+        const ip =
+        req.headers.get("x-forwarded-for") ||
+        req.headers.get("x-real-ip") ||
+        undefined;
         message: `Link updated (@${before.user.handle}) "${before.title}" -> "${nextTitle}"`,
       },
     });

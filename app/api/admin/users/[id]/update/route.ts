@@ -1,53 +1,78 @@
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isAdminId } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { writeLog } from "@/lib/log";
-import { redirect } from "next/navigation";
 
-function normalizeHandleDisplay(handle: string) {
-  const cleaned = handle.trim().replace(/[^A-Za-z0-9_]/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
-  return cleaned.slice(0, 20);
-}
-
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login");
 
-  const actorId = (session.user as any).id as string;
-  if (!isAdminId(actorId)) redirect("/");
-
-  const form = await req.formData();
-  const handle = String(form.get("handle") ?? "");
-  const bio = String(form.get("bio") ?? "");
-  const isPublic = String(form.get("isPublic") ?? "off") === "on";
-
-  const nextHandle = normalizeHandleDisplay(handle);
-  const handleLower = nextHandle.toLowerCase();
-
-  // handleLower must be unique
-  const exists = await prisma.user.findUnique({ where: { handleLower } });
-  if (exists && exists.id !== params.id) {
-    redirect("/admin?err=handle_exists");
+  if (!session?.user) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  await prisma.user.update({
-    where: { id: params.id },
-    data: {
-      handle: nextHandle,
-      handleLower,
-      bio: bio.slice(0, 500),
-      isPublic,
-    },
-  });
+  const actorId = (session.user as any).id as string;
+  if (!isAdminId(actorId)) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
 
-  await writeLog({
-    type: "ADMIN_USER_UPDATE",
-    message: `admin updated user id=${params.id} handle=@${nextHandle}`,
-    actorUserId: actorId,
-    targetUserId: params.id,
-    ip: req.headers.get("x-forwarded-for") ?? "",
-  });
+  const formData = await req.formData();
+  const title = String(formData.get("title") ?? "").trim();
+  const url = String(formData.get("url") ?? "").trim();
 
-  redirect("/admin");
+  const ip =
+    req.headers.get("x-forwarded-for") ||
+    req.headers.get("x-real-ip") ||
+    undefined;
+
+  try {
+    const before = await prisma.link.findUnique({
+      where: { id: params.id },
+      include: { user: true },
+    });
+
+    if (!before) {
+      return NextResponse.redirect(
+        new URL("/admin?err=Link not found", req.url)
+      );
+    }
+
+    const nextTitle = title || before.title;
+    const nextUrl = url || before.url;
+
+    if (!nextTitle || !nextUrl) {
+      return NextResponse.redirect(
+        new URL("/admin?err=Invalid input", req.url)
+      );
+    }
+
+    await prisma.link.update({
+      where: { id: params.id },
+      data: {
+        title: nextTitle,
+        url: nextUrl,
+      },
+    });
+
+    await prisma.log.create({
+      data: {
+        type: "ADMIN_LINK_UPDATE",
+        actorUserId: actorId,
+        targetUserId: before.userId,
+        ip, // ✅ string | undefined
+        message: `Link updated (@${before.user.handle}) "${before.title}" -> "${nextTitle}"`,
+      },
+    });
+
+
+    return NextResponse.redirect(new URL("/admin", req.url));
+  } catch (e) {
+    console.error(e);
+    return NextResponse.redirect(
+      new URL("/admin?err=Update failed", req.url)
+    );
+  }
 }
