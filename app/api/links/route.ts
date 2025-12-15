@@ -125,7 +125,9 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   const userId = await requireUserId();
-  if (!userId) return Response.json({ error: "unauthorized" }, { status: 401 });
+  if (!userId) {
+    return Response.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   const ip = req.headers.get("x-forwarded-for") ?? "";
 
@@ -141,12 +143,20 @@ export async function PUT(req: Request) {
 
   if (input.patch.handle || input.patch.url || input.patch.platform) {
     try {
+      // ✅ 타입을 여기서 확정
+      const platform =
+        input.patch.platform ??
+        (link.platform as z.infer<typeof PlatformEnum>);
+
       nextUrl = buildUrl(
-        input.patch.platform ?? link.platform,
+        platform,
         input.patch.handle ?? input.patch.url ?? link.url
       );
     } catch (e: any) {
-      return Response.json({ error: e?.message ?? "invalid" }, { status: 400 });
+      return Response.json(
+        { error: e?.message ?? "invalid" },
+        { status: 400 }
+      );
     }
   }
 
@@ -155,7 +165,10 @@ export async function PUT(req: Request) {
     data: {
       ...input.patch,
       url: nextUrl,
-      icon: platformIcon(input.patch.platform ?? link.platform),
+      icon: platformIcon(
+        (input.patch.platform ??
+          link.platform) as z.infer<typeof PlatformEnum>
+      ),
       platform: input.patch.platform ?? link.platform,
       subtitle: input.patch.subtitle ?? link.subtitle,
     },
