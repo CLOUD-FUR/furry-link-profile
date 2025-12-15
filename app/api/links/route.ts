@@ -3,63 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { writeLog } from "@/lib/log";
 import { z } from "zod";
-
-/* =========================
-   유틸
-========================= */
-
-// ❌ URL 들어오는 handle 차단 + @ 제거
-function normalizeHandleInput(s: string) {
-  const v = s.trim().replace(/^@+/, "");
-  if (!v) return "";
-  if (v.startsWith("http")) {
-    throw new Error("아이디만 입력해주세요 (URL ❌)");
-  }
-  return v;
-}
-
-// ✅ encodeURIComponent 절대 사용 X
-function buildUrl(
-  platform: z.infer<typeof PlatformEnum>,
-  handle?: string,
-  url?: string
-) {
-  // Twitter (X)
-  if (platform === "x") {
-    const h = normalizeHandleInput(handle ?? "");
-    if (!h) throw new Error("트위터 (X) 아이디를 입력해주세요 (@ 없이)");
-    return `https://x.com/${h}`;
-  }
-
-  // Instagram
-  if (platform === "instagram") {
-    const h = normalizeHandleInput(handle ?? "");
-    if (!h) throw new Error("인스타 아이디를 입력해주세요 (@ 없이)");
-    return `https://www.instagram.com/${h}/`;
-  }
-
-  // 그 외 (youtube, bluesky, other 등)
-  const u = (url ?? "").trim();
-  if (!u) throw new Error("URL을 입력해주세요");
-  return u;
-}
-
-function platformIcon(platform: string) {
-  const map: Record<string, string> = {
-    discord_server: "discord_server",
-    x: "x",
-    youtube: "youtube",
-    instagram: "instagram",
-    other: "other",
-  };
-  return map[platform] ?? "other";
-}
-
-async function requireUserId() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) return null;
-  return (session.user as any).id as string;
-}
+import { buildUrl } from "@/lib/links/url";
 
 /* =========================
    Schema
@@ -101,7 +45,28 @@ const DeleteSchema = z.object({
 });
 
 /* =========================
-   POST (생성)
+   Util
+========================= */
+
+function platformIcon(platform: string) {
+  const map: Record<string, string> = {
+    discord_server: "discord_server",
+    x: "x",
+    youtube: "youtube",
+    instagram: "instagram",
+    other: "other",
+  };
+  return map[platform] ?? "other";
+}
+
+async function requireUserId() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return null;
+  return (session.user as any).id as string;
+}
+
+/* =========================
+   POST
 ========================= */
 
 export async function POST(req: Request) {
@@ -117,7 +82,10 @@ export async function POST(req: Request) {
 
   let url: string;
   try {
-    url = buildUrl(input.platform, input.handle, input.url);
+    url = buildUrl(
+      input.platform,
+      input.handle ?? input.url ?? ""
+    );
   } catch (e: any) {
     return Response.json({ error: e?.message ?? "invalid" }, { status: 400 });
   }
@@ -152,7 +120,7 @@ export async function POST(req: Request) {
 }
 
 /* =========================
-   PUT (수정)
+   PUT
 ========================= */
 
 export async function PUT(req: Request) {
@@ -169,26 +137,16 @@ export async function PUT(req: Request) {
     return Response.json({ error: "not found" }, { status: 404 });
   }
 
-  const nextPlatform = input.patch.platform ?? link.platform;
-  let nextUrl = input.patch.url ?? link.url;
-  const handle = input.patch.handle;
+  let nextUrl = link.url;
 
-  // ✅ SNS 플랫폼 처리
-  if (nextPlatform === "x" || nextPlatform === "instagram") {
-    // URL 직접 입력한 경우 → 그대로 사용
-    if (typeof nextUrl === "string" && nextUrl.startsWith("http")) {
-      // OK
-    }
-    // handle 입력한 경우 → buildUrl
-    else if (typeof handle === "string") {
-      try {
-        nextUrl = buildUrl(nextPlatform, handle, undefined);
-      } catch (e: any) {
-        return Response.json(
-          { error: e?.message ?? "invalid" },
-          { status: 400 }
-        );
-      }
+  if (input.patch.handle || input.patch.url || input.patch.platform) {
+    try {
+      nextUrl = buildUrl(
+        input.patch.platform ?? link.platform,
+        input.patch.handle ?? input.patch.url ?? link.url
+      );
+    } catch (e: any) {
+      return Response.json({ error: e?.message ?? "invalid" }, { status: 400 });
     }
   }
 
@@ -197,8 +155,8 @@ export async function PUT(req: Request) {
     data: {
       ...input.patch,
       url: nextUrl,
-      icon: platformIcon(nextPlatform),
-      platform: nextPlatform,
+      icon: platformIcon(input.patch.platform ?? link.platform),
+      platform: input.patch.platform ?? link.platform,
       subtitle: input.patch.subtitle ?? link.subtitle,
     },
   });
@@ -227,8 +185,6 @@ export async function DELETE(req: Request) {
   const userId = await requireUserId();
   if (!userId) return Response.json({ error: "unauthorized" }, { status: 401 });
 
-  const ip = req.headers.get("x-forwarded-for") ?? "";
-
   const body = await req.json().catch(() => ({}));
   const input = DeleteSchema.parse(body);
 
@@ -239,15 +195,6 @@ export async function DELETE(req: Request) {
 
   await prisma.link.delete({ where: { id: input.id } });
 
-  await writeLog({
-    type: "LINK_DELETE",
-    message: `link deleted (id=${input.id})`,
-    actorUserId: userId,
-    targetUserId: userId,
-    ip,
-  });
-
-  // order 재정렬
   const links = await prisma.link.findMany({
     where: { userId },
     orderBy: { order: "asc" },
@@ -255,19 +202,12 @@ export async function DELETE(req: Request) {
 
   for (let i = 0; i < links.length; i++) {
     if (links[i].order !== i) {
-      await prisma.link
-        .update({
-          where: { id: links[i].id },
-          data: { order: i },
-        })
-        .catch(() => {});
+      await prisma.link.update({
+        where: { id: links[i].id },
+        data: { order: i },
+      });
     }
   }
 
-  const updated = await prisma.link.findMany({
-    where: { userId },
-    orderBy: { order: "asc" },
-  });
-
-  return Response.json({ links: updated });
+  return Response.json({ links });
 }

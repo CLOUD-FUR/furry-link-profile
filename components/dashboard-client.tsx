@@ -63,18 +63,6 @@ async function safeJson(res: Response) {
   }
 }
 
-function normalizeHandleInput(s: string) {
-  return s.trim().replace(/^@+/, "");
-}
-
-function buildUrlForPlatform(platform: string, input: string) {
-  const raw = normalizeHandleInput(input);
-  if (platform === "x") return `https://x.com/${encodeURIComponent(raw)}`;
-  if (platform === "instagram") return `https://www.instagram.com/${encodeURIComponent(raw)}/`;
-  if (platform === "bluesky") return `https://bsky.app/profile/${encodeURIComponent(raw)}`;
-  return input;
-}
-
 export function DashboardClient({ initialUser }: { initialUser: UserWithLinks }) {
   const [savedUser, setSavedUser] = useState<UserWithLinks>(initialUser);
   const [draftUser, setDraftUser] = useState<UserWithLinks>(initialUser);
@@ -634,8 +622,9 @@ async function addLink() {
                               value={l.handleInput ?? ""}
                               onChange={(e) => {
                                 const handleInput = e.target.value;
-                                setLink(l.id, { handleInput, url: buildUrlForPlatform(l.platform, handleInput) });
+                                setLink(l.id, { handleInput });
                               }}
+
                               className={clsx("rounded-xl border px-3 py-2 text-sm", isDark ? "border-white/15 bg-white/10 text-white placeholder:text-white/40" : "border-white/50 bg-white/60")}
                               placeholder={l.platform === "bluesky" ? "예시) cloud.bsky.social" : "예시) CLOUD (@ 없이)"}
                             />

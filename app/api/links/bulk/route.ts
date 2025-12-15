@@ -18,7 +18,7 @@ const BulkSchema = z.object({
     z.object({
       id: z.string().min(1),
       title: z.string().min(1).max(60),
-      url: z.string().min(1).max(2048),
+      url: z.string().min(1).max(2048), // 🔥 이미 완성된 URL
       platform: PlatformEnum,
       subtitle: z.string().max(80).optional(),
       enabled: z.boolean().optional(),
@@ -26,26 +26,6 @@ const BulkSchema = z.object({
     })
   ),
 });
-
-function normalizeHandleInput(s: string) {
-  return s.trim().replace(/^@+/, "");
-}
-
-function buildUrl(platform: string, url: string) {
-  const raw = url.trim();
-
-  if (platform === "x") {
-    const h = normalizeHandleInput(raw);
-    return `https://x.com/${encodeURIComponent(h)}`;
-  }
-
-  if (platform === "instagram") {
-    const h = normalizeHandleInput(raw);
-    return `https://www.instagram.com/${encodeURIComponent(h)}/`;
-  }
-
-  return raw;
-}
 
 export async function PUT(req: Request) {
   const session = await getServerSession(authOptions);
@@ -56,19 +36,12 @@ export async function PUT(req: Request) {
   const userId = (session.user as any).id as string;
   const ip = req.headers.get("x-forwarded-for") ?? "";
 
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
+  const body = await req.json().catch(() => null);
+  if (!body) {
     return Response.json({ error: "invalid json" }, { status: 400 });
   }
 
-  let input: z.infer<typeof BulkSchema>;
-  try {
-    input = BulkSchema.parse(body);
-  } catch {
-    return Response.json({ error: "invalid payload" }, { status: 400 });
-  }
+  const input = BulkSchema.parse(body);
 
   // 🔒 소유권 검증
   const ids = input.links.map((l) => l.id);
@@ -80,23 +53,21 @@ export async function PUT(req: Request) {
     return Response.json({ error: "not found" }, { status: 404 });
   }
 
-  // 🔁 트랜잭션으로 전체 저장
+  // 🔁 트랜잭션 저장 (URL 가공 ❌)
   await prisma.$transaction(
-    input.links.map((l) => {
-      const finalUrl = buildUrl(l.platform, l.url);
-
-      return prisma.link.update({
+    input.links.map((l) =>
+      prisma.link.update({
         where: { id: l.id },
         data: {
           title: l.title,
-          url: finalUrl,
+          url: l.url, // ✅ 그대로 저장
           platform: l.platform,
           subtitle: l.subtitle ?? "",
           enabled: l.enabled ?? true,
           order: l.order,
         },
-      });
-    })
+      })
+    )
   );
 
   await writeLog({
