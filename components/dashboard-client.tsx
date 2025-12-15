@@ -12,6 +12,20 @@ type DraftLink = Link & { handleInput?: string };
 
 type ToastKind = "success" | "error" | "info";
 
+function deriveHandleInput(platform: string, url: string): string | undefined {
+  if (!url) return undefined;
+
+  if (platform === "x") {
+    return url.replace(/^https?:\/\/(www\.)?x\.com\//, "");
+  }
+
+  if (platform === "instagram") {
+    return url.replace(/^https?:\/\/(www\.)?instagram\.com\//, "");
+  }
+
+  return undefined;
+}
+
 function fileToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -191,7 +205,12 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       // 3️⃣ 상태 동기화 (🔥 중요)
       if (d?.links) {
         setSavedUser((u) => ({ ...u, links: d.links }));
-        setDraftLinks((d.links as DraftLink[]).map((x: DraftLink) => ({ ...x })));
+        setDraftLinks(
+  (d.links as DraftLink[]).map((l) => ({
+    ...l,
+    handleInput: deriveHandleInput(l.platform, l.url),
+  }))
+);
         setDirty(false);
       }
 
