@@ -138,11 +138,21 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   }
 
   async function refreshFromServer() {
-    const refreshed = await fetch("/api/profile").then((r) => r.json()).catch(() => null);
+    const refreshed = await fetch("/api/profile")
+      .then((r) => r.json())
+      .catch(() => null);
+
     if (refreshed?.user) {
       setSavedUser(refreshed.user);
       setDraftUser(refreshed.user);
-      setDraftLinks(refreshed.user.links as DraftLink[]);
+
+      // 🔥 여기서 handleInput 복원
+      setDraftLinks(
+        refreshed.user.links.map((l: DraftLink) => ({
+          ...l,
+          handleInput: deriveHandleInput(l.platform, l.url),
+        }))
+      );
     }
   }
 
@@ -160,7 +170,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         bannerUrl: draftUser.bannerUrl,
         image: draftUser.image,
         isPublic: draftUser.isPublic,
-        profileTag: draftUser.profileTag, // ✅ 추가
+        profileTag: draftUser.profileTag, // ✅ 프로필 태그
       };
 
       const resU = await fetch("/api/profile", {
@@ -178,7 +188,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         return;
       }
 
-      // 2️⃣ 링크 bulk 저장 (🔥 핵심)
+      // 2️⃣ 링크 bulk 저장
       const r = await fetch("/api/links/bulk", {
         method: "PUT",
         headers: { "content-type": "application/json" },
@@ -191,7 +201,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
             subtitle: l.subtitle,
             enabled: l.enabled,
             order: i,
-            handle: l.handleInput ?? undefined,
+            handle: l.handleInput ?? undefined, // UI 전용 → 서버에서 URL로 변환
           })),
         }),
       });
@@ -202,18 +212,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         return;
       }
 
-      // 3️⃣ 상태 동기화 (🔥 중요)
-      if (d?.links) {
-        setSavedUser((u) => ({ ...u, links: d.links }));
-        setDraftLinks(
-  (d.links as DraftLink[]).map((l) => ({
-    ...l,
-    handleInput: deriveHandleInput(l.platform, l.url),
-  }))
-);
-        setDirty(false);
-      }
+      // 3️⃣ 🔥 서버 기준으로 재동기화 (핵심)
+      await refreshFromServer();
 
+      setDirty(false);
       showToast("success", "✅ 저장 완료!");
     } finally {
       setSaving(false);
