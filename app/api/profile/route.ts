@@ -46,28 +46,32 @@ function normalizeHandleDisplay(handle: string) {
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) return Response.json({ error: "unauthorized" }, { status: 401 });
+  if (!session?.user) {
+    return Response.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   const userId = (session.user as any).id as string;
 
   const user = await prisma.user.findUnique({
-    where: { handle },
+    where: {
+      id: userId, // ✅ 여기
+    },
     select: {
       id: true,
       handle: true,
+      handleLower: true,
       bio: true,
       image: true,
       bannerUrl: true,
       theme: true,
       themeJson: true,
-      profileTag: true, // ✅ 추가
+      profileTag: true,
       links: {
         where: { enabled: true },
         orderBy: { order: "asc" },
       },
     },
   });
-
 
   return Response.json({ user });
 }
