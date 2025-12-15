@@ -26,6 +26,7 @@ function normalizeUrl(platform: string, url: string) {
 }
 
 
+import { PROFILE_TAGS } from "@/lib/profile-tags";
 
 const PatchSchema = z.object({
   handle: z.string().min(1).max(20).optional(),
@@ -35,7 +36,12 @@ const PatchSchema = z.object({
   bannerUrl: z.string().max(200000).optional(),
   image: z.string().max(200000).optional(),
   isPublic: z.boolean().optional(),
+  profileTag: z
+    .string()
+    .optional()
+    .nullable(), // ✅ 추가
 });
+
 
 function normalizeHandleDisplay(handle: string) {
   const trimmed = handle.trim();
@@ -78,7 +84,9 @@ export async function GET(req: Request) {
 
 export async function PUT(req: Request) {
   const session = await getServerSession(authOptions);
-  if (!session?.user) return Response.json({ error: "unauthorized" }, { status: 401 });
+  if (!session?.user) {
+    return Response.json({ error: "unauthorized" }, { status: 401 });
+  }
 
   const userId = (session.user as any).id as string;
   const body = await req.json().catch(() => ({}));
@@ -88,9 +96,12 @@ export async function PUT(req: Request) {
 
   const data: any = { ...patch };
 
+  // handle 처리
   if (typeof patch.handle === "string") {
     const normalized = normalizeHandleDisplay(patch.handle);
-    if (!normalized) return Response.json({ error: "❌ 핸들이 비어있어요!" }, { status: 400 });
+    if (!normalized) {
+      return Response.json({ error: "❌ 핸들이 비어있어요!" }, { status: 400 });
+    }
 
     const handleLower = normalized.toLowerCase();
     const exists = await prisma.user.findUnique({ where: { handleLower } });
@@ -102,7 +113,22 @@ export async function PUT(req: Request) {
     data.handleLower = handleLower;
   }
 
-  if (typeof patch.bio === "string") data.bio = patch.bio.slice(0, 500);
+  // bio 길이 제한
+  if (typeof patch.bio === "string") {
+    data.bio = patch.bio.slice(0, 500);
+  }
+
+  // 🔥 profileTag 처리 (이게 핵심)
+  if ("profileTag" in patch) {
+    if (
+      patch.profileTag !== null &&
+      !PROFILE_TAGS.some((t) => t.id === patch.profileTag)
+    ) {
+      return Response.json({ error: "invalid profile tag" }, { status: 400 });
+    }
+
+    data.profileTag = patch.profileTag; // ✅ DB에 실제 저장
+  }
 
   const user = await prisma.user.update({
     where: { id: userId },
