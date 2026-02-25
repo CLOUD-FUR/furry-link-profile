@@ -19,7 +19,14 @@ export default async function PublicProfile({
 }: {
   params: { handle: string };
 }) {
-  const handleLower = params.handle.toLowerCase();
+  let handleParam = params.handle;
+  try {
+    handleParam = decodeURIComponent(params.handle);
+  } catch {
+    // keep as-is
+  }
+
+  const handleLower = handleParam.toLowerCase();
 
   const user = await prisma.user.findUnique({
     where: { handleLower },

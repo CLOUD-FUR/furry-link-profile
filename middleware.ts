@@ -31,7 +31,13 @@ export function middleware(req: NextRequest) {
 
   // Rewrite "/@cloud" -> "/p/cloud"
   if (pathname.length > 2 && pathname.startsWith("/@")) {
-    const handle = pathname.slice(2).split("/")[0];
+    const rawHandle = pathname.slice(2).split("/")[0];
+    let handle = rawHandle;
+    try {
+      handle = decodeURIComponent(rawHandle);
+    } catch {
+      // if malformed, keep raw
+    }
     if (handle) {
       const url = req.nextUrl.clone();
       url.pathname = `/p/${handle}`;
