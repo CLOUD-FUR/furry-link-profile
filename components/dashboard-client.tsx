@@ -122,6 +122,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
   // stats
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [profileVisitCount, setProfileVisitCount] = useState<number>(0);
   const [emojiErrors, setEmojiErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -129,6 +130,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (d?.counts) setCounts(d.counts);
+        if (typeof d?.profileVisitCount === "number")
+          setProfileVisitCount(d.profileVisitCount);
       })
       .catch(() => {});
   }, [saving]);
@@ -985,7 +988,13 @@ async function addLink() {
               {tab === "stats" ? (
                 <div className="space-y-3">
                   <div className={clsx("rounded-2xl border p-4 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/40 text-slate-800")}>
-                    * 같은 브라우저 또는 세션에서는 링크 클릭이 중복 카운트되지 않아요.
+                    * 같은 브라우저 또는 세션에서는 링크 클릭·프로필 방문이 중복 카운트되지 않아요.
+                  </div>
+                  <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                    <div className={clsx("font-bold", uiText)}>프로필 방문 수</div>
+                    <div className={clsx("mt-2 text-sm", uiSub)}>
+                      <b className={uiText}>{profileVisitCount}</b>명
+                    </div>
                   </div>
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div className={clsx("font-bold", uiText)}>링크별 방문자 수</div>

@@ -4,6 +4,7 @@ import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { notFound } from "next/navigation";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
 import Script from "next/script";
+import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 
 function parseThemeJson(themeJson?: string) {
   try {
@@ -56,6 +57,7 @@ export default async function PublicProfile({
 
   return (
     <>
+      <ProfileVisitTracker handle={handleParam} />
       {user.profileEffect === "snow" ? (
         <Script
           src="https://app.embed.im/snow.js"

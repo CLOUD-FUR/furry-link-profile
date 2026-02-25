@@ -33,11 +33,25 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  links         Link[]
-  logsAsActor   Log[]    @relation("ActorLogs")
-  logsAsTarget  Log[]    @relation("TargetLogs")
+  links           Link[]
+  logsAsActor     Log[]    @relation("ActorLogs")
+  logsAsTarget    Log[]    @relation("TargetLogs")
+  profileVisits   ProfileVisit[]
 }
 
+
+model ProfileVisit {
+  id        String   @id @default(cuid())
+  userId    String
+  sessionId String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sessionId])
+  @@index([userId, createdAt])
+  @@index([sessionId])
+}
 
 model Link {
   id              String   @id @default(cuid())

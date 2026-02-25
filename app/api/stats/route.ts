@@ -12,11 +12,15 @@ export async function GET() {
   const counts = await prisma.visit.groupBy({
     by: ["linkId"],
     _count: { linkId: true },
-    where: { linkId: { in: links.map(l => l.id) } },
+    where: { linkId: { in: links.map((l) => l.id) } },
   });
 
   const map: Record<string, number> = {};
   for (const c of counts) map[c.linkId] = c._count.linkId;
 
-  return Response.json({ counts: map });
+  const profileVisitCount = await prisma.profileVisit.count({
+    where: { userId },
+  });
+
+  return Response.json({ counts: map, profileVisitCount });
 }
