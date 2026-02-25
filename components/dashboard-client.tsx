@@ -877,8 +877,8 @@ async function addLink() {
                                       placeholder="🔗"
                                     />
                                     <span className={clsx("text-xs", uiSub)}>
-                                      기타 링크일 때 버튼 왼쪽에 표시할
-                                      이모지(1개)만 입력할 수 있어요.
+                                      이모지(1개)만 입력할 수 있어요. 
+                                      공백으로 둘 시 링크이모지 (🔗) 로 자동적용 돼요.
                                     </span>
                                   </div>
                                   {emojiErrors[l.id] ? (
