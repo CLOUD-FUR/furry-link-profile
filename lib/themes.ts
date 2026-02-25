@@ -75,3 +75,11 @@ export const themes: ThemePreset[] = [
 export function getThemeById(id: string | null | undefined) {
   return themes.find((t) => t.id === (id ?? "pastel")) ?? themes[0];
 }
+<<<<<<< HEAD
+=======
+
+export function isDarkTheme(id: string | null | undefined) {
+  if (id === "custom") return false;
+  return getThemeById(id).isDark;
+}
+>>>>>>> f6d4f6334a31a9378113e2e47c9957a59abfdbce

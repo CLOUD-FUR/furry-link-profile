@@ -7,10 +7,7 @@ import LegalButtons from "@/components/LegalButtons";
 export const metadata: Metadata = {
   title: "Fluffy Link",
   description: "여러개의 링크를 하나의 링크로!",
-<<<<<<< HEAD
-  themeColor: "#ffffff", // 🔥 흰색으로 변경
-=======
->>>>>>> 7950ffffafe594d117a80121641048e7711ec101
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
@@ -26,7 +23,6 @@ export default function RootLayout({
           <LegalButtons />
         </SessionProvider>
 
-<<<<<<< HEAD
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-CWR730ZHC5"
@@ -41,8 +37,6 @@ export default function RootLayout({
           `}
         </Script>
 
-=======
->>>>>>> 7950ffffafe594d117a80121641048e7711ec101
         {/* Channel.io */}
         <Script id="channel-io" strategy="afterInteractive">
           {`
@@ -79,8 +73,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 7950ffffafe594d117a80121641048e7711ec101
