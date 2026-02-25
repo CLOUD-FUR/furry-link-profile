@@ -216,6 +216,9 @@ export default async function AdminPage({
                 <th className="p-3 text-left">platform</th>
                 <th className="p-3 text-left">title</th>
                 <th className="p-3 text-left">url</th>
+                <th className="p-3 text-left">subtitle</th>
+                <th className="p-3 text-left">icon</th>
+                <th className="p-3 text-left">on</th>
                 <th className="p-3 text-left">actions</th>
               </tr>
             </thead>
@@ -223,15 +226,53 @@ export default async function AdminPage({
               {links.map((l) => (
                 <tr key={l.id} className="border-t border-white/10 align-top">
                   <td className="p-3">@{l.user.handle}</td>
-                  <td className="p-3">{l.platform}</td>
-
-                  {/* ✅ form은 한 td 안에서만 */}
                   <td className="p-3">
                     <form
                       action={`/api/admin/links/${l.id}/update`}
                       method="post"
                       className="flex flex-col gap-2"
                     >
+                      <input type="hidden" name="title" defaultValue={l.title} />
+                      <input type="hidden" name="url" defaultValue={l.url} />
+                      <input type="hidden" name="subtitle" defaultValue={l.subtitle ?? ""} />
+                      <input type="hidden" name="icon" defaultValue={l.icon ?? "link"} />
+                      <input
+                        type="hidden"
+                        name="enabled"
+                        value={l.enabled ? "on" : "off"}
+                      />
+                      <select
+                        name="platform"
+                        defaultValue={l.platform}
+                        className="w-28 rounded-lg bg-white/10 border border-white/15 px-2 py-1 text-xs"
+                      >
+                        <option value="discord_server">discord_server</option>
+                        <option value="x">x</option>
+                        <option value="youtube">youtube</option>
+                        <option value="bluesky">bluesky</option>
+                        <option value="instagram">instagram</option>
+                        <option value="other">other</option>
+                      </select>
+                      <button className="w-fit rounded-lg bg-sky-600 px-3 py-1 text-xs font-bold">
+                        저장
+                      </button>
+                    </form>
+                  </td>
+                  <td className="p-3">
+                    <form
+                      action={`/api/admin/links/${l.id}/update`}
+                      method="post"
+                      className="flex flex-col gap-2"
+                    >
+                      <input type="hidden" name="url" defaultValue={l.url} />
+                      <input type="hidden" name="platform" defaultValue={l.platform} />
+                      <input type="hidden" name="subtitle" defaultValue={l.subtitle ?? ""} />
+                      <input type="hidden" name="icon" defaultValue={l.icon ?? "link"} />
+                      <input
+                        type="hidden"
+                        name="enabled"
+                        value={l.enabled ? "on" : "off"}
+                      />
                       <input
                         name="title"
                         defaultValue={l.title}
@@ -243,26 +284,109 @@ export default async function AdminPage({
                       </button>
                     </form>
                   </td>
-
                   <td className="p-3">
                     <form
                       action={`/api/admin/links/${l.id}/update`}
                       method="post"
                       className="flex flex-col gap-2"
                     >
-                      {/* title도 같이 보내야 하니까 hidden으로 포함 */}
                       <input type="hidden" name="title" defaultValue={l.title} />
+                      <input type="hidden" name="platform" defaultValue={l.platform} />
+                      <input type="hidden" name="subtitle" defaultValue={l.subtitle ?? ""} />
+                      <input type="hidden" name="icon" defaultValue={l.icon ?? "link"} />
+                      <input
+                        type="hidden"
+                        name="enabled"
+                        value={l.enabled ? "on" : "off"}
+                      />
                       <input
                         name="url"
                         defaultValue={l.url}
-                        className="w-[420px] max-w-[420px] rounded-lg bg-white/10 border border-white/15 px-2 py-1 text-xs"
+                        className="w-[380px] max-w-[380px] rounded-lg bg-white/10 border border-white/15 px-2 py-1 text-xs"
                       />
                       <button className="w-fit rounded-lg bg-sky-600 px-3 py-1 text-xs font-bold">
                         저장
                       </button>
                     </form>
                   </td>
-
+                  <td className="p-3">
+                    <form
+                      action={`/api/admin/links/${l.id}/update`}
+                      method="post"
+                      className="flex flex-col gap-2"
+                    >
+                      <input type="hidden" name="title" defaultValue={l.title} />
+                      <input type="hidden" name="url" defaultValue={l.url} />
+                      <input type="hidden" name="platform" defaultValue={l.platform} />
+                      <input type="hidden" name="icon" defaultValue={l.icon ?? "link"} />
+                      <input
+                        type="hidden"
+                        name="enabled"
+                        value={l.enabled ? "on" : "off"}
+                      />
+                      <input
+                        name="subtitle"
+                        defaultValue={l.subtitle ?? ""}
+                        className="w-40 rounded-lg bg-white/10 border border-white/15 px-2 py-1 text-xs"
+                        maxLength={120}
+                      />
+                      <button className="w-fit rounded-lg bg-sky-600 px-3 py-1 text-xs font-bold">
+                        저장
+                      </button>
+                    </form>
+                  </td>
+                  <td className="p-3">
+                    <form
+                      action={`/api/admin/links/${l.id}/update`}
+                      method="post"
+                      className="flex flex-col gap-2"
+                    >
+                      <input type="hidden" name="title" defaultValue={l.title} />
+                      <input type="hidden" name="url" defaultValue={l.url} />
+                      <input type="hidden" name="platform" defaultValue={l.platform} />
+                      <input type="hidden" name="subtitle" defaultValue={l.subtitle ?? ""} />
+                      <input
+                        type="hidden"
+                        name="enabled"
+                        value={l.enabled ? "on" : "off"}
+                      />
+                      <input
+                        name="icon"
+                        key={l.id}
+                        defaultValue={l.icon ?? "link"}
+                        placeholder="기타 이모지"
+                        className="w-14 rounded-lg bg-white/10 border border-white/15 px-2 py-1 text-xs text-center"
+                        maxLength={4}
+                      />
+                      <button className="w-fit rounded-lg bg-sky-600 px-3 py-1 text-xs font-bold">
+                        저장
+                      </button>
+                    </form>
+                  </td>
+                  <td className="p-3">
+                    <form
+                      action={`/api/admin/links/${l.id}/update`}
+                      method="post"
+                      className="flex flex-col gap-2"
+                    >
+                      <input type="hidden" name="title" defaultValue={l.title} />
+                      <input type="hidden" name="url" defaultValue={l.url} />
+                      <input type="hidden" name="platform" defaultValue={l.platform} />
+                      <input type="hidden" name="subtitle" defaultValue={l.subtitle ?? ""} />
+                      <input type="hidden" name="icon" defaultValue={l.icon ?? "link"} />
+                      <label className="flex items-center gap-2 text-xs text-white/70">
+                        <input
+                          name="enabled"
+                          type="checkbox"
+                          defaultChecked={l.enabled}
+                        />
+                        on
+                      </label>
+                      <button className="w-fit rounded-lg bg-sky-600 px-3 py-1 text-xs font-bold">
+                        저장
+                      </button>
+                    </form>
+                  </td>
                   <td className="p-3">
                     <form
                       action={`/api/admin/links/${l.id}/delete`}
@@ -278,7 +402,7 @@ export default async function AdminPage({
 
               {links.length === 0 ? (
                 <tr className="border-t border-white/10">
-                  <td className="p-4 text-white/60" colSpan={5}>
+                  <td className="p-4 text-white/60" colSpan={8}>
                     결과가 없어요
                   </td>
                 </tr>
