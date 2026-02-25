@@ -1,11 +1,12 @@
 /**
  * Discord 웹훅으로 플러피링크 가입/로그인/로그아웃 로그 전송
- * 프로필: FLUFFY LINK, 아바타는 public/images/fluffy-webhook-avatar.png
+ * 프로필: FLUFFY LINK, 아바타는 Discord CDN URL 사용
  */
 
 const WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
-const BASE_URL = process.env.NEXTAUTH_URL ?? "";
-const AVATAR_URL = BASE_URL ? `${BASE_URL.replace(/\/$/, "")}/images/fluffy-webhook-avatar.png` : "";
+const AVATAR_URL =
+  process.env.DISCORD_WEBHOOK_AVATAR_URL ||
+  "https://cdn.discordapp.com/avatars/1362203848713703514/b89a0b5def16807f3a385939b6617ada.png?size=2048";
 
 /** 국가 코드(ISO 3166-1 alpha-2) → 플래그 이모지 (예: KR → 🇰🇷) */
 function countryToFlag(countryCode: string): string {
@@ -25,14 +26,19 @@ export async function sendAuthLogToDiscord(args: {
   ip: string;
   countryCode: string;
 }): Promise<void> {
-  if (!WEBHOOK_URL?.startsWith("https://discord.com/api/webhooks/")) return;
+  if (!WEBHOOK_URL?.startsWith("https://discord.com/api/webhooks/")) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("[discord-webhook] DISCORD_WEBHOOK_URL 없음 또는 형식 오류. .env 확인 후 서버 재시작했는지 확인하세요.");
+    }
+    return;
+  }
 
   const unix = Math.floor(Date.now() / 1000);
   const flag = countryToFlag(args.countryCode);
   const countryPart = args.countryCode ? ` ${flag} ${args.countryCode}` : "";
-  const ipCountry = `${args.ip || "(unknown)"}${countryPart}`.trim();
+  const ipCountry = `${args.ip || "(unknown)"} ( ${countryPart} )`.trim();
 
-  const eventLabel = args.event === "signup" ? "가입" : args.event === "login" ? "로그인" : "로그아웃";
+  const eventLabel = args.event === "signup" ? "💙 플러피링크 가입로그" : args.event === "login" ? "🔓 플러피링크 로그인 로그" : "🔐 플러피링크 로그아웃 로그";
 
   const body = {
     username: "FLUFFY LINK",
@@ -44,17 +50,17 @@ export async function sendAuthLogToDiscord(args: {
         color: args.event === "signup" ? 0x57f287 : args.event === "login" ? 0x5865f2 : 0xed4245,
         fields: [
           {
-            name: "시간",
+            name: "⏰ | 시각",
             value: `<t:${unix}:F> (<t:${unix}:R>)`,
-            inline: false,
+            inline: false, 
           },
           {
-            name: "핸들",
+            name: "💁 | 유저 및 핸들",
             value: `@${args.handle}`,
             inline: true,
           },
           {
-            name: "IP · 국가",
+            name: "🌎 | IP · 국가",
             value: ipCountry,
             inline: true,
           },
