@@ -1,14 +1,21 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Script from "next/script";
 import { SessionProvider } from "@/components/session-provider";
 import LegalButtons from "@/components/LegalButtons";
 
-export const metadata: Metadata = {
-  title: "Fluffy Link",
-  description: "여러개의 링크를 하나의 링크로!",
-  themeColor: "#ffffff",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const h = headers();
+  const country = h.get("x-vercel-ip-country") ?? "";
+  const isKorea = country.toUpperCase() === "KR";
+
+  return {
+    title: isKorea ? "플러피 링크" : "Fluffy Link",
+    description: "여러개의 링크를 하나의 링크로!",
+    themeColor: "#ffffff",
+  };
+}
 
 export default function RootLayout({
   children,
