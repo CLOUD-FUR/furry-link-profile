@@ -30,12 +30,23 @@ export async function GET(
   }
 
   // 1) http(s) URL이면 그 주소에서 이미지 가져와서 그대로 스트리밍 (해시 바뀌어도 다음 요청 때 DB 기준으로 새 URL 사용)
-  const httpUrl =
+  let httpUrl: string | null =
     user.image?.startsWith("http")
       ? user.image
       : user.discordImage?.startsWith("http")
         ? user.discordImage
         : null;
+
+  // 디스코드 CDN이면 고해상도(size=1024) 요청해서 흐림 방지
+  if (httpUrl?.includes("cdn.discordapp.com")) {
+    try {
+      const u = new URL(httpUrl);
+      u.searchParams.set("size", "1024");
+      httpUrl = u.toString();
+    } catch {
+      // keep original
+    }
+  }
 
   if (httpUrl) {
     try {

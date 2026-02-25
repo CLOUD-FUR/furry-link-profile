@@ -60,8 +60,9 @@ export async function generateMetadata({
     (user.image && (user.image.startsWith("http") || user.image.startsWith("data:"))) ||
     user.discordImage?.startsWith("http");
   const ogImagePath = `/p/${encodeURIComponent(handleParam)}/og-image`;
+  // 256x256으로 선언하면 Discord가 오른쪽 작은 썸네일로 표시. 실제 이미지는 og-image에서 고해상도로 내려줌.
   const openGraphImages = hasImage
-    ? [{ url: ogImagePath, width: 512, height: 512, alt: `@${user.handle}` }]
+    ? [{ url: ogImagePath, width: 256, height: 256, alt: `@${user.handle}` }]
     : undefined;
 
   return {
@@ -79,7 +80,7 @@ export async function generateMetadata({
       ...(openGraphImages && { images: openGraphImages }),
     },
     twitter: {
-      card: openGraphImages ? "summary_large_image" : "summary",
+      card: "summary",
       title,
       description: description,
       ...(openGraphImages && { images: [openGraphImages[0].url] }),
