@@ -5,6 +5,9 @@ import { notFound } from "next/navigation";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
 import Script from "next/script";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
+import type { Metadata } from "next";
+
+const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
 
 function parseThemeJson(themeJson?: string) {
   try {
@@ -12,6 +15,71 @@ function parseThemeJson(themeJson?: string) {
   } catch {
     return {};
   }
+}
+
+function decodeHandle(handle: string): string {
+  try {
+    return decodeURIComponent(handle);
+  } catch {
+    return handle;
+  }
+}
+
+/* ---------- metadata (메타태그 / OG / Discord 임베드) ---------- */
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { handle: string };
+}): Promise<Metadata> {
+  const handleParam = decodeHandle(params.handle);
+  const handleLower = handleParam.toLowerCase();
+
+  const user = await prisma.user.findUnique({
+    where: { handleLower },
+    select: {
+      handle: true,
+      bio: true,
+      image: true,
+      discordImage: true,
+      bannerUrl: true,
+      isPublic: true,
+    },
+  });
+
+  if (!user || !user.isPublic) {
+    return { title: "Not Found" };
+  }
+
+  const title = `@${user.handle}`;
+  const description = user.bio?.trim() ?? "";
+
+  const ogImage =
+    user.image?.startsWith("http") || user.discordImage?.startsWith("http")
+      ? user.image?.startsWith("http")
+        ? user.image
+        : user.discordImage
+      : undefined;
+
+  return {
+    title,
+    description: description,
+    keywords: [user.handle, "플러피 링크", "Fluffy Link"],
+    metadataBase: new URL(SITE_URL),
+    themeColor: "#ffffff",
+    openGraph: {
+      type: "website",
+      title,
+      description: description,
+      siteName: "Fluffy Link",
+      ...(ogImage && { images: [{ url: ogImage, width: 256, height: 256 }] }),
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description: description,
+    },
+  };
 }
 
 /* ---------- page ---------- */

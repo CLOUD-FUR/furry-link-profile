@@ -5,15 +5,48 @@ import Script from "next/script";
 import { SessionProvider } from "@/components/session-provider";
 import LegalButtons from "@/components/LegalButtons";
 
+const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
+
 export async function generateMetadata(): Promise<Metadata> {
   const h = headers();
   const country = h.get("x-vercel-ip-country") ?? "";
   const isKorea = country.toUpperCase() === "KR";
 
+  const title = isKorea ? "플러피 링크" : "Fluffy Link";
+  const description =
+    "여러개의 링크를 하나의 링크로! Discord 로그인으로 퍼리/퍼슈트 프로필 페이지를 만들 수 있어요.";
+
   return {
-    title: isKorea ? "플러피 링크" : "Fluffy Link",
-    description: "여러개의 링크를 하나의 링크로!",
+    title,
+    description,
+    keywords: [
+      "퍼리",
+      "퍼슈트",
+      "플러피 링크",
+      "Fluffy Link",
+      "링크트리",
+      "링크 모음",
+      "디스코드 링크",
+      "프로필 링크",
+      "퍼리 프로필",
+      "퍼리카페",
+      "퍼슈터",
+      "퍼리조아",
+    ],
+    metadataBase: new URL(SITE_URL),
     themeColor: "#ffffff",
+    openGraph: {
+      type: "website",
+      title,
+      description,
+      siteName: "Fluffy Link",
+      url: SITE_URL,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
   };
 }
 
