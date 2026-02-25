@@ -22,6 +22,8 @@ export default async function AdminPage({
   const actorId = (session.user as any).id as string;
   if (!isAdminId(actorId)) redirect("/");
 
+  const members = await prisma.user.count();
+
   const userBy = searchParams.user_by === "id" ? "id" : "handle";
   const userQ = (searchParams.user_q ?? "").trim();
   const linkHandleQ = (searchParams.link_handle ?? "").trim();
@@ -62,7 +64,7 @@ export default async function AdminPage({
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="mx-auto max-w-6xl px-4 py-10">
-        <h1 className="text-2xl font-black">Admin Panel</h1>
+        <h1 className="text-2xl font-black">🖥️ Admin Panel ({members}명 사용중)</h1>
         <p className="mt-1 text-sm text-white/70">
           유저/링크 수정 및 로그 확인
         </p>
