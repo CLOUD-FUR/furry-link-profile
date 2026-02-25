@@ -178,6 +178,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         image: draftUser.image,
         isPublic: draftUser.isPublic,
         profileTag: draftUser.profileTag, // ✅ 프로필 태그
+        profileEffect: draftUser.profileEffect ?? null, // ✅ 프로필 효과
       };
 
       const resU = await fetch("/api/profile", {
@@ -577,50 +578,103 @@ async function addLink() {
                       )}
                       placeholder="여러 링크를 한 곳에 ✨"
                     />
-                    <p className={clsx("mt-1 text-xs", uiSub)}>최대 500자까지 적을 수 있어요!</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>
+                      최대 500자까지 적을 수 있어요!
+                    </p>
                   </Field>
-                    <Field label="프로필 태그">
-                      <select
-                        value={draftUser.profileTag ?? ""}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          setDraftUser((u) => ({
-                            ...u,
-                            profileTag: v === "" ? null : v,
-                          }));
-                          markDirty();
-                        }}
-                        style={{ colorScheme: isDark ? "dark" : "light" }} // ✅ 추가
-                        className={clsx(
-                          "w-full rounded-xl border px-3 py-2",
-                          isDark
-                            ? "bg-white/10 text-white border-white/15"
-                            : "bg-white/60 border-white/50 text-black"
-                        )}
+
+                  <Field label="프로필 태그">
+                    <select
+                      value={draftUser.profileTag ?? ""}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setDraftUser((u) => ({
+                          ...u,
+                          profileTag: v === "" ? null : v,
+                        }));
+                        markDirty();
+                      }}
+                      style={{ colorScheme: isDark ? "dark" : "light" }} // ✅ 추가
+                      className={clsx(
+                        "w-full rounded-xl border px-3 py-2",
+                        isDark
+                          ? "bg-white/10 text-white border-white/15"
+                          : "bg-white/60 border-white/50 text-black"
+                      )}
+                    >
+                      <option
+                        value=""
+                        className={isDark ? "bg-slate-900 text-white" : ""}
                       >
+                        선택 안함
+                      </option>
+
+                      {PROFILE_TAGS.map((tag) => (
                         <option
-                          value=""
+                          key={tag.id}
+                          value={tag.id}
                           className={isDark ? "bg-slate-900 text-white" : ""}
                         >
-                          선택 안함
+                          {tag.label}
                         </option>
+                      ))}
+                    </select>
 
-                        {PROFILE_TAGS.map((tag) => (
-                          <option
-                            key={tag.id}
-                            value={tag.id}
-                            className={isDark ? "bg-slate-900 text-white" : ""}
-                          >
-                            {tag.label}
-                          </option>
-                        ))}
-                      </select>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>
+                      프로필에 표시할 태그를 1개 선택할 수 있어요
+                    </p>
+                  </Field>
 
-                      <p className={clsx("mt-1 text-xs", uiSub)}>
-                        프로필에 표시할 태그를 1개 선택할 수 있어요
-                      </p>
-                    </Field>
+                  <Field label="프로필 효과">
+                    <select
+                      value={draftUser.profileEffect ?? ""}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setDraftUser((u) => ({
+                          ...u,
+                          profileEffect: v === "" ? null : (v as any),
+                        }));
+                        markDirty();
+                      }}
+                      style={{ colorScheme: isDark ? "dark" : "light" }}
+                      className={clsx(
+                        "w-full rounded-xl border px-3 py-2",
+                        isDark
+                          ? "bg-white/10 text-white border-white/15"
+                          : "bg-white/60 border-white/50 text-black"
+                      )}
+                    >
+                      <option
+                        value=""
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        선택 안함
+                      </option>
+                      <option
+                        value="snow"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        스노우
+                      </option>
+                      <option
+                        value="balloons"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        풍선
+                      </option>
+                      <option
+                        value="confetti"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        색종이 조각
+                      </option>
+                    </select>
 
+                    <p className={clsx("mt-1 text-xs", uiSub)}>
+                      프로필 페이지에 눈 / 풍선 / 색종이 조각 효과를 1개 적용할 수
+                      있어요. 대시보드 미리보기에는 표시되지 않습니다.
+                    </p>
+                  </Field>
 
                 </div>
               ) : null}

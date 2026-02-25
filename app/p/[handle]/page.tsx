@@ -3,6 +3,7 @@ import { getThemeById } from "@/lib/themes";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { notFound } from "next/navigation";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
+import Script from "next/script";
 
 function parseThemeJson(themeJson?: string) {
   try {
@@ -54,7 +55,27 @@ export default async function PublicProfile({
     : null;
 
   return (
-    <div
+    <>
+      {user.profileEffect === "snow" ? (
+        <Script
+          src="https://app.embed.im/snow.js"
+          strategy="afterInteractive"
+        />
+      ) : null}
+      {user.profileEffect === "confetti" ? (
+        <Script
+          src="https://app.embed.im/confetti.js"
+          strategy="afterInteractive"
+        />
+      ) : null}
+      {user.profileEffect === "balloons" ? (
+        <Script
+          src="https://app.embed.im/balloons.js"
+          strategy="afterInteractive"
+        />
+      ) : null}
+
+      <div
       className={`min-h-screen flex justify-center ${theme.bg}`}
       style={
         user.theme === "custom" && themeJson.bgImage
@@ -193,5 +214,6 @@ export default async function PublicProfile({
         </div>
       </div>
     </div>
+    </>
   );
 }

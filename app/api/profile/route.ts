@@ -46,6 +46,12 @@ const PatchSchema = z.object({
 
   // ⬇️ 프로필 태그
   profileTag: z.string().optional().nullable(),
+
+  // ⬇️ 프로필 효과
+  profileEffect: z
+    .enum(["snow", "balloons", "confetti"])
+    .optional()
+    .nullable(),
 });
 
 function normalizeHandleDisplay(handle: string) {
@@ -84,6 +90,7 @@ export async function GET(req: Request) {
       themeJson: true,
       isPublic: true,
       profileTag: true,
+      profileEffect: true,
       links: {
         where: { enabled: true },
         orderBy: { order: "asc" },
@@ -163,6 +170,11 @@ export async function PUT(req: Request) {
     }
 
     data.profileTag = patch.profileTag; // ✅ DB에 실제 저장
+  }
+
+  // 🔥 profileEffect 처리
+  if ("profileEffect" in patch) {
+    data.profileEffect = patch.profileEffect ?? null;
   }
 
   const user = await prisma.user.update({
