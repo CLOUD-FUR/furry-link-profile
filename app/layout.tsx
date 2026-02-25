@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const title = isKorea ? "플러피 링크" : "Fluffy Link";
   const description =
-    "여러개의 링크를 하나의 링크로! Discord 로그인으로 퍼리/퍼슈트 프로필 페이지를 만들 수 있어요.";
+    "여러개의 링크를 하나의 링크로!";
 
   return {
     title,
@@ -39,13 +39,16 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       title,
       description,
-      siteName: "Fluffy Link",
+      siteName: "깔끔하고 편리한 플러피링크",
       url: SITE_URL,
     },
     twitter: {
       card: "summary",
       title,
       description,
+    },
+    other: {
+      "theme-color": "#ffffff",
     },
   };
 }

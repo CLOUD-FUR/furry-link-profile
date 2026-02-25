@@ -54,13 +54,12 @@ export async function generateMetadata({
   const title = `@${user.handle}`;
   const description = user.bio?.trim() ?? "";
 
-  // OG 이미지: http(s) URL만 사용 (Discord/캐시는 data URL 미지원). 절대 URL + 최소 300px 권장
+  // OG 이미지: http(s) 절대 URL만 사용 (Discord는 data URL·상대경로 미지원). 최소 300px 권장
   let ogImageUrl: string | undefined;
   if (user.image?.startsWith("http")) {
     ogImageUrl = user.image;
   } else if (user.discordImage?.startsWith("http")) {
     const d = user.discordImage;
-    // Discord CDN이면 크기 파라미터 올려서 OG 최소 요구(300px) 충족
     if (d.includes("cdn.discordapp.com")) {
       try {
         const u = new URL(d);
@@ -74,9 +73,13 @@ export async function generateMetadata({
     }
   }
 
+  // 절대 URL로 통일 (Discord/캐시가 상대경로를 못 불러오는 경우 대비)
+  const toAbsolute = (url: string) =>
+    url.startsWith("http") ? url : `${SITE_URL.replace(/\/$/, "")}${url.startsWith("/") ? url : `/${url}`}`;
+
   const openGraphImages = ogImageUrl
-    ? [{ url: ogImageUrl, width: 512, height: 512, alt: `@${user.handle}` }]
-    : undefined;
+    ? [{ url: toAbsolute(ogImageUrl), width: 512, height: 512, alt: `@${user.handle}` }]
+    : [{ url: `${SITE_URL.replace(/\/$/, "")}/og-default.png`, width: 1200, height: 630, alt: "Fluffy Link" }];
 
   return {
     title,
@@ -93,10 +96,10 @@ export async function generateMetadata({
       images: openGraphImages,
     },
     twitter: {
-      card: openGraphImages ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title,
       description: description,
-      images: openGraphImages ? [openGraphImages[0].url] : undefined,
+      images: [openGraphImages[0].url],
     },
     other: {
       "theme-color": "#ffffff",
