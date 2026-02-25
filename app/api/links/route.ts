@@ -54,9 +54,9 @@ function platformIcon(platform: string) {
     x: "x",
     youtube: "youtube",
     instagram: "instagram",
-    other: "other",
+    other: "link", // 기타 링크는 기본 🔗, 이모지 커스텀은 대시보드에서만
   };
-  return map[platform] ?? "other";
+  return map[platform] ?? "link";
 }
 
 async function requireUserId() {
