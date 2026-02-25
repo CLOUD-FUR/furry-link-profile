@@ -25,9 +25,9 @@ model User {
   /// 값 = profile-tags.ts 에 정의된 tag id
   profileTag    String?
 
-  /// 🔥 프로필 효과 (스노우/풍선/색종이 조각)
+  /// 🔥 프로필 효과 (스노우/색종이 조각)
   /// null 또는 "" = 효과 없음
-  /// "snow" | "balloons" | "confetti"
+  /// "snow" | "confetti"
   profileEffect String?
 
   createdAt     DateTime @default(now())

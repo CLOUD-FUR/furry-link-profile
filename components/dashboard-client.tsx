@@ -657,12 +657,6 @@ async function addLink() {
                         스노우
                       </option>
                       <option
-                        value="balloons"
-                        className={isDark ? "bg-slate-900 text-white" : ""}
-                      >
-                        풍선
-                      </option>
-                      <option
                         value="confetti"
                         className={isDark ? "bg-slate-900 text-white" : ""}
                       >
