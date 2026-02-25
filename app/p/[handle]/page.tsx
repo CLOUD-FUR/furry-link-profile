@@ -168,7 +168,9 @@ export default async function PublicProfile({
                 >
                   <span className="flex items-center gap-3">
                     <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/35">
-                      {PLATFORM_ICONS[l.platform] ? (
+                      {l.platform === "other" && l.icon && l.icon !== "link" ? (
+                        <span className="text-xl">{l.icon}</span>
+                      ) : PLATFORM_ICONS[l.platform] ? (
                         <img
                           src={PLATFORM_ICONS[l.platform]!}
                           alt={l.platform}

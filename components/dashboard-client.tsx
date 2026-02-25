@@ -122,6 +122,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
   // stats
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [emojiErrors, setEmojiErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetch("/api/stats")
@@ -168,6 +169,11 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     setHandleError("");
 
     try {
+      // 이모지 에러가 남아 있으면 저장 막기
+      if (Object.values(emojiErrors).some((v) => v)) {
+        showToast("error", "❌ 이모지 입력을 다시 확인해주세요.");
+        return;
+      }
       // 1️⃣ 프로필 저장
       const userPatch: Partial<User> = {
         handle: draftUser.handle,
@@ -212,6 +218,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
             enabled: l.enabled,
             order: i,
             handle: l.handleInput ?? undefined, // UI 전용 → 서버에서 URL로 변환
+            icon:
+              l.platform === "other" && l.icon && l.icon !== "link"
+                ? l.icon
+                : undefined,
           })),
         }),
       });
@@ -757,7 +767,9 @@ async function addLink() {
                             placeholder="설명(옵션)"
                           />
 
-                          {l.platform === "x" || l.platform === "instagram" || l.platform === "bluesky" ? (
+                          {l.platform === "x" ||
+                          l.platform === "instagram" ||
+                          l.platform === "bluesky" ? (
                             <input
                               value={l.handleInput ?? ""}
                               onChange={(e) => {
@@ -769,12 +781,103 @@ async function addLink() {
                               placeholder={l.platform === "bluesky" ? "예시) cloud.bsky.social" : "예시) CLOUD (@ 없이)"}
                             />
                           ) : (
-                            <input
-                              value={l.url}
-                              onChange={(e) => setLink(l.id, { url: e.target.value })}
-                              className={clsx("rounded-xl border px-3 py-2 text-sm", isDark ? "border-white/15 bg-white/10 text-white placeholder:text-white/40" : "border-white/50 bg-white/60")}
-                              placeholder="https://..."
-                            />
+                            <>
+                              <input
+                                value={l.url}
+                                onChange={(e) =>
+                                  setLink(l.id, { url: e.target.value })
+                                }
+                                className={clsx(
+                                  "rounded-xl border px-3 py-2 text-sm",
+                                  isDark
+                                    ? "border-white/15 bg-white/10 text-white placeholder:text-white/40"
+                                    : "border-white/50 bg-white/60"
+                                )}
+                                placeholder="https://..."
+                              />
+
+                              {l.platform === "other" ? (
+                                <div className="mt-2">
+                                  <div className="flex items-center gap-2">
+                                    <input
+                                      maxLength={8}
+                                      value={
+                                        l.icon && l.icon !== "link"
+                                          ? l.icon
+                                          : ""
+                                      }
+                                      onChange={(e) => {
+                                        const raw = e.target.value;
+                                        const v = raw.trim();
+
+                                        if (!v) {
+                                          setLink(l.id, { icon: "link" });
+                                          setEmojiErrors((prev) => {
+                                            const next = { ...prev };
+                                            delete next[l.id];
+                                            return next;
+                                          });
+                                          return;
+                                        }
+
+                                        if (/\s/.test(v)) {
+                                          setEmojiErrors((prev) => ({
+                                            ...prev,
+                                            [l.id]:
+                                              "공백 없이 이모지 1개만 입력해주세요.",
+                                          }));
+                                          return;
+                                        }
+
+                                        const units = Array.from(v);
+                                        if (units.length !== 1) {
+                                          setEmojiErrors((prev) => ({
+                                            ...prev,
+                                            [l.id]:
+                                              "이모지는 1개만 입력할 수 있어요.",
+                                          }));
+                                          return;
+                                        }
+
+                                        const ch = units[0];
+                                        if (!/\p{Extended_Pictographic}/u.test(ch)) {
+                                          setEmojiErrors((prev) => ({
+                                            ...prev,
+                                            [l.id]:
+                                              "시스템 이모지 1개만 입력할 수 있어요.",
+                                          }));
+                                          return;
+                                        }
+
+                                        setEmojiErrors((prev) => {
+                                          const next = { ...prev };
+                                          delete next[l.id];
+                                          return next;
+                                        });
+                                        setLink(l.id, { icon: ch });
+                                        markDirty();
+                                      }}
+                                      className={clsx(
+                                        "w-20 rounded-xl border px-3 py-2 text-sm text-center",
+                                        isDark
+                                          ? "border-white/15 bg-white/10 text-white placeholder:text-white/40"
+                                          : "border-white/50 bg-white/60"
+                                      )}
+                                      placeholder="🔗"
+                                    />
+                                    <span className={clsx("text-xs", uiSub)}>
+                                      기타 링크일 때 버튼 왼쪽에 표시할
+                                      이모지(1개)만 입력할 수 있어요.
+                                    </span>
+                                  </div>
+                                  {emojiErrors[l.id] ? (
+                                    <p className="mt-1 text-xs text-red-300 font-semibold">
+                                      {emojiErrors[l.id]}
+                                    </p>
+                                  ) : null}
+                                </div>
+                              ) : null}
+                            </>
                           )}
 
                           <label className={clsx("flex items-center gap-2 text-sm", uiSub)}>
