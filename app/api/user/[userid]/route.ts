@@ -24,7 +24,7 @@ export async function GET(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json({
+  const body = {
     id: user.id,
     name: user.name,
     handle: user.handle,
@@ -52,5 +52,12 @@ export async function GET(
       createdAt: l.createdAt,
       updatedAt: l.updatedAt,
     })),
+  };
+
+  return new NextResponse(JSON.stringify(body, null, 2), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+    },
   });
 }
