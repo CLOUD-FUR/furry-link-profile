@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User { 
+  id            String   @id // Discord user id
+  name          String?
+  image         String   @default("") // current avatar shown on profile (can be custom)
+  discordImage  String   @default("") // last known Discord avatar URL
+  handle        String   // display (can include uppercase)
+  handleLower   String   @unique
+  bio           String   @default("")
+  theme         String   @default("pastel") // preset name or "custom"
+  themeJson     String   @default("")       // optional custom theme JSON
+  bannerUrl     String   @default("")       // can be data URL or hosted URL
+  isPublic      Boolean  @default(true)
+
+  /// 🔥 프로필 태그 (뱃지)
+  /// null = 선택 안함
+  /// 값 = profile-tags.ts 에 정의된 tag id
+  profileTag    String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  links         Link[]
+  logsAsActor   Log[]    @relation("ActorLogs")
+  logsAsTarget  Log[]    @relation("TargetLogs")
+}
+
+
+model Link {
+  id              String   @id @default(cuid())
+  userId          String
+  platform        String   @default("other") // discord_server | x | youtube | bluesky | instagram | other
+  title           String
+  url             String
+  icon            String   @default("link")
+  subtitle        String   @default("")
+  order           Int      @default(0)
+  enabled         Boolean  @default(true)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  visits          Visit[]
+
+  @@index([userId, order])
+  @@index([userId, platform])
+}
+
+model Visit {
+  id        String   @id @default(cuid())
+  linkId    String
+  sessionId String
+  createdAt DateTime @default(now())
+
+  link      Link     @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId, createdAt])
+  @@index([sessionId])
+  @@unique([linkId, sessionId])
+}
+
+model Log {
+  id           String   @id @default(cuid())
+  type         String
+  message      String
+  actorUserId  String?
+  targetUserId String?
+  ip           String   @default("")
+  createdAt    DateTime @default(now())
+
+  actor        User?    @relation("ActorLogs", fields: [actorUserId], references: [id], onDelete: SetNull)
+  target       User?    @relation("TargetLogs", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([type, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([targetUserId, createdAt])
+}
