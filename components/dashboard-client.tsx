@@ -665,13 +665,13 @@ async function addLink() {
                     </select>
 
                     <p className={clsx("mt-1 text-xs", uiSub)}>
-                      프로필 페이지에 눈 / 풍선 / 색종이 조각 효과를 1개 적용할 수
-                      있어요. 대시보드 미리보기에는 표시되지 않습니다.
+                      프로필 페이지에 스노우 / 색종이 조각 효과를 1개 적용할 수
+                      있어요. 대시보드 미리보기에는 표시되지 않습니다!
                     </p>
                   </Field>
 
                 </div>
-              ) : null}
+              ) : null}ㄴ
 
               {tab === "links" ? (
                 <div>
