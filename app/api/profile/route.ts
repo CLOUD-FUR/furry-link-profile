@@ -48,12 +48,17 @@ const PatchSchema = z.object({
   profileTag: z.string().optional().nullable(),
 });
 
-
 function normalizeHandleDisplay(handle: string) {
   const trimmed = handle.trim();
-  // allow A-Z a-z 0-9 _
-  const cleaned = trimmed.replace(/[^A-Za-z0-9_]/g, "_").replace(/_+/g, "_").replace(/^_+|_+$/g, "");
-  return cleaned.slice(0, 20);
+  if (!trimmed) return "";
+
+  // 한글, 영어, 숫자, 언더바(_), 마침표(.)만 허용
+  const validPattern = /^[A-Za-z0-9가-힣._]+$/u;
+  if (!validPattern.test(trimmed)) {
+    throw new Error("INVALID_HANDLE_CHARS");
+  }
+
+  return trimmed.slice(0, 20);
 }
 
 export async function GET(req: Request) {
@@ -96,7 +101,12 @@ export async function PUT(req: Request) {
 
   const userId = (session.user as any).id as string;
   const body = await req.json().catch(() => ({}));
-  const patch = PatchSchema.parse(body);
+  let patch: any;
+  try {
+    patch = PatchSchema.parse(body);
+  } catch {
+    return Response.json({ error: "❌ 잘못된 프로필 데이터에요." }, { status: 400 });
+  }
 
   const ip = req.headers.get("x-forwarded-for") ?? "";
 
@@ -104,7 +114,25 @@ export async function PUT(req: Request) {
 
   // handle 처리
   if (typeof patch.handle === "string") {
-    const normalized = normalizeHandleDisplay(patch.handle);
+    let normalized: string;
+    try {
+      normalized = normalizeHandleDisplay(patch.handle);
+    } catch (e) {
+      if (e instanceof Error && e.message === "INVALID_HANDLE_CHARS") {
+        return Response.json(
+          {
+            error:
+              "❌ 핸들에는 한글, 영어, 숫자, 언더바(_), 마침표(.)만 사용할 수 있어요.",
+          },
+          { status: 400 }
+        );
+      }
+
+      return Response.json(
+        { error: "❌ 잘못된 핸들 형식이에요." },
+        { status: 400 }
+      );
+    }
     if (!normalized) {
       return Response.json({ error: "❌ 핸들이 비어있어요!" }, { status: 400 });
     }

@@ -188,8 +188,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
       const dataU = await safeJson(resU);
       if (!resU.ok) {
-        if (resU.status === 409) {
-          setHandleError((dataU as any)?.error ?? "❌ 이미 있는 핸들이에요!");
+        if (resU.status === 409 || resU.status === 400) {
+          setHandleError(
+            (dataU as any)?.error ?? "❌ 핸들을 다시 확인해주세요."
+          );
         }
         showToast("error", (dataU as any)?.error ?? "❌ 프로필 저장 실패");
         return;
@@ -554,7 +556,10 @@ async function addLink() {
                       )}
                       placeholder="CLOUD"
                     />
-                    <p className={clsx("mt-1 text-xs", uiSub)}>최대 20자까지 영어와 언더바만 적을 수 있어요!</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>
+                      최대 20자까지 한글, 영어, 숫자, 언더바(_), 마침표(.)만 사용할 수
+                      있어요!
+                    </p>
                     {handleError ? <p className="mt-1 text-xs text-red-300 font-semibold">{handleError}</p> : null}
                   </Field>
 

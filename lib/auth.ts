@@ -7,10 +7,10 @@ function makeHandleDisplay(base: string) {
   const cleaned = base
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9_]/g, "_")
-    .replace(/_+/g, "_")
-    .replace(/^_+|_+$/g, "")
+    // 한글, 영어, 숫자, 언더바(_), 마침표(.)만 남기기
+    .replace(/[^a-z0-9가-힣._]/gu, "")
     .slice(0, 20);
+
   return cleaned || "user";
 }
 
