@@ -54,32 +54,15 @@ export async function generateMetadata({
   const title = `@${user.handle}`;
   const description = user.bio?.trim() ?? "";
 
-  // OG 이미지: http(s) 절대 URL만 사용 (Discord는 data URL·상대경로 미지원). 최소 300px 권장
-  let ogImageUrl: string | undefined;
-  if (user.image?.startsWith("http")) {
-    ogImageUrl = user.image;
-  } else if (user.discordImage?.startsWith("http")) {
-    const d = user.discordImage;
-    if (d.includes("cdn.discordapp.com")) {
-      try {
-        const u = new URL(d);
-        u.searchParams.set("size", "512");
-        ogImageUrl = u.toString();
-      } catch {
-        ogImageUrl = d;
-      }
-    } else {
-      ogImageUrl = d;
-    }
-  }
-
-  // 절대 URL로 통일 (Discord/캐시가 상대경로를 못 불러오는 경우 대비)
-  const toAbsolute = (url: string) =>
-    url.startsWith("http") ? url : `${SITE_URL.replace(/\/$/, "")}${url.startsWith("/") ? url : `/${url}`}`;
-
-  const openGraphImages = ogImageUrl
-    ? [{ url: toAbsolute(ogImageUrl), width: 512, height: 512, alt: `@${user.handle}` }]
-    : [{ url: `${SITE_URL.replace(/\/$/, "")}/og-default.png`, width: 1200, height: 630, alt: "Fluffy Link" }];
+  // OG 이미지는 우리 서버 경로로 고정. 이 주소가 DB의 최신 이미지를 내려줘서
+  // 디스코드 아바타 해시가 바뀌어도 로그인 시 DB만 갱신되면 항상 최신이 나감.
+  const hasImage =
+    (user.image && (user.image.startsWith("http") || user.image.startsWith("data:"))) ||
+    user.discordImage?.startsWith("http");
+  const ogImagePath = `/p/${encodeURIComponent(handleParam)}/og-image`;
+  const openGraphImages = hasImage
+    ? [{ url: ogImagePath, width: 512, height: 512, alt: `@${user.handle}` }]
+    : undefined;
 
   return {
     title,
@@ -92,14 +75,14 @@ export async function generateMetadata({
       title,
       description: description,
       siteName: "Fluffy Link",
-      url: `${SITE_URL}/@${encodeURIComponent(user.handle)}`,
-      images: openGraphImages,
+      url: `${SITE_URL.replace(/\/$/, "")}/@${encodeURIComponent(user.handle)}`,
+      ...(openGraphImages && { images: openGraphImages }),
     },
     twitter: {
-      card: "summary_large_image",
+      card: openGraphImages ? "summary_large_image" : "summary",
       title,
       description: description,
-      images: [openGraphImages[0].url],
+      ...(openGraphImages && { images: [openGraphImages[0].url] }),
     },
     other: {
       "theme-color": "#ffffff",
