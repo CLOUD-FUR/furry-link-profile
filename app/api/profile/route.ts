@@ -82,6 +82,7 @@ export async function GET(req: Request) {
       bannerUrl: true,
       theme: true,
       themeJson: true,
+      isPublic: true,
       profileTag: true,
       links: {
         where: { enabled: true },
