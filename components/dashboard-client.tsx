@@ -7,7 +7,7 @@ import type { Link as DbLink, User } from "@prisma/client";
 import { themes, getThemeById } from "@/lib/themes";
 import clsx from "clsx";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
-import { PLATFORM_ICONS } from "@/lib/platform-icons";
+import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 
 type UserWithLinks = User & { links: DbLink[] };
 type DraftLink = DbLink & { handleInput?: string };
@@ -107,6 +107,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     refreshFromServer();
   }, []);
 
+  // ✅ 가입/로그인 시 디스코드 웹훅 로그 (한 번만)
+  useEffect(() => {
+    fetch("/api/auth/log-event", { method: "POST", credentials: "include" }).catch(() => {});
+  }, []);
 
   function showToast(kind: ToastKind, message: string) {
     setToast({ kind, message });
@@ -466,7 +470,10 @@ async function addLink() {
             </button>
 
             <button
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={async () => {
+                await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
+                signOut({ callbackUrl: "/" });
+              }}
               className={clsx(
                 "rounded-2xl px-4 py-2 font-semibold shadow-soft transition",
                 isDark ? "bg-white/20 text-white hover:bg-white/25" : "bg-slate-900/90 text-white hover:opacity-95"
@@ -1103,8 +1110,8 @@ async function addLink() {
                       >
                         <span className="flex items-center gap-3">
                           <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/35">
-                            {l.platform === "other" && l.icon && l.icon !== "link" ? (
-                              <span className="text-xl">{l.icon}</span>
+                            {l.platform === "other" ? (
+                              <span className="text-xl">{getOtherLinkDisplayIcon(l.icon)}</span>
                             ) : PLATFORM_ICONS[l.platform] ? (
                               <img
                                 src={PLATFORM_ICONS[l.platform]!}

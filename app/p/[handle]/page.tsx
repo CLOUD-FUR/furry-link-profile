@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { getThemeById } from "@/lib/themes";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { notFound } from "next/navigation";
-import { PLATFORM_ICONS } from "@/lib/platform-icons";
+import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import Script from "next/script";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 import type { Metadata } from "next";
@@ -247,8 +247,8 @@ export default async function PublicProfile({
                 >
                   <span className="flex items-center gap-3">
                     <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/35">
-                      {l.platform === "other" && l.icon && l.icon !== "link" ? (
-                        <span className="text-xl">{l.icon}</span>
+                      {l.platform === "other" ? (
+                        <span className="text-xl">{getOtherLinkDisplayIcon(l.icon)}</span>
                       ) : PLATFORM_ICONS[l.platform] ? (
                         <img
                           src={PLATFORM_ICONS[l.platform]!}
