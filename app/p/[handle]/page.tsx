@@ -54,13 +54,12 @@ export async function generateMetadata({
   const title = `@${user.handle}`;
   const description = user.bio?.trim() ?? "";
 
-  // OG 이미지는 우리 서버 경로로 고정. 이 주소가 DB의 최신 이미지를 내려줘서
-  // 디스코드 아바타 해시가 바뀌어도 로그인 시 DB만 갱신되면 항상 최신이 나감.
+  // OG 이미지는 우리 서버 경로로 고정. 절대 URL 사용 시 Discord 등 크롤러에서 더 안정적으로 로드됨.
   const hasImage =
     (user.image && (user.image.startsWith("http") || user.image.startsWith("data:"))) ||
     user.discordImage?.startsWith("http");
-  const ogImagePath = `/p/${encodeURIComponent(handleParam)}/og-image`;
-  // 256x256으로 선언하면 Discord가 오른쪽 작은 썸네일로 표시. 실제 이미지는 og-image에서 고해상도로 내려줌.
+  const base = SITE_URL.replace(/\/$/, "");
+  const ogImagePath = `${base}/p/${encodeURIComponent(handleParam)}/og-image`;
   const openGraphImages = hasImage
     ? [{ url: ogImagePath, width: 256, height: 256, alt: `@${user.handle}` }]
     : undefined;

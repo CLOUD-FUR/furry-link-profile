@@ -51,10 +51,11 @@ export async function GET(
   if (httpUrl) {
     try {
       const res = await fetch(httpUrl, {
-        headers: { "User-Agent": "FluffyLink-OG/1.0" },
+        headers: { "User-Agent": "Mozilla/5.0 (compatible; FluffyLink-OG/1.0)" },
       });
       if (!res.ok) {
-        return new NextResponse(null, { status: 404 });
+        // fetch 실패 시 원본 이미지 URL로 리다이렉트 (Discord/CDN이 우리 서버 fetch를 막는 경우 대비)
+        return NextResponse.redirect(httpUrl, 302);
       }
       const contentType = res.headers.get("content-type") ?? "image/png";
       const body = await res.arrayBuffer();
@@ -66,7 +67,8 @@ export async function GET(
         },
       });
     } catch {
-      return new NextResponse(null, { status: 404 });
+      // 네트워크 오류 시에도 리다이렉트로 이미지 노출 시도
+      return NextResponse.redirect(httpUrl, 302);
     }
   }
 
