@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { isAdminId } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 type SearchParams = {
   err?: string;
@@ -122,7 +123,11 @@ export default async function AdminPage({
             <tbody>
               {users.map((u) => (
                 <tr key={u.id} className="border-t border-white/10 align-top">
-                  <td className="p-3">@{u.handle}</td>
+                  <td className="p-3">
+                    <Link href={`/@${u.handle}`} className="text-sky-300 hover:underline">
+                      @{u.handle}
+                    </Link>
+                  </td>
                   <td className="p-3">{u.name ?? ""}</td>
                   <td className="p-3 font-mono text-xs">{u.id}</td>
                   <td className="p-3">{u.isPublic ? "ON" : "OFF"}</td>
@@ -225,7 +230,11 @@ export default async function AdminPage({
             <tbody>
               {links.map((l) => (
                 <tr key={l.id} className="border-t border-white/10 align-top">
-                  <td className="p-3">@{l.user.handle}</td>
+                  <td className="p-3">
+                    <Link href={`/@${l.user.handle}`} className="text-sky-300 hover:underline">
+                      @{l.user.handle}
+                    </Link>
+                  </td>
                   <td className="p-3">
                     <form
                       action={`/api/admin/links/${l.id}/update`}

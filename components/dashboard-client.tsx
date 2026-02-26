@@ -921,7 +921,7 @@ async function addLink() {
                     ))}
                     {draftLinks.length === 0 ? (
                       <div className={clsx("rounded-2xl border p-4 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/35 text-slate-700")}>
-                        아직 링크가 없어요! “링크 추가” 버튼을 눌러주세요!
+                        아직 링크가 없어요! “링크 추가” 버튼을 눌러서 설정해주세요!
                       </div>
                     ) : null}
                   </div>
