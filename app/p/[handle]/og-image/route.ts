@@ -9,9 +9,12 @@ function decodeHandle(handle: string): string {
   }
 }
 
+/** 이 유저는 OG/메타에 고정 이미지 사용 (새로 DB에서 안 가져옴) */
+const FIXED_AVATAR_USER_ID = "1362203848713703514";
+const FIXED_AVATAR_URL = "https://cdn.discordapp.com/avatars/1362203848713703514/b89a0b5def16807f3a385939b6617ada.png?size=2048";
+
 /**
- * OG/디스코드 임베드용 이미지. 우리 도메인 URL로 두어서
- * 디스코드 아바타 해시가 바뀌어도 DB만 갱신되면 항상 최신 이미지가 나감.
+ * OG/디스코드 임베드용 이미지. 고정 아바타 유저는 항상 고정 URL 사용.
  */
 export async function GET(
   _req: Request,
@@ -22,20 +25,22 @@ export async function GET(
 
   const user = await prisma.user.findUnique({
     where: { handleLower },
-    select: { image: true, discordImage: true, isPublic: true },
+    select: { id: true, image: true, discordImage: true, isPublic: true },
   });
 
   if (!user || !user.isPublic) {
     return new NextResponse(null, { status: 404 });
   }
 
-  // 1) http(s) URL이면 그 주소에서 이미지 가져와서 그대로 스트리밍 (해시 바뀌어도 다음 요청 때 DB 기준으로 새 URL 사용)
+  // 고정 아바타 유저는 항상 고정 URL 사용 (DB 이미지 무시)
   let httpUrl: string | null =
-    user.image?.startsWith("http")
-      ? user.image
-      : user.discordImage?.startsWith("http")
-        ? user.discordImage
-        : null;
+    user.id === FIXED_AVATAR_USER_ID
+      ? FIXED_AVATAR_URL
+      : user.image?.startsWith("http")
+        ? user.image
+        : user.discordImage?.startsWith("http")
+          ? user.discordImage
+          : null;
 
   // 디스코드 CDN이면 고해상도(size=1024) 요청해서 흐림 방지
   if (httpUrl?.includes("cdn.discordapp.com")) {

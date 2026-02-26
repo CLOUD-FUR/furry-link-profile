@@ -9,6 +9,10 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
 
+/** 이 유저는 OG/프로필에 고정 이미지 사용 (Discord ID) */
+const FIXED_AVATAR_USER_ID = "1362203848713703514";
+const FIXED_AVATAR_URL = "https://cdn.discordapp.com/avatars/1362203848713703514/b89a0b5def16807f3a385939b6617ada.png?size=2048";
+
 function parseThemeJson(themeJson?: string) {
   try {
     return themeJson ? JSON.parse(themeJson) : {};
@@ -38,6 +42,7 @@ export async function generateMetadata({
   const user = await prisma.user.findUnique({
     where: { handleLower },
     select: {
+      id: true,
       handle: true,
       bio: true,
       image: true,
@@ -54,8 +59,9 @@ export async function generateMetadata({
   const title = `@${user.handle}`;
   const description = user.bio?.trim() ?? "";
 
-  // OG 이미지는 우리 서버 경로로 고정. 절대 URL 사용 시 Discord 등 크롤러에서 더 안정적으로 로드됨.
+  // 고정 아바타 유저는 항상 OG 이미지 사용, 그 외는 DB 이미지 여부로 결정
   const hasImage =
+    user.id === FIXED_AVATAR_USER_ID ||
     (user.image && (user.image.startsWith("http") || user.image.startsWith("data:"))) ||
     user.discordImage?.startsWith("http");
   const base = SITE_URL.replace(/\/$/, "");
@@ -187,9 +193,11 @@ export default async function PublicProfile({
           <div className="-mt-10 flex justify-center">
             <img
               src={
-                user.image ||
-                user.discordImage ||
-                "https://placehold.co/128x128/png"
+                user.id === FIXED_AVATAR_USER_ID
+                  ? FIXED_AVATAR_URL
+                  : user.image ||
+                    user.discordImage ||
+                    "https://placehold.co/128x128/png"
               }
               alt="avatar"
               className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
