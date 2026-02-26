@@ -98,6 +98,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const [toast, setToast] = useState<{ kind: ToastKind; message: string } | null>(null);
   const toastTimer = useRef<number | null>(null);
 
+  // 복사 버튼 피드백 (버튼 옆에 "복사가 완료되었어요!" 표시 후 원상복귀)
+  const [copyDone, setCopyDone] = useState(false);
+
   const activeTag = PROFILE_TAGS.find(
     (t) => t.id === draftUser.profileTag
   );
@@ -1019,20 +1022,31 @@ async function addLink() {
 
               {tab === "settings" ? (
                 <div className="space-y-4">
-                  <label className={clsx("flex items-center justify-between gap-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                  <div className={clsx("flex items-center justify-between gap-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div>
                       <div className={clsx("font-bold", uiText)}>페이지 공개</div>
                       <div className={clsx("text-xs", uiSub)}>OFF로 되있으면 프로필 링크가 비공개로 변경돼요</div>
                     </div>
                     <input
+                      id="page-public-toggle"
                       type="checkbox"
+                      className="peer sr-only"
                       checked={draftUser.isPublic}
                       onChange={(e) => {
                         setDraftUser((u) => ({ ...u, isPublic: e.target.checked }));
                         markDirty();
                       }}
                     />
-                  </label>
+                    <label
+                      htmlFor="page-public-toggle"
+                      className={clsx(
+                        "relative flex h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors after:absolute after:left-0 after:top-0.5 after:h-7 after:w-7 after:rounded-full after:bg-white after:shadow-sm after:transition-[left] after:duration-200 after:content-['']",
+                        draftUser.isPublic
+                          ? "bg-emerald-400 after:left-[calc(100%-1.75rem)]"
+                          : isDark ? "bg-white/25 after:left-0.5" : "bg-slate-300"
+                      )}
+                    />
+                  </div>
 
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div className={clsx("font-bold", uiText)}>프로필 링크</div>
@@ -1045,11 +1059,19 @@ async function addLink() {
                       onClick={() => {
                         const url = typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath;
                         navigator.clipboard.writeText(url);
-                        showToast("success", "✅ 프로필 링크를 복사했어요!");
+                        setCopyDone(true);
+                        window.setTimeout(() => setCopyDone(false), 1600);
                       }}
-                      className={clsx("mt-2 w-full rounded-2xl px-4 py-2 font-semibold", isDark ? "bg-white text-slate-900" : "bg-slate-900 text-white")}
+                      className={clsx(
+                        "mt-2 w-full rounded-2xl px-4 py-2 font-semibold transition-colors duration-200",
+                        copyDone
+                          ? "bg-emerald-500 text-white"
+                          : isDark
+                            ? "bg-white text-slate-900 hover:bg-white/90"
+                            : "bg-slate-900 text-white hover:bg-slate-800"
+                      )}
                     >
-                      복사
+                      {copyDone ? "복사가 완료되었어요!" : "복사"}
                     </button>
                   </div>
                 </div>
