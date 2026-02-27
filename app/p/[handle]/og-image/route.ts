@@ -9,9 +9,13 @@ function decodeHandle(handle: string): string {
   }
 }
 
-/** 이 유저는 OG/메타에 고정 이미지 사용 (새로 DB에서 안 가져옴) */
-const FIXED_AVATAR_USER_ID = "1362203848713703514";
-const FIXED_AVATAR_URL = "https://cdn.discordapp.com/avatars/1362203848713703514/b89a0b5def16807f3a385939b6617ada.png?size=2048";
+/**
+ * @CLOUD 계정만 OG/메타에 고정 이미지 사용.
+ * 나머지 핸들(ex. @Tiger_Rangi)은 항상 현재 프로필 이미지를 사용.
+ */
+const FIXED_AVATAR_HANDLE = "cloud";
+const FIXED_AVATAR_URL =
+  "https://cdn.discordapp.com/avatars/1362203848713703514/b89a0b5def16807f3a385939b6617ada.png?size=2048";
 
 /**
  * OG/디스코드 임베드용 이미지. 고정 아바타 유저는 항상 고정 URL 사용.
@@ -32,15 +36,21 @@ export async function GET(
     return new NextResponse(null, { status: 404 });
   }
 
-  // 고정 아바타 유저는 항상 고정 URL 사용 (DB 이미지 무시)
+  /**
+   * ✅ @CLOUD 핸들만 고정 아바타 사용.
+   *    그 외 핸들은 항상 DB에 저장된 현재 프로필 이미지를 사용.
+   */
+  if (handleLower === FIXED_AVATAR_HANDLE) {
+    return NextResponse.redirect(FIXED_AVATAR_URL, 302);
+  }
+
+  // 일반 유저는 DB 이미지 / 디스코드 이미지를 사용
   let httpUrl: string | null =
-    user.id === FIXED_AVATAR_USER_ID
-      ? FIXED_AVATAR_URL
-      : user.image?.startsWith("http")
-        ? user.image
-        : user.discordImage?.startsWith("http")
-          ? user.discordImage
-          : null;
+    user.image?.startsWith("http")
+      ? user.image
+      : user.discordImage?.startsWith("http")
+        ? user.discordImage
+        : null;
 
   // 디스코드 CDN이면 고해상도(size=1024) 요청해서 흐림 방지
   if (httpUrl?.includes("cdn.discordapp.com")) {

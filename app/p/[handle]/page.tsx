@@ -9,9 +9,13 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
 
-/** 이 유저는 OG/프로필에 고정 이미지 사용 (Discord ID) */
-const FIXED_AVATAR_USER_ID = "1362203848713703514";
-const FIXED_AVATAR_URL = "https://cdn.discordapp.com/avatars/1362203848713703514/b89a0b5def16807f3a385939b6617ada.png?size=2048";
+/**
+ * @CLOUD 계정만 고정 아바타 이미지를 사용.
+ * 나머지 핸들(ex. @Tiger_Rangi)은 항상 현재 프로필 이미지/디스코드 이미지를 사용.
+ */
+const FIXED_AVATAR_HANDLE = "cloud";
+const FIXED_AVATAR_URL =
+  "https://cdn.discordapp.com/avatars/1362203848713703514/b89a0b5def16807f3a385939b6617ada.png?size=2048";
 
 function parseThemeJson(themeJson?: string) {
   try {
@@ -60,9 +64,11 @@ export async function generateMetadata({
   const title = `@${user.handle}`;
   const description = user.bio?.trim() ?? "";
 
+  const isFixedAvatarUser = user.handle.toLowerCase() === FIXED_AVATAR_HANDLE;
+
   // 고정 아바타 유저는 항상 OG 이미지 사용, 그 외는 DB 이미지 여부로 결정
   const hasImage =
-    user.id === FIXED_AVATAR_USER_ID ||
+    isFixedAvatarUser ||
     (user.image && (user.image.startsWith("http") || user.image.startsWith("data:"))) ||
     user.discordImage?.startsWith("http");
   const base = SITE_URL.replace(/\/$/, "");
@@ -140,6 +146,8 @@ export default async function PublicProfile({
     ? PROFILE_TAGS.find((t) => t.id === user.profileTag)
     : null;
 
+  const isFixedAvatarUser = handleLower === FIXED_AVATAR_HANDLE;
+
   return (
     <>
       <ProfileVisitTracker handle={handleParam} />
@@ -196,11 +204,9 @@ export default async function PublicProfile({
           <div className="-mt-10 flex justify-center">
             <img
               src={
-                user.id === FIXED_AVATAR_USER_ID
+                isFixedAvatarUser
                   ? FIXED_AVATAR_URL
-                  : user.image ||
-                    user.discordImage ||
-                    "https://placehold.co/128x128/png"
+                  : user.image || user.discordImage || "https://placehold.co/128x128/png"
               }
               alt="avatar"
               className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
