@@ -44,13 +44,36 @@ export async function GET(
     return NextResponse.redirect(FIXED_AVATAR_URL, 302);
   }
 
-  // 일반 유저는 DB 이미지 / 디스코드 이미지를 사용
-  let httpUrl: string | null =
-    user.image?.startsWith("http")
-      ? user.image
-      : user.discordImage?.startsWith("http")
-        ? user.discordImage
-        : null;
+  /**
+   * 1) data URL (대시보드에서 업로드한 커스텀 프로필 이미지)을 최우선 사용
+   *    - 사용자가 새 프로필을 업로드하면, 항상 이 이미지가 메타 태그에 바로 반영되도록.
+   */
+  if (user.image?.startsWith("data:")) {
+    try {
+      const [header, base64] = user.image.split(",");
+      const m = header.match(/data:([^;]+)/);
+      const contentType = m ? m[1].trim() : "image/png";
+      const buf = Buffer.from(base64!, "base64");
+      return new NextResponse(buf, {
+        status: 200,
+        headers: {
+          "Content-Type": contentType,
+          "Cache-Control": "public, max-age=3600, s-maxage=3600",
+        },
+      });
+    } catch {
+      // 디코딩 실패 시 아래 HTTP URL 로직으로 폴백
+    }
+  }
+
+  // 2) 그 다음으로, HTTP URL(직접 링크) / 디스코드 이미지를 사용
+  let httpUrl: string | null = null;
+
+  if (user.image?.startsWith("http")) {
+    httpUrl = user.image;
+  } else if (user.discordImage?.startsWith("http")) {
+    httpUrl = user.discordImage;
+  }
 
   // 디스코드 CDN이면 고해상도(size=1024) 요청해서 흐림 방지
   if (httpUrl?.includes("cdn.discordapp.com")) {
@@ -84,25 +107,6 @@ export async function GET(
     } catch {
       // 네트워크 오류 시에도 리다이렉트로 이미지 노출 시도
       return NextResponse.redirect(httpUrl, 302);
-    }
-  }
-
-  // 2) data URL (커스텀 업로드 이미지)
-  if (user.image?.startsWith("data:")) {
-    try {
-      const [header, base64] = user.image.split(",");
-      const m = header.match(/data:([^;]+)/);
-      const contentType = m ? m[1].trim() : "image/png";
-      const buf = Buffer.from(base64!, "base64");
-      return new NextResponse(buf, {
-        status: 200,
-        headers: {
-          "Content-Type": contentType,
-          "Cache-Control": "public, max-age=3600, s-maxage=3600",
-        },
-      });
-    } catch {
-      return new NextResponse(null, { status: 404 });
     }
   }
 
