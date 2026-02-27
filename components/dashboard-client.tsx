@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import type { Link as DbLink, User } from "@prisma/client";
 import { themes, getThemeById } from "@/lib/themes";
+import { CUSTOM_THEMES } from "@/lib/custom-themes";
 import clsx from "clsx";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
@@ -100,6 +101,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
   // 복사 버튼 피드백 (버튼 옆에 "복사가 완료되었어요!" 표시 후 원상복귀)
   const [copyDone, setCopyDone] = useState(false);
+
+  // 랜덤 추천 테마 버튼 피드백
+  const [randomThemeDone, setRandomThemeDone] = useState(false);
 
   const activeTag = PROFILE_TAGS.find(
     (t) => t.id === draftUser.profileTag
@@ -392,6 +396,27 @@ async function addLink() {
     setDraftUser((u) => ({ ...u, theme: "pastel", themeJson: "" }));
     markDirty();
     showToast("info", "✅ 사진 테마를 기본으로 변경했어요! 저장을 눌러 적용해주세요!");
+  }
+
+  function applyRandomCustomTheme() {
+    if (!CUSTOM_THEMES.length) {
+      showToast("info", "등록된 추천 테마가 없어요. CUSTOM_THEMES를 먼저 채워주세요!");
+      return;
+    }
+
+    const idx = Math.floor(Math.random() * CUSTOM_THEMES.length);
+    const picked = CUSTOM_THEMES[idx];
+    const obj = { bgImage: picked.imageUrl };
+
+    setDraftUser((u) => ({
+      ...u,
+      theme: "custom",
+      themeJson: JSON.stringify(obj),
+    }));
+    markDirty();
+
+    setRandomThemeDone(true);
+    window.setTimeout(() => setRandomThemeDone(false), 1600);
   }
 
   // ✅ 여기 추가 (return 위)
@@ -958,12 +983,26 @@ async function addLink() {
                       </button>
                     </div>
 
-
                     {draftUser.theme === "custom" && parseThemeBg() ? (
                       <div className={clsx("mt-3 overflow-hidden rounded-2xl border", isDark ? "border-white/15" : "border-white/50")}>
                         <img src={parseThemeBg()} alt="theme preview" className="h-28 w-full object-cover" />
                       </div>
                     ) : null}
+
+                    <button
+                      type="button"
+                      onClick={applyRandomCustomTheme}
+                      className={clsx(
+                        "mt-3 w-full rounded-2xl px-4 py-2 text-sm font-semibold transition-colors duration-200",
+                        randomThemeDone
+                          ? "bg-emerald-500 text-white"
+                          : isDark
+                            ? "bg-white text-slate-900 hover:bg-white/90"
+                            : "bg-slate-900 text-white hover:bg-slate-800"
+                      )}
+                    >
+                      {randomThemeDone ? "랜덤 테마가 적용되었어요!" : "랜덤 추천 테마"}
+                    </button>
                   </div>
 
                   {themes.slice(0, 6).map((t) => {

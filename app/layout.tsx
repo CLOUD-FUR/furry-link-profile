@@ -20,6 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title,
     description,
     keywords: [
+      "플러피링크",
       "퍼리",
       "퍼슈트",
       "플러피 링크",
