@@ -988,7 +988,13 @@ async function addLink() {
                         <img src={parseThemeBg()} alt="theme preview" className="h-28 w-full object-cover" />
                       </div>
                     ) : null}
+                  </div>
 
+                  <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/50 bg-white/40")}>
+                    <div className={clsx("font-black", uiText)}>랜덤 추천테마</div>
+                    <div className={clsx("mt-1 text-xs", uiSub)}>
+                      저작권 문제가 없는 배경 이미지를 랜덤으로 불러와요. 적용을 원할 시 꼭 저장버튼을 눌러주세요.
+                    </div>
                     <button
                       type="button"
                       onClick={applyRandomCustomTheme}
