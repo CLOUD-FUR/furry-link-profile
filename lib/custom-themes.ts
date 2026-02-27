@@ -18,7 +18,20 @@ export type CustomThemePreset = {
  * 기본값은 비어 있고, 이미지를 추가하면 자동으로 랜덤 추천에 사용됩니다.
  */
 export const CUSTOM_THEMES: CustomThemePreset[] = [
-  // 예시:
-  // { id: "sample1", label: "Joa Wall 1", imageUrl: "/custom-themes/joa-1.jpg" },
+  {
+    id: "akireSurface1280",
+    label: "Akire Surface",
+    imageUrl: "/custom-themes/akirevarga-surface-4373559_1280.jpg",
+  },
+  {
+    id: "felixNewYear1280",
+    label: "Felix New Year",
+    imageUrl: "/custom-themes/felix-mittermeier-new-year-background-3625405_1280.jpg",
+  },
+  {
+    id: "walWater1280",
+    label: "Wal Water",
+    imageUrl: "/custom-themes/wal_172619-water-5917708_1280.jpg",
+  },
 ];
 
