@@ -49,6 +49,7 @@ export async function generateMetadata({
       discordImage: true,
       bannerUrl: true,
       isPublic: true,
+      updatedAt: true,
     },
   });
 
@@ -65,7 +66,9 @@ export async function generateMetadata({
     (user.image && (user.image.startsWith("http") || user.image.startsWith("data:"))) ||
     user.discordImage?.startsWith("http");
   const base = SITE_URL.replace(/\/$/, "");
-  const ogImagePath = `${base}/p/${encodeURIComponent(handleParam)}/og-image`;
+  // updatedAt 기준으로 버전을 붙여서 Discord / 카톡 썸네일 캐시를 갱신
+  const version = user.updatedAt ? user.updatedAt.getTime() : Date.now();
+  const ogImagePath = `${base}/p/${encodeURIComponent(handleParam)}/og-image?v=${version}`;
   const openGraphImages = hasImage
     ? [{ url: ogImagePath, width: 256, height: 256, alt: `@${user.handle}` }]
     : undefined;
