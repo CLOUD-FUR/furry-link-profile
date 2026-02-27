@@ -64,11 +64,6 @@ export const CUSTOM_THEMES: CustomThemePreset[] = [
     imageUrl: "/custom-themes/9051050.jpg",
   },
   {
-    id: "akireSurface1280",
-    label: "Akire Surface",
-    imageUrl: "/custom-themes/akirevarga-surface-4373559_1280.jpg",
-  },
-  {
     id: "cozyCatCandle",
     label: "Cozy Cat Candle",
     imageUrl: "/custom-themes/cozy-cat-by-candlelight.jpg",
@@ -84,6 +79,36 @@ export const CUSTOM_THEMES: CustomThemePreset[] = [
     imageUrl: "/custom-themes/ksushlapush-background-6556413.jpg",
   },
   {
+    id: "pexels6985001",
+    label: "Codioful 6985001",
+    imageUrl: "/custom-themes/pexels-codioful-6985001.jpg",
+  },
+  {
+    id: "pexels6985003",
+    label: "Codioful 6985003",
+    imageUrl: "/custom-themes/pexels-codioful-6985003.jpg",
+  },
+  {
+    id: "pexels6985265",
+    label: "Codioful 6985265",
+    imageUrl: "/custom-themes/pexels-codioful-6985265.jpg",
+  },
+  {
+    id: "pexels7130465",
+    label: "Codioful 7130465",
+    imageUrl: "/custom-themes/pexels-codioful-7130465.jpg",
+  },
+  {
+    id: "pexels7130498",
+    label: "Codioful 7130498",
+    imageUrl: "/custom-themes/pexels-codioful-7130498.jpg",
+  },
+  {
+    id: "pexels7130555",
+    label: "Codioful 7130555",
+    imageUrl: "/custom-themes/pexels-codioful-7130555.jpg",
+  },
+  {
     id: "rm456004",
     label: "RM456 004",
     imageUrl: "/custom-themes/rm456-004.jpg",
@@ -92,11 +117,6 @@ export const CUSTOM_THEMES: CustomThemePreset[] = [
     id: "v960Ning31",
     label: "V960 Ning 31",
     imageUrl: "/custom-themes/v960-ning-31.jpg",
-  },
-  {
-    id: "walWater1280",
-    label: "Wal Water",
-    imageUrl: "/custom-themes/wal_172619-water-5917708_1280.jpg",
   },
 ];
 
