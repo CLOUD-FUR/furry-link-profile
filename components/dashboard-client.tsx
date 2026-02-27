@@ -423,16 +423,26 @@ async function addLink() {
   const cleanPath = publicPath.trim();
   const fullUrl = `https://fluffy-link.xyz${cleanPath}`;
 
-  return (
+  const hasCustomBg = draftUser.theme === "custom" && !!parseThemeBg();
 
-    <div className={clsx("min-h-screen relative overflow-hidden", theme.bg)}>
+  return (
+    <div
+      className={clsx(
+        "min-h-screen relative overflow-hidden",
+        // 커스텀 배경이 없을 때만 기본 그라데이션 사용
+        hasCustomBg ? "" : theme.bg
+      )}
+      style={
+        hasCustomBg
+          ? {
+              backgroundImage: `url(${parseThemeBg()})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }
+          : undefined
+      }
+    >
       <div className="absolute inset-0 noise opacity-30" />
-      {draftUser.theme === "custom" && parseThemeBg() ? (
-        <div
-          className="absolute inset-0 opacity-35"
-          style={{ backgroundImage: `url(${parseThemeBg()})`, backgroundSize: "cover", backgroundPosition: "center" }}
-        />
-      ) : null}
 
       <div className="relative mx-auto w-full max-w-6xl px-4 py-10">
         <header className="flex flex-wrap items-center justify-between gap-3">
