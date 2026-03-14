@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import Script from "next/script";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
+import { ProfileShareButton } from "@/components/profile-share-button";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
@@ -239,6 +240,13 @@ export default async function PublicProfile({
               </div>
 
             ) : null}
+
+            {/* 공유하기 (Web Share API) */}
+            <ProfileShareButton
+              profileUrl={`${SITE_URL.replace(/\/$/, "")}/@${user.handle}`}
+              handle={user.handle}
+              bio={user.bio}
+            />
 
             {/* Bio */}
             {user.bio ? (
