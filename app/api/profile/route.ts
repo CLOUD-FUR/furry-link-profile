@@ -91,6 +91,7 @@ export async function GET(req: Request) {
       themeJson: true,
       isPublic: true,
       listPublic: true,
+      lastBumpedAt: true,
       profileTag: true,
       profileEffect: true,
       links: {

@@ -21,6 +21,8 @@ model User {
   isPublic      Boolean  @default(true)
   /// 유저 리스트(/user) 노출 여부. 기본 ON
   listPublic    Boolean  @default(true)
+  /// 끌어올리기 시각. 12시간마다 갱신 가능, 유저 리스트 정렬에 사용
+  lastBumpedAt  DateTime?
 
   /// 🔥 프로필 태그 (뱃지)
   /// null = 선택 안함

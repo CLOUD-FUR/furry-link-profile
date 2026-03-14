@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 export default async function UserListPage() {
-  const users = await prisma.user.findMany({
+  const rows = await prisma.user.findMany({
     where: {
       isPublic: true,
       listPublic: true,
@@ -20,9 +20,17 @@ export default async function UserListPage() {
       bio: true,
       image: true,
       discordImage: true,
+      lastBumpedAt: true,
     },
     orderBy: { handleLower: "asc" },
   });
+
+  const users = [...rows].sort((a, b) => {
+    const at = a.lastBumpedAt?.getTime() ?? 0;
+    const bt = b.lastBumpedAt?.getTime() ?? 0;
+    if (bt !== at) return bt - at;
+    return (a.handleLower ?? "").localeCompare(b.handleLower ?? "");
+  }).map(({ lastBumpedAt: _, ...u }) => u);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200 relative overflow-hidden">

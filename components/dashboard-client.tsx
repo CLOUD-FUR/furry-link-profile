@@ -105,6 +105,27 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   // 랜덤 추천 테마 버튼 피드백
   const [randomThemeDone, setRandomThemeDone] = useState(false);
 
+  // 끌어올리기: 성공 피드백 + 쿨타임 표시용 1초 틱
+  const [bumpDone, setBumpDone] = useState(false);
+  const [tick, setTick] = useState(0);
+  const BUMP_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+  const nextBumpAt = savedUser.lastBumpedAt
+    ? savedUser.lastBumpedAt.getTime() + BUMP_COOLDOWN_MS
+    : 0;
+  const inBumpCooldown = nextBumpAt > Date.now();
+  useEffect(() => {
+    if (!inBumpCooldown) return;
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, [inBumpCooldown]);
+  const bumpRemainingMs = Math.max(0, nextBumpAt - Date.now());
+  const bumpCooldownText =
+    bumpRemainingMs >= 3600000
+      ? `${Math.floor(bumpRemainingMs / 3600000)}시간 ${Math.floor((bumpRemainingMs % 3600000) / 60000)}분 뒤에 다시 시도해주세요!`
+      : bumpRemainingMs >= 60000
+        ? `${Math.floor(bumpRemainingMs / 60000)}분 뒤에 다시 시도해주세요!`
+        : `${Math.ceil(bumpRemainingMs / 1000)}초 뒤에 다시 시도해주세요!`;
+
   const activeTag = PROFILE_TAGS.find(
     (t) => t.id === draftUser.profileTag
   );
@@ -1122,6 +1143,47 @@ async function addLink() {
                       )}
                     />
                   </div>
+
+                  {draftUser.listPublic !== false ? (
+                    <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (inBumpCooldown) return;
+                          const res = await fetch("/api/profile/bump", { method: "POST" });
+                          const data = await res.json().catch(() => ({}));
+                          if (res.ok && data.ok) {
+                            setBumpDone(true);
+                            window.setTimeout(() => setBumpDone(false), 1600);
+                            const r = await fetch("/api/profile");
+                            const j = await r.json().catch(() => null);
+                            if (j?.user) {
+                              const nextAt = j.user.lastBumpedAt ? new Date(j.user.lastBumpedAt) : null;
+                              setSavedUser((u) => ({ ...u, lastBumpedAt: nextAt }));
+                              setDraftUser((u) => ({ ...u, lastBumpedAt: nextAt }));
+                            }
+                          }
+                        }}
+                        disabled={inBumpCooldown}
+                        className={clsx(
+                          "mt-0 w-full rounded-2xl px-4 py-2 font-semibold transition-colors duration-200 text-center",
+                          bumpDone
+                            ? "bg-emerald-500 text-white"
+                            : inBumpCooldown
+                              ? "bg-amber-400 text-amber-900 text-xs sm:text-sm"
+                              : isDark
+                                ? "bg-white text-slate-900 hover:bg-white/90"
+                                : "bg-slate-900 text-white hover:bg-slate-800"
+                        )}
+                      >
+                        {bumpDone
+                          ? "끌어올리기가 되었어요!"
+                          : inBumpCooldown
+                            ? bumpCooldownText
+                            : "프로필 끌어올리기"}
+                      </button>
+                    </div>
+                  ) : null}
 
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div className={clsx("font-bold", uiText)}>프로필 링크</div>

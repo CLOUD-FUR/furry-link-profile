@@ -19,7 +19,7 @@ function getAvatarUrl(u: UserItem): string {
   if (u.handleLower === FIXED_AVATAR_HANDLE) return FIXED_AVATAR_URL;
   if (u.image?.startsWith("http") || u.image?.startsWith("data:")) return u.image;
   if (u.discordImage?.startsWith("http")) return u.discordImage;
-  return "https://placehold.co/400x400?text=@";
+  return "/discord-avatar-placeholder.png";
 }
 
 function matchQuery(u: UserItem, q: string): boolean {
@@ -47,11 +47,11 @@ export function UserListClient({ users }: { users: UserItem[] }) {
           🐾 Fluffy Link
         </Link>
         <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-          유저 리스트
+          플러피링크 유저 리스트
         </h1>
         <input
           type="search"
-          placeholder="핸들 또는 소개로 검색 (예: @cloud, cloud, cl...)"
+          placeholder="핸들 또는 유저 이름으로 검색 (예시: @CLOUD, 클라우드 ...)"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full max-w-md rounded-2xl border border-white/50 bg-white/60 px-4 py-3 text-slate-900 placeholder:text-slate-500 shadow-soft backdrop-blur-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
