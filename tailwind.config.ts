@@ -29,6 +29,15 @@ const config: Config = {
       borderRadius: {
         "2xl": "1.25rem",
       },
+      keyframes: {
+        slideInRight: {
+          from: { opacity: "0", transform: "translateX(1.25rem)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+      },
+      animation: {
+        "slide-in-right": "slideInRight 0.5s ease-out forwards",
+      },
     },
   },
   plugins: [],

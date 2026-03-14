@@ -1,17 +1,18 @@
 import { Container, GlassCard, ButtonLink } from "@/components/ui";
+import { HomeFeatureList } from "@/components/home-feature-list";
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 relative overflow-hidden transition-colors">
       <div className="absolute inset-0 noise opacity-40 dark:opacity-20" />
       <Container className="relative py-12 pb-28">
-        <header className="flex items-center justify-between gap-4">
-          <div className="font-black tracking-tight text-xl text-slate-900 dark:text-white">🐾 Fluffy Link</div>
-          <nav className="flex items-center gap-2">
-            <ButtonLink href="/login" className="bg-white/70 border-white/60 hover:bg-white/85 dark:bg-white/15 dark:border-white/20 dark:hover:bg-white/25 dark:text-white">
+        <header className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+          <div className="font-black tracking-tight text-xl text-slate-900 dark:text-white shrink-0">🐾 Fluffy Link</div>
+          <nav className="flex shrink-0 items-center gap-2">
+            <ButtonLink href="/login" className="whitespace-nowrap bg-white/70 border-white/60 hover:bg-white/85 dark:bg-white/15 dark:border-white/20 dark:hover:bg-white/25 dark:text-white">
               Discord 로그인
             </ButtonLink>
-            <ButtonLink href="/@CLOUD" className="bg-slate-900 text-white border-slate-900 dark:bg-white/20 dark:border-white/30 dark:text-white">
+            <ButtonLink href="/@CLOUD" className="whitespace-nowrap bg-slate-900 text-white border-slate-900 dark:bg-white/20 dark:border-white/30 dark:text-white">
               개발자 프로필
             </ButtonLink>
           </nav>
@@ -36,20 +37,7 @@ export default function HomePage() {
               </ButtonLink>
             </div>
 
-            <ul className="mt-8 space-y-3 text-slate-800 dark:text-slate-200">
-              {[
-                "🌈 여러가지 테마 및 커스텀 테마 제공",
-                "🔗 바로가기 버튼 링크 설정 가능",
-                "🔐 Discord 로그인으로 누구나 이용 가능",
-                "📱 PC 및 모바일 최적화",
-                "😺 실시간 지원 및 문의 처리 가능",
-              ].map((t) => (
-                <li key={t} className="flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-slate-900/70 dark:bg-white/60" />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
+            <HomeFeatureList />
           </div>
 
           <GlassCard className="bg-white/35 border-white/45 dark:bg-white/10 dark:border-white/15 p-6">

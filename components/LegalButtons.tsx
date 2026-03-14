@@ -33,22 +33,22 @@ export default function LegalButtons() {
         transform: showBar ? "translateY(0)" : "translateY(100%)",
       }}
     >
-      <div className="mx-auto flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 dark:border-white/15 dark:bg-white/5 px-3 py-2 backdrop-blur-md shadow-soft w-fit">
+      <div className="mx-auto flex max-w-full flex-nowrap items-center justify-center gap-1.5 sm:gap-2 rounded-2xl border border-white/20 bg-white/10 dark:border-white/15 dark:bg-white/5 px-2 py-1.5 sm:px-3 sm:py-2 backdrop-blur-md shadow-soft w-fit overflow-x-auto">
         <a
           href="/questions"
-          className="shrink-0 rounded-xl bg-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white/95 hover:bg-white/20 dark:hover:bg-white/15 whitespace-nowrap"
+          className="shrink-0 rounded-xl bg-white/15 dark:bg-white/10 px-2 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-900 dark:text-white/95 hover:bg-white/20 dark:hover:bg-white/15 whitespace-nowrap"
         >
           ❓ 자주하는 질문
         </a>
         <a
           href="/terms#terms"
-          className="shrink-0 rounded-xl bg-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white/95 hover:bg-white/20 dark:hover:bg-white/15 whitespace-nowrap"
+          className="shrink-0 rounded-xl bg-white/15 dark:bg-white/10 px-2 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-900 dark:text-white/95 hover:bg-white/20 dark:hover:bg-white/15 whitespace-nowrap"
         >
           📜 이용약관
         </a>
         <a
           href="/terms#privacy"
-          className="shrink-0 rounded-xl bg-white/15 dark:bg-white/10 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white/95 hover:bg-white/20 dark:hover:bg-white/15 whitespace-nowrap"
+          className="shrink-0 rounded-xl bg-white/15 dark:bg-white/10 px-2 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-xs font-semibold text-slate-900 dark:text-white/95 hover:bg-white/20 dark:hover:bg-white/15 whitespace-nowrap"
         >
           🔒 개인정보처리방침
         </a>

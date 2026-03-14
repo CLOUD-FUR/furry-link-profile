@@ -53,7 +53,7 @@ export function DarkLightToggle() {
     <button
       type="button"
       onClick={handleToggle}
-      className="fixed top-4 right-4 z-[9999] flex h-12 w-12 items-center justify-center rounded-xl border border-white/30 bg-white/20 shadow-soft backdrop-blur-md transition hover:bg-white/30 dark:border-white/15 dark:bg-white/10 dark:hover:bg-white/15"
+      className="fixed top-4 right-4 z-[9999] hidden sm:flex h-12 w-12 items-center justify-center rounded-xl border border-white/30 bg-white/20 shadow-soft backdrop-blur-md transition hover:bg-white/30 dark:border-white/15 dark:bg-white/10 dark:hover:bg-white/15"
       aria-label={theme === "light" ? "다크 모드로 전환" : "라이트 모드로 전환"}
       title={theme === "light" ? "다크 모드" : "라이트 모드"}
     >

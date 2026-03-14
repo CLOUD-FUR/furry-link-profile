@@ -159,6 +159,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   // stats
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [profileVisitCount, setProfileVisitCount] = useState<number>(0);
+  const [displayProfileVisit, setDisplayProfileVisit] = useState(0);
+  const [displayCounts, setDisplayCounts] = useState<Record<string, number>>({});
   const [emojiErrors, setEmojiErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -171,6 +173,35 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       })
       .catch(() => {});
   }, [saving]);
+
+  // 방문자 수 카운트업: stats 탭 열릴 때 0 → 실제 값으로 애니메이션
+  const countUpRaf = useRef<number>(0);
+  useEffect(() => {
+    if (tab !== "stats") {
+      setDisplayProfileVisit(0);
+      setDisplayCounts({});
+      return;
+    }
+    setDisplayProfileVisit(0);
+    setDisplayCounts({});
+    const duration = 1200;
+    const startTime = Date.now();
+    function tick() {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(1, elapsed / duration);
+      const easeOut = 1 - (1 - progress) ** 2;
+      setDisplayProfileVisit(Math.floor(easeOut * profileVisitCount));
+      setDisplayCounts(
+        draftLinks.reduce(
+          (acc, l) => ({ ...acc, [l.id]: Math.floor(easeOut * (counts[l.id] ?? 0)) }),
+          {}
+        )
+      );
+      if (progress < 1) countUpRaf.current = requestAnimationFrame(tick);
+    }
+    countUpRaf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(countUpRaf.current);
+  }, [tab, profileVisitCount, counts, draftLinks]);
 
   function markDirty() {
     setDirty(true);
@@ -1077,7 +1108,7 @@ async function addLink() {
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div className={clsx("font-bold", uiText)}>프로필 방문 수</div>
                     <div className={clsx("mt-2 text-sm", uiSub)}>
-                      <b className={uiText}>{profileVisitCount}</b>명
+                      <b className={uiText}><span className="tabular-nums">{displayProfileVisit.toLocaleString()}</span></b>명
                     </div>
                   </div>
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
@@ -1086,7 +1117,7 @@ async function addLink() {
                       {draftLinks.map((l) => (
                         <div key={l.id} className="flex items-center justify-between">
                           <span className="truncate">{l.title}</span>
-                          <b className={uiText}>{counts[l.id] ?? 0}</b>
+                          <b className={clsx("tabular-nums", uiText)}>{displayCounts[l.id] ?? 0}</b>
                         </div>
                       ))}
                     </div>
