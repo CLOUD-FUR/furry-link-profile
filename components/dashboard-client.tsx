@@ -1072,7 +1072,7 @@ async function addLink() {
               {tab === "stats" ? (
                 <div className="space-y-3">
                   <div className={clsx("rounded-2xl border p-4 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/40 text-slate-800")}>
-                    * 같은 브라우저 또는 세션에서는 링크 클릭·프로필 방문이 중복 카운트되지 않아요.
+                    같은 브라우저 또는 세션에서는 링크 클릭 · 프로필 방문이 중복 카운트되지 않아요.
                   </div>
                   <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div className={clsx("font-bold", uiText)}>프로필 방문 수</div>
@@ -1178,7 +1178,7 @@ async function addLink() {
                           bumpDone
                             ? "bg-emerald-500 text-white"
                             : inBumpCooldown
-                              ? "bg-amber-400 text-amber-900 text-xs sm:text-sm"
+                              ? "bg-amber-100 text-amber-800 text-xs sm:text-sm"
                               : isDark
                                 ? "bg-white text-slate-900 hover:bg-white/90"
                                 : "bg-slate-900 text-white hover:bg-slate-800"

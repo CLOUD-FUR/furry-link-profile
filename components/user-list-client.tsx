@@ -43,10 +43,10 @@ export function UserListClient({ users }: { users: UserItem[] }) {
   return (
     <>
       <header className="mb-8 flex flex-col items-center gap-4">
-        <Link href="/" className="font-black tracking-tight text-xl text-slate-900 hover:opacity-90">
+        <Link href="/" className="font-black tracking-tight text-xl text-slate-900 dark:text-white hover:opacity-90">
           🐾 Fluffy Link
         </Link>
-        <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+        <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
           플러피링크 유저 리스트
         </h1>
         <input
@@ -54,7 +54,7 @@ export function UserListClient({ users }: { users: UserItem[] }) {
           placeholder="핸들 또는 유저 이름으로 검색 (예시: @CLOUD, 클라우드 ...)"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full max-w-md rounded-2xl border border-white/50 bg-white/60 px-4 py-3 text-slate-900 placeholder:text-slate-500 shadow-soft backdrop-blur-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
+          className="w-full max-w-md rounded-2xl border border-white/50 bg-white/60 dark:border-white/20 dark:bg-white/15 dark:text-white dark:placeholder:text-slate-400 px-4 py-3 text-slate-900 placeholder:text-slate-500 shadow-soft backdrop-blur-sm focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/30"
           aria-label="검색"
         />
       </header>
@@ -64,7 +64,7 @@ export function UserListClient({ users }: { users: UserItem[] }) {
           <Link
             key={u.handleLower}
             href={`/@${u.handle}`}
-            className="flex overflow-hidden rounded-2xl border border-white/40 bg-white/25 shadow-soft backdrop-blur-glass transition hover:border-white/60 hover:bg-white/35 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+            className="flex overflow-hidden rounded-2xl border border-white/40 bg-white/25 dark:border-white/20 dark:bg-white/10 shadow-soft backdrop-blur-glass transition hover:border-white/60 hover:bg-white/35 dark:hover:border-white/30 dark:hover:bg-white/15 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
           >
             <div className="h-24 w-24 shrink-0 sm:h-28 sm:w-28">
               <img
@@ -76,10 +76,10 @@ export function UserListClient({ users }: { users: UserItem[] }) {
               />
             </div>
             <div className="flex min-w-0 flex-1 flex-col justify-center p-4 text-left">
-              <div className="text-lg font-black text-slate-900 sm:text-xl">
+              <div className="text-lg font-black text-slate-900 dark:text-white sm:text-xl">
                 @{u.handle}
               </div>
-              <div className="mt-0.5 line-clamp-2 text-sm text-slate-600">
+              <div className="mt-0.5 line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
                 {u.bio?.trim() || "소개가 없어요"}
               </div>
             </div>
@@ -88,7 +88,7 @@ export function UserListClient({ users }: { users: UserItem[] }) {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="py-12 text-center text-slate-600">
+        <p className="py-12 text-center text-slate-600 dark:text-slate-400">
           {query.trim() ? "검색 결과가 없어요." : "아직 공개된 유저가 없어요."}
         </p>
       ) : null}

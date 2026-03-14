@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import Script from "next/script";
 import { SessionProvider } from "@/components/session-provider";
 import LegalButtons from "@/components/LegalButtons";
+import { DarkLightToggle } from "@/components/dark-light-toggle";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
 
@@ -60,11 +61,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var t=localStorage.getItem('fluffy-site-theme');document.documentElement.classList.toggle('dark',t==='dark');})();`,
+          }}
+        />
         <SessionProvider>
           {children}
           <LegalButtons />
+          <DarkLightToggle />
         </SessionProvider>
 
         {/* Google Analytics */}

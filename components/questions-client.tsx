@@ -19,7 +19,7 @@ function Btn({ children, dark }: { children: React.ReactNode; dark?: boolean }) 
     <span
       className={clsx(
         "inline-flex items-center rounded-2xl border px-3 py-1.5 text-sm font-semibold text-white",
-        dark ? "border-slate-600 bg-slate-700" : "border-slate-700 bg-slate-800"
+        dark ? "border-slate-600 bg-slate-700 dark:border-white/20 dark:bg-white/20" : "border-slate-700 bg-slate-800 dark:border-white/25 dark:bg-white/15"
       )}
     >
       {children}
@@ -29,7 +29,7 @@ function Btn({ children, dark }: { children: React.ReactNode; dark?: boolean }) 
 
 function LinkBtn({ href, children }: { href: string; children: React.ReactNode }) {
   return (
-    <NextLink href={href} className="font-semibold text-violet-600 underline decoration-violet-400 underline-offset-2 hover:text-violet-700">
+    <NextLink href={href} className="font-semibold text-violet-600 dark:text-violet-300 underline decoration-violet-400 dark:decoration-violet-400/70 underline-offset-2 hover:text-violet-700 dark:hover:text-violet-200">
       {children}
     </NextLink>
   );
@@ -213,20 +213,20 @@ export function QuestionsClient() {
   const [openId, setOpenId] = useState<string | null>(FAQ_DATA[0]?.id ?? null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-30 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')]" />
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 relative overflow-hidden transition-colors">
+      <div className="absolute inset-0 opacity-30 dark:opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')]" />
       <div className="relative mx-auto max-w-2xl px-4 py-10">
         <header className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <NextLink href="/" className="font-black tracking-tight text-xl text-slate-800 hover:text-slate-900">
+          <NextLink href="/" className="font-black tracking-tight text-xl text-slate-800 dark:text-white hover:text-slate-900 dark:hover:text-slate-200">
             🐾 Fluffy Link
           </NextLink>
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-slate-600">Language</span>
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Language</span>
             <button
               onClick={() => setLang("ko")}
               className={clsx(
                 "rounded-xl px-3 py-2 text-sm font-semibold transition",
-                lang === "ko" ? "bg-slate-900 text-white" : "bg-white/50 text-slate-600 hover:bg-white/70"
+                lang === "ko" ? "bg-slate-900 dark:bg-white/20 text-white" : "bg-white/50 dark:bg-white/15 text-slate-600 dark:text-slate-300 hover:bg-white/70 dark:hover:bg-white/25"
               )}
             >
               한국어
@@ -235,7 +235,7 @@ export function QuestionsClient() {
               onClick={() => setLang("en")}
               className={clsx(
                 "rounded-xl px-3 py-2 text-sm font-semibold transition",
-                lang === "en" ? "bg-slate-900 text-white" : "bg-white/50 text-slate-600 hover:bg-white/70"
+                lang === "en" ? "bg-slate-900 dark:bg-white/20 text-white" : "bg-white/50 dark:bg-white/15 text-slate-600 dark:text-slate-300 hover:bg-white/70 dark:hover:bg-white/25"
               )}
             >
               English
@@ -243,35 +243,35 @@ export function QuestionsClient() {
           </div>
         </header>
 
-        <div className="rounded-3xl border border-white/50 bg-white/40 backdrop-blur-md shadow-xl overflow-hidden">
-          <div className="border-b border-white/50 bg-white/30 px-6 py-5">
-            <h1 className="text-2xl font-black text-slate-800">
+        <div className="rounded-3xl border border-white/50 bg-white/40 dark:border-white/20 dark:bg-white/10 backdrop-blur-md shadow-xl overflow-hidden">
+          <div className="border-b border-white/50 bg-white/30 dark:border-white/20 dark:bg-white/5 px-6 py-5">
+            <h1 className="text-2xl font-black text-slate-800 dark:text-white">
               {lang === "ko" ? "자주 묻는 질문 & 사용 방법" : "FAQ & How to use"}
             </h1>
-            <p className="mt-1 text-slate-600 text-sm">
+            <p className="mt-1 text-slate-600 dark:text-slate-400 text-sm">
               {lang === "ko"
                 ? "궁금한 항목을 눌러 펼쳐 보세요."
                 : "Click an item to expand."}
             </p>
           </div>
 
-          <ul className="divide-y divide-white/60">
+          <ul className="divide-y divide-white/60 dark:divide-white/20">
             {FAQ_DATA.map((item) => {
               const isOpen = openId === item.id;
               return (
-                <li key={item.id} className="bg-white/20">
+                <li key={item.id} className="bg-white/20 dark:bg-white/5">
                   <button
                     type="button"
                     onClick={() => setOpenId(isOpen ? null : item.id)}
-                    className="w-full flex items-center justify-between gap-3 px-6 py-4 text-left hover:bg-white/25 transition"
+                    className="w-full flex items-center justify-between gap-3 px-6 py-4 text-left hover:bg-white/25 dark:hover:bg-white/10 transition"
                   >
-                    <span className="font-bold text-slate-800">
+                    <span className="font-bold text-slate-800 dark:text-white">
                       {lang === "ko" ? item.titleKo : item.titleEn}
                     </span>
                     <span
                       className={clsx(
-                        "shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-slate-600 transition-transform",
-                        isOpen ? "bg-white/60 rotate-180" : "bg-white/40"
+                        "shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 transition-transform",
+                        isOpen ? "bg-white/60 dark:bg-white/30 rotate-180" : "bg-white/40 dark:bg-white/20"
                       )}
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +286,7 @@ export function QuestionsClient() {
                     )}
                   >
                     <div className="px-6 pb-5 pt-0">
-                      <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
+                      <div className="rounded-2xl border border-white/50 bg-white/50 dark:border-white/20 dark:bg-white/10 p-4 text-slate-700 dark:text-slate-300 [&_.text-slate-700]:dark:text-slate-300">
                         {lang === "ko" ? item.contentKo : item.contentEn}
                       </div>
                     </div>
@@ -297,7 +297,7 @@ export function QuestionsClient() {
           </ul>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
           {lang === "ko" ? "더 궁금한 점이 있으면 옆에 보이는 버튼을 눌러 문의하기를 이용해 주세요!" : "For more help, please use the channel or contact."}
         </p>
       </div>
