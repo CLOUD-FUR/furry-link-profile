@@ -1,14 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { createPortal } from "react-dom";
-import { useEffect, useState } from "react";
 
 export default function LegalButtons() {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
 
   // ✅ 홈(/) 과 로그인(/login) 에서만 표시
   const shouldShow =
@@ -17,11 +12,8 @@ export default function LegalButtons() {
 
   if (!shouldShow) return null;
 
-  const bar = (
-    <div
-      className="fixed inset-x-0 bottom-0 z-[9999] px-4 pb-4 pt-2"
-      style={{ position: "fixed" }}
-    >
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-[9999] px-4 pb-4 pt-2">
       <div className="mx-auto flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-3 py-2 backdrop-blur-md shadow-soft w-fit">
         <a
           href="/questions"
@@ -44,9 +36,4 @@ export default function LegalButtons() {
       </div>
     </div>
   );
-
-  if (typeof document !== "undefined" && mounted) {
-    return createPortal(bar, document.body);
-  }
-  return null;
 }
