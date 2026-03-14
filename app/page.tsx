@@ -7,8 +7,8 @@ export default function HomePage() {
       <div className="absolute inset-0 noise opacity-40 dark:opacity-20" />
       <Container className="relative py-12 pb-28">
         <header className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-          <div className="font-black tracking-tight text-xl text-slate-900 dark:text-white shrink-0">🐾 Fluffy Link</div>
-          <nav className="flex shrink-0 items-center gap-2">
+          <div className="font-black tracking-tight text-2xl text-slate-900 dark:text-white shrink-0">🐾 Fluffy Link</div>
+          <nav className="hidden sm:flex shrink-0 items-center gap-2">
             <ButtonLink href="/login" className="whitespace-nowrap bg-white/70 border-white/60 hover:bg-white/85 dark:bg-white/15 dark:border-white/20 dark:hover:bg-white/25 dark:text-white">
               Discord 로그인
             </ButtonLink>
