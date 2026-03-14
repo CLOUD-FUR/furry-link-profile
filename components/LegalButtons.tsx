@@ -1,19 +1,38 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
+const SCROLL_THRESHOLD = 60;
 
 export default function LegalButtons() {
   const pathname = usePathname();
+  const [showBar, setShowBar] = useState(false);
 
   // ✅ 홈(/) 과 로그인(/login) 에서만 표시
   const shouldShow =
     pathname === "/" ||
     pathname === "/login";
 
+  useEffect(() => {
+    if (!shouldShow) return;
+    const onScroll = () => setShowBar(window.scrollY > SCROLL_THRESHOLD);
+    onScroll(); // 초기값
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [shouldShow]);
+
   if (!shouldShow) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-[9999] px-4 pb-4 pt-2">
+    <div
+      className="fixed inset-x-0 bottom-0 z-[9999] px-4 pb-4 pt-2 transition-[opacity,transform] duration-300 ease-out"
+      style={{
+        opacity: showBar ? 1 : 0,
+        pointerEvents: showBar ? "auto" : "none",
+        transform: showBar ? "translateY(0)" : "translateY(100%)",
+      }}
+    >
       <div className="mx-auto flex max-w-full flex-wrap items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-3 py-2 backdrop-blur-md shadow-soft w-fit">
         <a
           href="/questions"

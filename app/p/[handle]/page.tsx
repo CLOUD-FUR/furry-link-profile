@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import Script from "next/script";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
-import { ProfileShareButton } from "@/components/profile-share-button";
+import { ProfileHandleShare } from "@/components/profile-handle-share";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
@@ -221,7 +221,13 @@ export default async function PublicProfile({
                 isDark ? "text-white" : "text-slate-900"
               }`}
             >
-              @{user.handle}
+              <ProfileHandleShare
+                handle={user.handle}
+                bio={user.bio}
+                profileUrl={`${SITE_URL.replace(/\/$/, "")}/@${user.handle}`}
+                isDark={isDark}
+                className={isDark ? "text-white" : "text-slate-900"}
+              />
             </div>
 
             {/* Profile Tag */}
@@ -240,13 +246,6 @@ export default async function PublicProfile({
               </div>
 
             ) : null}
-
-            {/* 공유하기 (Web Share API) */}
-            <ProfileShareButton
-              profileUrl={`${SITE_URL.replace(/\/$/, "")}/@${user.handle}`}
-              handle={user.handle}
-              bio={user.bio}
-            />
 
             {/* Bio */}
             {user.bio ? (
