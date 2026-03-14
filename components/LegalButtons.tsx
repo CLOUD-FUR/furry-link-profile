@@ -13,7 +13,7 @@ export default function LegalButtons() {
   if (!shouldShow) return null;
 
   return (
-    <div className="fixed bottom-4 left-0 right-0 z-50 px-4">
+    <div className="fixed bottom-20 left-0 right-0 z-50 px-4 sm:bottom-24">
       <div className="mx-auto flex w-fit items-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-3 py-2 backdrop-blur-md shadow-soft">
         <a
           href="/questions"

@@ -4,7 +4,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200 relative overflow-hidden">
       <div className="absolute inset-0 noise opacity-40" />
-      <Container className="relative py-12">
+      <Container className="relative py-12 pb-28">
         <header className="flex items-center justify-between gap-4">
           <div className="font-black tracking-tight text-xl">🐾 Fluffy Link</div>
           <nav className="flex items-center gap-2">

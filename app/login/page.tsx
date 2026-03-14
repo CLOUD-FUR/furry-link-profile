@@ -5,7 +5,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-200 via-pink-200 to-violet-200 relative overflow-hidden">
       <div className="absolute inset-0 noise opacity-40" />
-      <Container className="relative py-16">
+      <Container className="relative py-16 pb-28">
         <GlassCard className="bg-white/45 border-white/50 p-8">
           <h1 className="text-3xl font-black tracking-tight">Discord로 로그인</h1>
           <p className="mt-2 text-slate-700">
