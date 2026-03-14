@@ -101,6 +101,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
   // 복사 버튼 피드백 (버튼 옆에 "복사가 완료되었어요!" 표시 후 원상복귀)
   const [copyDone, setCopyDone] = useState(false);
+  const [qrDone, setQrDone] = useState(false);
 
   // 랜덤 추천 테마 버튼 피드백
   const [randomThemeDone, setRandomThemeDone] = useState(false);
@@ -1181,6 +1182,8 @@ async function addLink() {
 
                   {draftUser.listPublic !== false ? (
                     <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                      <div className={clsx("font-bold", uiText)}>유저 페이지 끌어올리기</div>
+                      <div className={clsx("mt-1 text-xs", uiSub)}>플러피링크 유저 사이트에서 본인 프로필을 끌어올려요! 12시간마다 사용할 수 있어요.</div>
                       <button
                         type="button"
                         onClick={async () => {
@@ -1205,7 +1208,7 @@ async function addLink() {
                         }}
                         disabled={inBumpCooldown}
                         className={clsx(
-                          "mt-0 w-full rounded-2xl px-4 py-2 font-semibold transition-colors duration-200 text-center",
+                          "mt-3 w-full rounded-2xl px-4 py-2 font-semibold transition-colors duration-200 text-center",
                           bumpDone
                             ? "bg-emerald-500 text-white"
                             : inBumpCooldown
@@ -1231,24 +1234,54 @@ async function addLink() {
                       value={typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath}
                       className={clsx("mt-2 w-full rounded-xl border px-3 py-2 text-sm", isDark ? "border-white/15 bg-white/10 text-white" : "border-white/50 bg-white/60")}
                     />
-                    <button
-                      onClick={() => {
-                        const url = typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath;
-                        navigator.clipboard.writeText(url);
-                        setCopyDone(true);
-                        window.setTimeout(() => setCopyDone(false), 1600);
-                      }}
-                      className={clsx(
-                        "mt-2 w-full rounded-2xl px-4 py-2 font-semibold transition-colors duration-200",
-                        copyDone
-                          ? "bg-emerald-500 text-white"
-                          : isDark
-                            ? "bg-white text-slate-900 hover:bg-white/90"
-                            : "bg-slate-900 text-white hover:bg-slate-800"
-                      )}
-                    >
-                      {copyDone ? "복사가 완료되었어요!" : "복사"}
-                    </button>
+                    <div className="mt-2 flex flex-col gap-2">
+                      <button
+                        onClick={() => {
+                          const url = typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath;
+                          navigator.clipboard.writeText(url);
+                          setCopyDone(true);
+                          window.setTimeout(() => setCopyDone(false), 1600);
+                        }}
+                        className={clsx(
+                          "w-full rounded-2xl px-4 py-2 font-semibold transition-colors duration-200",
+                          copyDone
+                            ? "bg-emerald-500 text-white"
+                            : isDark
+                              ? "bg-white text-slate-900 hover:bg-white/90"
+                              : "bg-slate-900 text-white hover:bg-slate-800"
+                        )}
+                      >
+                        {copyDone ? "복사가 완료되었어요!" : "링크 복사하기"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const url = typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath;
+                          try {
+                            const QRCode = (await import("qrcode")).default;
+                            const dataUrl = await QRCode.toDataURL(url, { width: 256, margin: 2 });
+                            const a = document.createElement("a");
+                            a.href = dataUrl;
+                            a.download = "fluffy-link-profile-qr.png";
+                            a.click();
+                            setQrDone(true);
+                            window.setTimeout(() => setQrDone(false), 1600);
+                          } catch {
+                            showToast("error", "QR 코드 생성에 실패했어요.");
+                          }
+                        }}
+                        className={clsx(
+                          "w-full rounded-2xl px-4 py-2 font-semibold transition-colors duration-200",
+                          qrDone
+                            ? "bg-emerald-500 text-white"
+                            : isDark
+                              ? "bg-white text-slate-900 hover:bg-white/90"
+                              : "bg-slate-900 text-white hover:bg-slate-800"
+                        )}
+                      >
+                        {qrDone ? "QR코드가 저장되었어요!" : "QR코드 저장하기"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : null}

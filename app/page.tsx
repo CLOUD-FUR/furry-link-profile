@@ -7,12 +7,12 @@ export default function HomePage() {
       <div className="absolute inset-0 noise opacity-40 dark:opacity-20" />
       <Container className="relative py-12 pb-28">
         <header className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
-          <div className="font-black tracking-tight text-2xl text-slate-900 dark:text-white shrink-0">🐾 Fluffy Link</div>
+          <div className="font-black tracking-tight text-2xl text-slate-900 dark:text-slate-100 shrink-0">🐾 Fluffy Link</div>
           <nav className="hidden sm:flex shrink-0 items-center gap-2">
-            <ButtonLink href="/login" className="whitespace-nowrap bg-white/70 border-white/60 hover:bg-white/85 dark:bg-white/15 dark:border-white/20 dark:hover:bg-white/25 dark:text-white">
+            <ButtonLink href="/login" className="whitespace-nowrap bg-white/70 border-white/60 hover:bg-white/85 dark:bg-white/15 dark:border-white/20 dark:hover:bg-white/25 dark:text-slate-100">
               Discord 로그인
             </ButtonLink>
-            <ButtonLink href="/@CLOUD" className="whitespace-nowrap bg-slate-900 text-white border-slate-900 dark:bg-white/20 dark:border-white/30 dark:text-white">
+            <ButtonLink href="/@CLOUD" className="whitespace-nowrap bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-200">
               개발자 프로필
             </ButtonLink>
           </nav>
@@ -20,19 +20,19 @@ export default function HomePage() {
 
         <section className="mt-12 grid gap-8 lg:grid-cols-2">
           <div>
-            <h1 className="text-5xl font-black tracking-tight leading-[1.05] text-slate-900 dark:text-white">
+            <h1 className="text-5xl font-black tracking-tight leading-[1.05] text-slate-900 dark:text-slate-100">
               All your links,
               <span className="block">in one link.</span>
             </h1>
-            <p className="mt-4 text-slate-700 dark:text-slate-300 text-lg">
+            <p className="mt-4 text-slate-700 dark:text-slate-200/90 text-lg">
               Discord로 로그인하고 프로필 페이지를 바로 만들 수 있어요!
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/dashboard" className="bg-slate-900 text-white border-slate-900 dark:bg-white/20 dark:border-white/30">
+              <ButtonLink href="/dashboard" className="bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-200 dark:hover:bg-white">
                 Discord로 시작하기
               </ButtonLink>
-              <ButtonLink href="/@CLOUD" className="bg-white/70 border-white/60 hover:bg-white/85 dark:bg-white/15 dark:border-white/20 dark:hover:bg-white/25 dark:text-white">
+              <ButtonLink href="/@CLOUD" className="bg-white/70 border-white/60 hover:bg-white/85 dark:bg-white/15 dark:border-white/25 dark:hover:bg-white/25 dark:text-slate-100">
                 개발자 프로필
               </ButtonLink>
             </div>
@@ -47,14 +47,14 @@ export default function HomePage() {
                 <div className="h-20 w-20 rounded-full border-4 border-white/70 bg-white/60 shadow-glow" />
               </div>
               <div className="mt-3 text-center">
-                <div className="text-xl font-black text-slate-900 dark:text-white">@handle_name</div>
-                <div className="mt-1 text-sm text-slate-700 dark:text-slate-300">여러개의 링크를 한 곳에 ✨</div>
+                <div className="text-xl font-black text-slate-900 dark:text-slate-100">@handle_name</div>
+                <div className="mt-1 text-sm text-slate-700 dark:text-slate-200/80">여러개의 링크를 한 곳에 ✨</div>
               </div>
               <div className="mt-4 grid gap-3">
-                {["Twitter", "Commission", "Instagram", "Discord"].map((t) => (
+                {["Twitter", "Youtube", "Instagram", "Discord"].map((t) => (
                   <div
                     key={t}
-                    className="rounded-2xl border border-white/50 bg-white/55 dark:border-white/20 dark:bg-white/15 px-4 py-3 font-semibold text-slate-900 dark:text-white hover:bg-white/70 dark:hover:bg-white/20"
+                    className="rounded-2xl border border-white/50 bg-white/55 dark:border-white/20 dark:bg-white/15 px-4 py-3 font-semibold text-slate-900 dark:text-slate-100 hover:bg-white/70 dark:hover:bg-white/20"
                   >
                     {t}
                   </div>
@@ -62,7 +62,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <p className="mt-4 text-xs text-slate-700 dark:text-slate-400">
+            <p className="mt-4 text-xs text-slate-700 dark:text-slate-300/90">
               * 해당 프리뷰는 예시에요. 로그인하면 프로필을 직접 세팅할 수 있어요!
             </p>
           </GlassCard>

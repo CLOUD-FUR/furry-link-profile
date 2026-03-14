@@ -12,14 +12,14 @@ const STAGGER_MS = 90;
 
 export function HomeFeatureList() {
   return (
-    <ul className="mt-8 space-y-3 text-slate-800 dark:text-slate-200">
+    <ul className="mt-8 space-y-3 text-slate-800 dark:text-slate-100/90">
       {ITEMS.map((t, i) => (
         <li
           key={t}
           className="flex items-center gap-2 opacity-0 animate-slide-in-right"
           style={{ animationDelay: `${i * STAGGER_MS}ms` }}
         >
-          <span className="h-2 w-2 shrink-0 rounded-full bg-slate-900/70 dark:bg-white/60" />
+          <span className="h-2 w-2 shrink-0 rounded-full bg-slate-900/70 dark:bg-slate-200/80" />
           <span>{t}</span>
         </li>
       ))}
