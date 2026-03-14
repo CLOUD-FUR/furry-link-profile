@@ -109,9 +109,13 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const [bumpDone, setBumpDone] = useState(false);
   const [tick, setTick] = useState(0);
   const BUMP_COOLDOWN_MS = 12 * 60 * 60 * 1000;
-  const nextBumpAt = savedUser.lastBumpedAt
-    ? savedUser.lastBumpedAt.getTime() + BUMP_COOLDOWN_MS
-    : 0;
+  const lastBumpedAt = savedUser.lastBumpedAt;
+  const lastBumpedTime = !lastBumpedAt
+    ? 0
+    : lastBumpedAt instanceof Date
+      ? lastBumpedAt.getTime()
+      : new Date(String(lastBumpedAt)).getTime();
+  const nextBumpAt = lastBumpedTime > 0 ? lastBumpedTime + BUMP_COOLDOWN_MS : 0;
   const inBumpCooldown = nextBumpAt > Date.now();
   useEffect(() => {
     if (!inBumpCooldown) return;
@@ -1150,18 +1154,22 @@ async function addLink() {
                         type="button"
                         onClick={async () => {
                           if (inBumpCooldown) return;
-                          const res = await fetch("/api/profile/bump", { method: "POST" });
-                          const data = await res.json().catch(() => ({}));
-                          if (res.ok && data.ok) {
-                            setBumpDone(true);
-                            window.setTimeout(() => setBumpDone(false), 1600);
-                            const r = await fetch("/api/profile");
-                            const j = await r.json().catch(() => null);
-                            if (j?.user) {
-                              const nextAt = j.user.lastBumpedAt ? new Date(j.user.lastBumpedAt) : null;
-                              setSavedUser((u) => ({ ...u, lastBumpedAt: nextAt }));
-                              setDraftUser((u) => ({ ...u, lastBumpedAt: nextAt }));
+                          try {
+                            const res = await fetch("/api/profile/bump", { method: "POST" });
+                            const data = await res.json().catch(() => ({}));
+                            if (res.ok && data.ok) {
+                              setBumpDone(true);
+                              window.setTimeout(() => setBumpDone(false), 1600);
+                              const r = await fetch("/api/profile");
+                              const j = await r.json().catch(() => null);
+                              if (j?.user?.lastBumpedAt != null) {
+                                const nextAt = new Date(j.user.lastBumpedAt);
+                                setSavedUser((u) => ({ ...u, lastBumpedAt: nextAt }));
+                                setDraftUser((u) => ({ ...u, lastBumpedAt: nextAt }));
+                              }
                             }
+                          } catch {
+                            showToast("error", "끌어올리기 요청에 실패했어요.");
                           }
                         }}
                         disabled={inBumpCooldown}
