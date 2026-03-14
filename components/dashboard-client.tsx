@@ -1258,12 +1258,16 @@ async function addLink() {
                         onClick={async () => {
                           const url = typeof window !== "undefined" ? `${window.location.origin}${publicPath}` : publicPath;
                           try {
-                            const QRCode = (await import("qrcode")).default;
-                            const dataUrl = await QRCode.toDataURL(url, { width: 256, margin: 2 });
+                            const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=256x256&data=${encodeURIComponent(url)}`;
+                            const res = await fetch(qrImageUrl);
+                            if (!res.ok) throw new Error("QR fetch failed");
+                            const blob = await res.blob();
+                            const blobUrl = URL.createObjectURL(blob);
                             const a = document.createElement("a");
-                            a.href = dataUrl;
+                            a.href = blobUrl;
                             a.download = "fluffy-link-profile-qr.png";
                             a.click();
+                            URL.revokeObjectURL(blobUrl);
                             setQrDone(true);
                             window.setTimeout(() => setQrDone(false), 1600);
                           } catch {
