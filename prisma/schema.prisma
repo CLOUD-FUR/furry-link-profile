@@ -19,6 +19,8 @@ model User {
   themeJson     String   @default("")       // optional custom theme JSON
   bannerUrl     String   @default("")       // can be data URL or hosted URL
   isPublic      Boolean  @default(true)
+  /// 유저 리스트(/user) 노출 여부. 기본 ON
+  listPublic    Boolean  @default(true)
 
   /// 🔥 프로필 태그 (뱃지)
   /// null = 선택 안함

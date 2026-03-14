@@ -197,6 +197,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         bannerUrl: draftUser.bannerUrl,
         image: draftUser.image,
         isPublic: draftUser.isPublic,
+        listPublic: draftUser.listPublic,
         profileTag: draftUser.profileTag, // ✅ 프로필 태그
         profileEffect: draftUser.profileEffect ?? null, // ✅ 프로필 효과
       };
@@ -1090,6 +1091,32 @@ async function addLink() {
                       className={clsx(
                         "relative flex h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors after:absolute after:left-0 after:top-0.5 after:h-7 after:w-7 after:rounded-full after:bg-white after:shadow-sm after:transition-[left] after:duration-200 after:content-['']",
                         draftUser.isPublic
+                          ? "bg-emerald-400 after:left-[calc(100%-1.75rem)]"
+                          : isDark ? "bg-white/25 after:left-0.5" : "bg-slate-300"
+                      )}
+                    />
+                  </div>
+
+                  <div className={clsx("flex items-center justify-between gap-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                    <div>
+                      <div className={clsx("font-bold", uiText)}>유저 페이지에 공개</div>
+                      <div className={clsx("text-xs", uiSub)}>플러피링크 유저 리스트 사이트에 공개 여부를 설정 할 수 있어요!</div>
+                    </div>
+                    <input
+                      id="list-public-toggle"
+                      type="checkbox"
+                      className="peer sr-only"
+                      checked={draftUser.listPublic ?? true}
+                      onChange={(e) => {
+                        setDraftUser((u) => ({ ...u, listPublic: e.target.checked }));
+                        markDirty();
+                      }}
+                    />
+                    <label
+                      htmlFor="list-public-toggle"
+                      className={clsx(
+                        "relative flex h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors after:absolute after:left-0 after:top-0.5 after:h-7 after:w-7 after:rounded-full after:bg-white after:shadow-sm after:transition-[left] after:duration-200 after:content-['']",
+                        draftUser.listPublic !== false
                           ? "bg-emerald-400 after:left-[calc(100%-1.75rem)]"
                           : isDark ? "bg-white/25 after:left-0.5" : "bg-slate-300"
                       )}

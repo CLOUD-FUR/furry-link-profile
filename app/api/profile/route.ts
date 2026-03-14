@@ -43,6 +43,7 @@ const PatchSchema = z.object({
   image: z.string().max(300_000).optional(),
 
   isPublic: z.boolean().optional(),
+  listPublic: z.boolean().optional(),
 
   // ⬇️ 프로필 태그
   profileTag: z.string().optional().nullable(),
@@ -89,6 +90,7 @@ export async function GET(req: Request) {
       theme: true,
       themeJson: true,
       isPublic: true,
+      listPublic: true,
       profileTag: true,
       profileEffect: true,
       links: {
