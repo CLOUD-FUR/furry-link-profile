@@ -50,7 +50,16 @@ const PatchSchema = z.object({
 
   // ⬇️ 프로필 효과
   profileEffect: z
-    .enum(["snow", "balloons", "confetti"])
+    .enum([
+      "snow",
+      "balloons",
+      "confetti",
+      "softGlow",
+      "glassShine",
+      "subtleNoise",
+      "borderBreath",
+      "gradientDrift",
+    ])
     .optional()
     .nullable(),
 });
