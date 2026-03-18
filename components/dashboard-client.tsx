@@ -771,11 +771,47 @@ async function addLink() {
                       >
                         색종이 조각
                       </option>
+                      <option
+                        value="balloons"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        풍선
+                      </option>
+                      <option
+                        value="softGlow"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        은은 글로우
+                      </option>
+                      <option
+                        value="glassShine"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        유리 반사
+                      </option>
+                      <option
+                        value="subtleNoise"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        필름 그레인
+                      </option>
+                      <option
+                        value="borderBreath"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        테두리 숨쉬기
+                      </option>
+                      <option
+                        value="gradientDrift"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        그라데이션 드리프트
+                      </option>
                     </select>
 
                     <p className={clsx("mt-1 text-xs", uiSub)}>
-                      프로필 페이지에 스노우 / 색종이 조각 효과를 1개 적용할 수
-                      있어요. 대시보드 미리보기에는 표시되지 않습니다!
+                      프로필 페이지에 효과를 1개 적용할 수 있어요. (스노우/색종이/풍선
+                      + 깔끔한 CSS 효과) 대시보드 미리보기에는 표시되지 않습니다!
                     </p>
                   </Field>
 

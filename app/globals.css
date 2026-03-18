@@ -88,3 +88,136 @@ body {
 .noise {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
 }
+
+@keyframes fluffyGlowPulse {
+  0%,
+  100% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12),
+      0 0 0 rgba(147, 197, 253, 0);
+  }
+  50% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12),
+      0 0 28px rgba(147, 197, 253, 0.32);
+  }
+}
+
+@keyframes fluffyBorderBreath {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes fluffyShineSweep {
+  0% {
+    transform: translateX(-140%) skewX(-18deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.55;
+  }
+  25% {
+    transform: translateX(140%) skewX(-18deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(140%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fluffyGradientDrift {
+  0% {
+    transform: translate3d(-6%, -4%, 0);
+  }
+  50% {
+    transform: translate3d(6%, 4%, 0);
+  }
+  100% {
+    transform: translate3d(-6%, -4%, 0);
+  }
+}
+
+.profile-effect-softGlow {
+  animation: fluffyGlowPulse 4.8s ease-in-out infinite;
+}
+
+.profile-effect-borderBreath {
+  position: relative;
+}
+.profile-effect-borderBreath::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+  animation: fluffyBorderBreath 6.2s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+
+.profile-effect-glassShine {
+  position: relative;
+}
+.profile-effect-glassShine::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.22) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.22) 55%,
+    transparent 100%
+  );
+  width: 55%;
+  pointer-events: none;
+  animation: fluffyShineSweep 7.2s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+
+.profile-effect-subtleNoise {
+  position: relative;
+}
+.profile-effect-subtleNoise::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.16;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+.profile-effect-gradientDrift {
+  position: relative;
+}
+.profile-effect-gradientDrift::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(147, 197, 253, 0.22),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      rgba(196, 181, 253, 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 55% 85%,
+      rgba(252, 211, 77, 0.14),
+      transparent 58%
+    );
+  filter: blur(2px);
+  opacity: 0.9;
+  mix-blend-mode: overlay;
+  animation: fluffyGradientDrift 10.5s ease-in-out infinite;
+}

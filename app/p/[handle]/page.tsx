@@ -149,6 +149,19 @@ export default async function PublicProfile({
 
   const isFixedAvatarUser = handleLower === FIXED_AVATAR_HANDLE;
 
+  const cardEffectClass =
+    user.profileEffect === "softGlow"
+      ? "profile-effect-softGlow"
+      : user.profileEffect === "glassShine"
+        ? "profile-effect-glassShine"
+        : user.profileEffect === "subtleNoise"
+          ? "profile-effect-subtleNoise"
+          : user.profileEffect === "borderBreath"
+            ? "profile-effect-borderBreath"
+            : user.profileEffect === "gradientDrift"
+              ? "profile-effect-gradientDrift"
+              : "";
+
   return (
     <>
       <ProfileVisitTracker handle={handleParam} />
@@ -185,7 +198,7 @@ export default async function PublicProfile({
     >
       <div className="relative mx-auto w-full max-w-md px-4 py-10">
         <div
-          className={`rounded-[2rem] border ${theme.card} backdrop-blur-glass shadow-soft overflow-hidden`}
+          className={`rounded-[2rem] border ${theme.card} backdrop-blur-glass shadow-soft overflow-hidden ${cardEffectClass}`}
         >
           {/* Banner */}
           <div
