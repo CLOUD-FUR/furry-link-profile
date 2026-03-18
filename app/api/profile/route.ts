@@ -52,12 +52,7 @@ const PatchSchema = z.object({
   profileEffect: z
     .enum([
       "snow",
-      "balloons",
       "confetti",
-      "softGlow",
-      "glassShine",
-      "subtleNoise",
-      "borderBreath",
       "gradientDrift",
     ])
     .optional()

@@ -150,17 +150,7 @@ export default async function PublicProfile({
   const isFixedAvatarUser = handleLower === FIXED_AVATAR_HANDLE;
 
   const cardEffectClass =
-    user.profileEffect === "softGlow"
-      ? "profile-effect-softGlow"
-      : user.profileEffect === "glassShine"
-        ? "profile-effect-glassShine"
-        : user.profileEffect === "subtleNoise"
-          ? "profile-effect-subtleNoise"
-          : user.profileEffect === "borderBreath"
-            ? "profile-effect-borderBreath"
-            : user.profileEffect === "gradientDrift"
-              ? "profile-effect-gradientDrift"
-              : "";
+    user.profileEffect === "gradientDrift" ? "profile-effect-gradientDrift" : "";
 
   return (
     <>
@@ -174,12 +164,6 @@ export default async function PublicProfile({
       {user.profileEffect === "confetti" ? (
         <Script
           src="https://app.embed.im/confetti.js"
-          strategy="afterInteractive"
-        />
-      ) : null}
-      {user.profileEffect === "balloons" ? (
-        <Script
-          src="https://app.embed.im/balloons.js"
           strategy="afterInteractive"
         />
       ) : null}
