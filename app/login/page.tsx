@@ -15,7 +15,7 @@ export default function LoginPage() {
             <SignInButton />
           </div>
           <p className="mt-6 text-xs text-slate-600 dark:text-slate-400">
-            로그인 후 디스코드 태그와 프로필을 기본값으로 가져오고 따로 수정할 수 있어요!
+            로그인 후 디스코드 태그와 프로필 사진을 기본값으로 가져오고 따로 수정할 수 있어요!
           </p>
         </GlassCard>
       </Container>
