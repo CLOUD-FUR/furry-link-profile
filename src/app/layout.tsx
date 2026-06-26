@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
 import DarkLightToggle from "@/components/dark-light-toggle";
-import LegalButtons from "@/components/LegalButtons";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,7 +52,6 @@ export default function RootLayout({
         <SessionProvider>
           {children}
           <DarkLightToggle />
-          <LegalButtons />
         </SessionProvider>
       </body>
     </html>
