@@ -21,11 +21,11 @@ export default function RegisterPage() {
   useEffect(() => {
     if (status === "loading") return;
     if (session?.user) {
-      router.replace("/dashboard");
+      window.location.href = "/dashboard";
       return;
     }
     setChecking(false);
-  }, [session, status, router]);
+  }, [session, status]);
 
   function validateHandle(h: string): string | null {
     const lower = h.toLowerCase();
@@ -90,7 +90,7 @@ export default function RegisterPage() {
         router.push("/login");
         return;
       }
-      router.replace("/dashboard");
+      window.location.href = "/dashboard";
     } catch {
       setError("회원가입 중 문제가 발생했어요.");
       setLoading(false);

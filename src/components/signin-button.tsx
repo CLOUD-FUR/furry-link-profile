@@ -10,7 +10,7 @@ export function SignInButton() {
 
   const handleClick = () => {
     if (session?.user) {
-      router.replace("/dashboard");
+      window.location.href = "/dashboard";
       return;
     }
     signIn("discord", { callbackUrl: "/dashboard" });
