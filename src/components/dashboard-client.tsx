@@ -13,6 +13,30 @@ import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import { SiteTopBar } from "@/components/SiteTopBar";
 import { ChannelTalk } from "@/components/channel-talk";
 
+/** Theme background for dashboard — shows selected theme's gradient in real-time */
+function ThemeBackground({ theme, themeJson }: { theme: string; themeJson: string }) {
+  const themeData = getThemeById(theme);
+  
+  if (theme === "custom") {
+    try {
+      const o = JSON.parse(themeJson || "{}");
+      if (o?.bgImage) {
+        return (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundImage: o.bgImage, backgroundSize: "cover", backgroundPosition: "center" }}
+          />
+        );
+      }
+    } catch {}
+  }
+
+  if (themeData?.bg) {
+    return <div className={`absolute inset-0 ${themeData.bg}`} />;
+  }
+  return <div className="absolute inset-0 bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950" />;
+}
+
 type UserWithLinks = User & { links: DbLink[] };
 type DraftLink = DbLink & { handleInput?: string };
 
@@ -492,7 +516,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 relative overflow-hidden transition-colors">
+    <div className="min-h-screen relative overflow-hidden transition-colors">
+      {/* Theme background */}
+      <ThemeBackground theme={draftUser.theme} themeJson={draftUser.themeJson} />
       {/* Decorative blobs */}
       <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-pink-300/40 dark:bg-fuchsia-500/15 blur-3xl" />
       <div className="pointer-events-none absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full bg-violet-300/40 dark:bg-indigo-500/15 blur-3xl" />
@@ -501,6 +527,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
       {/* === Floating capsule top bar === */}
       <SiteTopBar
+              hideTheme={true}
         activePage="dashboard"
         userAvatarUrl={topBarAvatarUrl}
         showNav={false}

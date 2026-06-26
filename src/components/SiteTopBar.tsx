@@ -50,11 +50,13 @@ type Props = {
   userAvatarUrl?: string | null;
   /** Hide nav items (e.g. on public profile page where space is tight). */
   showNav?: boolean;
+  /** Hide theme toggle button (e.g. on dashboard). */
+  hideTheme?: boolean;
   /** Optional action buttons rendered on the right side (e.g. Save/Revert/Logout for dashboard). */
   actions?: React.ReactNode;
 };
 
-export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, actions }: Props) {
+export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideTheme = false, actions }: Props) {
   const pathname = usePathname() ?? "/";
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
@@ -135,42 +137,44 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, actions 
               <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">{actions}</div>
             ) : null}
 
-            {/* Theme toggle — hidden on mobile when actions are present to prevent overflow */}
-            <button
-              type="button"
-              onClick={handleToggleTheme}
-              className={clsx(
-                "relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/70 dark:border-white/15 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/15 transition-all",
-                actions ? "hidden sm:inline-flex" : "inline-flex"
-              )}
-              aria-label={theme === "light" ? "다크 모드로 전환" : "라이트 모드로 전환"}
-              title={theme === "light" ? "다크 모드" : "라이트 모드"}
-            >
-              <span className="relative flex h-5 w-5 items-center justify-center">
-                <span
-                  className={clsx(
-                    "absolute flex h-5 w-5 items-center justify-center transition-all duration-300",
-                    mounted && theme === "light"
-                      ? "opacity-100 rotate-0 scale-100"
-                      : "opacity-0 -rotate-90 scale-50 pointer-events-none"
-                  )}
-                  aria-hidden
-                >
-                  <SunIcon className="h-5 w-5 text-amber-500" />
+            {/* Theme toggle — hidden when hideTheme=true (e.g. dashboard) */}
+            {!hideTheme ? (
+              <button
+                type="button"
+                onClick={handleToggleTheme}
+                className={clsx(
+                  "relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/70 dark:border-white/15 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/15 transition-all",
+                  actions ? "hidden sm:inline-flex" : "inline-flex"
+                )}
+                aria-label={theme === "light" ? "다크 모드로 전환" : "라이트 모드로 전환"}
+                title={theme === "light" ? "다크 모드" : "라이트 모드"}
+              >
+                <span className="relative flex h-5 w-5 items-center justify-center">
+                  <span
+                    className={clsx(
+                      "absolute flex h-5 w-5 items-center justify-center transition-all duration-300",
+                      mounted && theme === "light"
+                        ? "opacity-100 rotate-0 scale-100"
+                        : "opacity-0 -rotate-90 scale-50 pointer-events-none"
+                    )}
+                    aria-hidden
+                  >
+                    <SunIcon className="h-5 w-5 text-amber-500" />
+                  </span>
+                  <span
+                    className={clsx(
+                      "absolute flex h-5 w-5 items-center justify-center transition-all duration-300",
+                      mounted && theme === "dark"
+                        ? "opacity-100 rotate-0 scale-100"
+                        : "opacity-0 rotate-90 scale-50 pointer-events-none"
+                    )}
+                    aria-hidden
+                  >
+                    <MoonIcon className="h-5 w-5 text-slate-200" />
+                  </span>
                 </span>
-                <span
-                  className={clsx(
-                    "absolute flex h-5 w-5 items-center justify-center transition-all duration-300",
-                    mounted && theme === "dark"
-                      ? "opacity-100 rotate-0 scale-100"
-                      : "opacity-0 rotate-90 scale-50 pointer-events-none"
-                  )}
-                  aria-hidden
-                >
-                  <MoonIcon className="h-5 w-5 text-slate-200" />
-                </span>
-              </span>
-            </button>
+              </button>
+            ) : null}
 
             {/* User avatar */}
             {userAvatarUrl ? (
@@ -240,6 +244,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, actions 
                 className="block w-full rounded-xl px-4 py-2 text-sm font-semibold transition-all text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-white/10 text-left"
               >
                 {theme === "light" ? "🌙 다크 모드" : "☀️ 라이트 모드"}
+              )
               </button>
             ) : null}
           </div>
