@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   description: "여러 개의 링크를 한 곳에! Discord 로그인으로 바로 시작하세요.",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/logo.png",
     apple: "/apple-touch-icon.png",
   },
   openGraph: {

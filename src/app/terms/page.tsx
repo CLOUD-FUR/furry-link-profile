@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16 min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 transition-colors">
+    <main className="mx-auto max-w-3xl px-4 py-16 min-h-screen">
       <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-slate-50">
         Fluffy Link 이용약관 및 개인정보처리방침
       </h1>
