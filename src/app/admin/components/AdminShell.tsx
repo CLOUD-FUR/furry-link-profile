@@ -7,7 +7,7 @@ import TopBar from "./TopBar";
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const [dark, setDark] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
-    const stored = localStorage.getItem("fluffy-admin-theme");
+    const stored = localStorage.getItem("fluffy-site-theme");
     if (stored !== null) return stored === "dark";
     return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
@@ -17,7 +17,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle("dark", dark);
-    localStorage.setItem("fluffy-admin-theme", dark ? "dark" : "light");
+    localStorage.setItem("fluffy-site-theme", dark ? "dark" : "light");
   }, [dark]);
 
   const toggleDark = useCallback(() => setDark((d) => !d), []);
