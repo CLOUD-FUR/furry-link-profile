@@ -56,17 +56,27 @@ providers.push(
       password: { label: "비밀번호", type: "password" },
     },
     async authorize(credentials) {
-      const handle = credentials?.handle?.trim().toLowerCase();
-      const password = credentials?.password;
-      if (!handle || !password) return null;
+      try {
+        const handle = credentials?.handle?.trim().toLowerCase();
+        const password = credentials?.password;
+        if (!handle || !password) return null;
 
-      const user = await prisma.user.findUnique({ where: { handleLower: handle } });
-      if (!user || !user.password) return null;
+        const user = await prisma.user.findUnique({ where: { handleLower: handle } });
+        if (!user || !user.password) return null;
 
-      const valid = await bcrypt.compare(password, user.password);
-      if (!valid) return null;
+        const valid = await bcrypt.compare(String(password), user.password);
+        if (!valid) return null;
 
-      return { id: user.id, name: user.name, image: user.image };
+        return {
+          id: String(user.id),
+          name: user.name ?? user.handle,
+          email: user.email ?? null,
+          image: user.image ?? null,
+        };
+      } catch (e) {
+        console.error("[auth] credentials authorize error:", e);
+        return null;
+      }
     },
   })
 );
