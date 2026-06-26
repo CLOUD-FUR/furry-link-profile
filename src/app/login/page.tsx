@@ -30,22 +30,12 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    try {
-      const res = await signIn("credentials", {
-        handle,
-        password,
-        redirect: false,
-      });
-      if (res?.error) {
-        setError("아이디 또는 비밀번호가 올바르지 않아요");
-        setLoading(false);
-        return;
-      }
-      window.location.href = "/dashboard";
-    } catch {
-      setError("로그인 중 문제가 발생했어요.");
-      setLoading(false);
-    }
+    signIn("credentials", {
+      handle,
+      password,
+      callbackUrl: "/dashboard",
+    });
+    // redirect가 기본 true이므로 자동 전환됨
   }
 
   return (

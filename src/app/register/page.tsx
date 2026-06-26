@@ -79,18 +79,13 @@ export default function RegisterPage() {
         return;
       }
 
-      // Auto-login after register
-      const signInRes = await signIn("credentials", {
+      // Auto-login after register — redirect: true로 설정해서 NextAuth가 직접 처리
+      signIn("credentials", {
         handle,
         password,
-        redirect: false,
+        callbackUrl: "/dashboard",
       });
-      if (signInRes?.error) {
-        // Registration succeeded but auto-login failed → go to login
-        router.push("/login");
-        return;
-      }
-      window.location.href = "/dashboard";
+      // redirect: true이므로 페이지가 자동으로 전환됨 — 여기서 아무것도 하지 않음
     } catch {
       setError("회원가입 중 문제가 발생했어요.");
       setLoading(false);
