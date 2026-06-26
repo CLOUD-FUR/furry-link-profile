@@ -1,5 +1,8 @@
 import type { NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { writeLog } from "@/lib/log";
 
@@ -25,40 +28,133 @@ async function ensureUniqueHandleLower(handleLower: string) {
   }
 }
 
+// Build providers list. Discord is always present. Google is conditional.
+const providers: NextAuthOptions["providers"] = [
+  DiscordProvider({
+    clientId: process.env.DISCORD_CLIENT_ID!,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+    authorization: { params: { scope: "identify email" } },
+  }),
+];
+
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  providers.push(
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: { params: { scope: "openid email profile" } },
+    })
+  );
+}
+
+providers.push(
+  CredentialsProvider({
+    id: "credentials",
+    name: "credentials",
+    credentials: {
+      handle: { label: "아이디", type: "text" },
+      password: { label: "비밀번호", type: "password" },
+    },
+    async authorize(credentials) {
+      const handle = credentials?.handle?.trim().toLowerCase();
+      const password = credentials?.password;
+      if (!handle || !password) return null;
+
+      const user = await prisma.user.findUnique({ where: { handleLower: handle } });
+      if (!user || !user.password) return null;
+
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) return null;
+
+      return { id: user.id, name: user.name, image: user.image };
+    },
+  })
+);
+
 export const authOptions: NextAuthOptions = {
-  providers: [
-    DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID!,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
-      authorization: { params: { scope: "identify email" } },
-    }),
-  ],
+  providers: providers as any,
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account, profile }) {
-      if (account && profile) {
-        const discordId = String((profile as any).id);
-        token.id = discordId;
+      // Credentials sign-in: authorize() already returned user with id
+      if (account?.provider === "credentials") {
+        // token.id was set by the returned user.id
+        if ((token as any).id) return token;
+        return token;
+      }
 
-        const name = (profile as any).global_name || (profile as any).username || "user";
-        const discordImage =
-          (profile as any).avatar
+      // OAuth sign-in (Discord or Google)
+      if (account && profile) {
+        const provider = account.provider; // "discord" | "google"
+        let providerAccountId: string | undefined;
+        let name: string = "user";
+        let image: string = "";
+
+        if (provider === "discord") {
+          const discordId = String((profile as any).id);
+          providerAccountId = discordId;
+          name =
+            (profile as any).global_name || (profile as any).username || "user";
+          image = (profile as any).avatar
             ? `https://cdn.discordapp.com/avatars/${discordId}/${(profile as any).avatar}.png?size=256`
             : "";
+        } else if (provider === "google") {
+          const sub = String((profile as any).sub);
+          providerAccountId = sub;
+          name = (profile as any).name || (profile as any).email || "user";
+          image = (profile as any).picture ?? "";
+        }
 
-        const existing = await prisma.user.findUnique({ where: { id: discordId } });
+        if (!providerAccountId) return token;
 
-        if (!existing) {
+        // Look up existing Account for this provider+providerAccountId
+        const existingAccount = await prisma.account.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider,
+              providerAccountId,
+            },
+          },
+          include: { user: true },
+        });
+
+        if (existingAccount) {
+          // Login as existing user — update name/image
+          token.id = existingAccount.userId;
+
+          await prisma.user
+            .update({
+              where: { id: existingAccount.userId },
+              data: {
+                name,
+                ...(provider === "discord"
+                  ? {
+                      discordImage: image,
+                      ...(existingAccount.user.image?.startsWith("data:")
+                        ? {}
+                        : { image: image || existingAccount.user.image || "" }),
+                    }
+                  : {}),
+              },
+            })
+            .catch(() => {});
+
+          await writeLog({
+            type: "LOGIN",
+            message: `login (provider=${provider}, id=${existingAccount.userId})`,
+            actorUserId: existingAccount.userId,
+            targetUserId: existingAccount.userId,
+          });
+        } else {
+          // No Account exists — create new User + Account
           const handle = makeHandleDisplay(name);
-          const handleLowerBase = handle.toLowerCase();
-          const handleLower = await ensureUniqueHandleLower(handleLowerBase);
+          const handleLower = await ensureUniqueHandleLower(handle);
 
-          await prisma.user.create({
+          const newUser = await prisma.user.create({
             data: {
-              id: discordId,
               name,
-              image: discordImage,
-              discordImage,
+              image,
+              ...(provider === "discord" ? { discordImage: image } : {}),
               handle,
               handleLower,
               bio: "",
@@ -66,32 +162,28 @@ export const authOptions: NextAuthOptions = {
               themeJson: "",
               bannerUrl: "",
               isPublic: true,
+              ...(provider === "google" && (profile as any).email
+                ? { email: String((profile as any).email) }
+                : {}),
             },
           });
+
+          await prisma.account.create({
+            data: {
+              userId: newUser.id,
+              provider,
+              providerAccountId,
+              type: "oauth",
+            },
+          });
+
+          token.id = newUser.id;
 
           await writeLog({
             type: "USER_CREATE",
-            message: `user created (id=${discordId}, handle=@${handle})`,
-            actorUserId: discordId,
-            targetUserId: discordId,
-          });
-        } else {
-          await prisma.user.update({
-            where: { id: discordId },
-            data: {
-              name,
-              discordImage,
-              ...(existing.image?.startsWith("data:")
-                ? {}
-                : { image: discordImage || existing.image || "" }),
-            },
-          });
-
-          await writeLog({
-            type: "LOGIN",
-            message: `login (id=${discordId})`,
-            actorUserId: discordId,
-            targetUserId: discordId,
+            message: `user created (provider=${provider}, id=${newUser.id}, handle=@${handle})`,
+            actorUserId: newUser.id,
+            targetUserId: newUser.id,
           });
         }
       }

@@ -7,8 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User { 
-  id            String   @id // Discord user id
+model User {
+  id            String   @id @default(cuid()) // auto-generated (cuid); legacy users keep their Discord id
+  password      String?  // bcrypt hash (null for OAuth-only users)
+  email         String?  // optional (Google OAuth users etc.)
+
   name          String?
   image         String   @default("") // current avatar shown on profile (can be custom)
   discordImage  String   @default("") // last known Discord avatar URL
@@ -37,12 +40,26 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  accounts        Account[]
   links           Link[]
   logsAsActor     Log[]    @relation("ActorLogs")
   logsAsTarget    Log[]    @relation("TargetLogs")
   profileVisits   ProfileVisit[]
 }
 
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String   // "credentials" | "discord" | "google"
+  providerAccountId String   // Discord id, Google sub, or handleLower
+  type              String   // "oauth" | "credentials"
+  createdAt         DateTime @default(now())
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
 
 model ProfileVisit {
   id        String   @id @default(cuid())
