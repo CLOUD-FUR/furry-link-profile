@@ -84,7 +84,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, actions 
   return (
     <header className="sticky top-3 sm:top-4 z-30 px-3 sm:px-4">
       <div className="mx-auto w-full max-w-6xl">
-        <div className="relative flex items-center justify-between gap-3 rounded-full border border-white/60 dark:border-white/15 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl shadow-soft px-3 py-2 sm:px-4 sm:py-2.5">
+        <div className="relative flex items-center justify-between gap-2 sm:gap-3 rounded-full border border-white/60 dark:border-white/15 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl shadow-soft px-2.5 py-1.5 sm:px-4 sm:py-2">
           {/* Logo */}
           <NextLink
             href="/"
@@ -132,14 +132,17 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, actions 
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             {/* Custom actions (e.g. Save/Revert/Logout for dashboard) */}
             {actions ? (
-              <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">{actions}</div>
+              <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">{actions}</div>
             ) : null}
 
-            {/* Theme toggle */}
+            {/* Theme toggle — hidden on mobile when actions are present to prevent overflow */}
             <button
               type="button"
               onClick={handleToggleTheme}
-              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/70 dark:border-white/15 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/15 transition-all"
+              className={clsx(
+                "relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/70 dark:border-white/15 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/15 transition-all",
+                actions ? "hidden sm:inline-flex" : "inline-flex"
+              )}
               aria-label={theme === "light" ? "다크 모드로 전환" : "라이트 모드로 전환"}
               title={theme === "light" ? "다크 모드" : "라이트 모드"}
             >
@@ -227,6 +230,18 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, actions 
                 </NextLink>
               );
             })}
+            {/* Theme toggle in mobile menu (visible when the top bar theme button is hidden due to actions) */}
+            {actions ? (
+              <button
+                type="button"
+                onClick={() => {
+                  handleToggleTheme();
+                }}
+                className="block w-full rounded-xl px-4 py-2 text-sm font-semibold transition-all text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-white/10 text-left"
+              >
+                {theme === "light" ? "🌙 다크 모드" : "☀️ 라이트 모드"}
+              </button>
+            ) : null}
           </div>
         ) : null}
       </div>

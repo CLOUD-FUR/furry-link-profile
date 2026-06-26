@@ -115,7 +115,7 @@ export function HomePreviewCard() {
               key={p.name}
               type="button"
               tabIndex={-1}
-              className="group flex items-center gap-3 rounded-2xl border border-white/70 bg-white/70 dark:border-white/10 dark:bg-white/10 px-3.5 py-2.5 text-left transition-all hover:bg-white dark:hover:bg-white/15 hover:shadow-soft cursor-default"
+              className="group flex items-center gap-3 rounded-2xl border border-white/70 bg-white/70 dark:border-white/10 dark:bg-white/10 px-3.5 py-2.5 text-left transition-all duration-200 hover:bg-white dark:hover:bg-white/15 hover:shadow-soft active:scale-[0.97] cursor-default"
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <span

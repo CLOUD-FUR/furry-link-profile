@@ -11,6 +11,7 @@ import clsx from "clsx";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import { SiteTopBar } from "@/components/SiteTopBar";
+import { ChannelTalk } from "@/components/channel-talk";
 
 type UserWithLinks = User & { links: DbLink[] };
 type DraftLink = DbLink & { handleInput?: string };
@@ -529,8 +530,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   ? "border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20"
                   : "border-white/40 bg-white/40 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
               )}
+              title="되돌리기"
             >
-              되돌리기
+              <span className="sm:hidden" aria-hidden>↺</span>
+              <span className="hidden sm:inline">되돌리기</span>
             </button>
 
             <button
@@ -539,8 +542,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                 signOut({ callbackUrl: "/" });
               }}
               className="inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20 transition-all active:scale-[0.98] hover:scale-[1.02]"
+              title="로그아웃"
             >
-              로그아웃
+              <span className="sm:hidden" aria-hidden>⎋</span>
+              <span className="hidden sm:inline">로그아웃</span>
             </button>
           </>
         }
@@ -1146,6 +1151,25 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     </a>
                   </div>
 
+                  {/* 문의하기 */}
+                  <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                    <div className={clsx("font-bold", uiText)}>문의하기</div>
+                    <div className={clsx("mt-1 text-xs", uiSub)}>
+                      궁금한 점이나 문제가 있으면 문의해 주세요!
+                    </div>
+                    <a
+                      href="/questions"
+                      className={clsx(
+                        "mt-3 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-semibold transition-colors duration-200",
+                        isDark
+                          ? "bg-white text-slate-900 hover:bg-white/90"
+                          : "bg-slate-900 text-white hover:bg-slate-800"
+                      )}
+                    >
+                      💬 자주 묻는 질문 보기
+                    </a>
+                  </div>
+
                   <div className={clsx("flex items-center justify-between gap-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div>
                       <div className={clsx("font-bold", uiText)}>페이지 공개</div>
@@ -1430,6 +1454,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
           </div>
         ) : null}
       </div>
+
+      {/* ChannelTalk inquiry widget */}
+      <ChannelTalk />
     </div>
   );
 }

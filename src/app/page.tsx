@@ -29,8 +29,8 @@ export default function HomePage() {
               <ButtonLink href="/login" variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
                 로그인
               </ButtonLink>
-              <ButtonLink href="/@CLOUD" variant="secondary" size="sm" className="rounded-full">
-                개발자 프로필
+              <ButtonLink href="/user" variant="secondary" size="sm" className="rounded-full">
+                유저 리스트
               </ButtonLink>
             </nav>
           </div>
@@ -70,8 +70,8 @@ export default function HomePage() {
                   <path fillRule="evenodd" d="M7.293 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 10 7.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
                 </svg>
               </ButtonLink>
-              <ButtonLink href="/@CLOUD" variant="secondary" size="lg" className="w-full sm:w-auto">
-                개발자 프로필 보기
+              <ButtonLink href="/user" variant="secondary" size="lg" className="w-full sm:w-auto">
+                유저 리스트 보기
               </ButtonLink>
             </div>
 
@@ -166,7 +166,7 @@ export default function HomePage() {
                   href="/login"
                   size="lg"
                   variant="secondary"
-                  className="w-full sm:w-auto bg-white text-slate-900 border-white hover:bg-slate-100 dark:bg-white dark:text-slate-900 dark:border-white dark:hover:bg-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]"
+                  className="w-full sm:w-auto bg-white text-slate-900 border-white hover:bg-slate-100 dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:bg-white/15 dark:backdrop-blur shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]"
                 >
                   플러피링크 무료로 시작
                   <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
@@ -174,12 +174,12 @@ export default function HomePage() {
                   </svg>
                 </ButtonLink>
                 <ButtonLink
-                  href="/@CLOUD"
+                  href="/user"
                   size="lg"
                   variant="ghost"
                   className="w-full sm:w-auto text-white border-white/30 hover:bg-white/15 dark:text-white dark:hover:bg-white/15"
                 >
-                  예시 프로필 보기
+                  유저 리스트 보기
                 </ButtonLink>
               </div>
             </div>
@@ -217,9 +217,9 @@ function FeatureCard({
   gradient: string;
 }) {
   return (
-    <div className="group rounded-3xl border border-white/70 bg-white/65 dark:border-white/10 dark:bg-white/5 p-6 backdrop-blur-glass shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] transition-all hover:-translate-y-1 hover:bg-white/80 hover:shadow-[0_25px_60px_-25px_rgba(124,58,237,0.35)] dark:hover:bg-white/10">
+    <div className="group rounded-3xl border border-white/70 bg-white/65 dark:border-white/10 dark:bg-white/5 p-6 backdrop-blur-glass shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-[0_25px_60px_-25px_rgba(124,58,237,0.35)] dark:hover:bg-white/10 active:scale-[0.97] active:translate-y-0 cursor-pointer">
       <div
-        className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-2xl shadow-[0_8px_20px_-8px_rgba(15,23,42,0.35)] transition-transform group-hover:scale-110 group-hover:rotate-3`}
+        className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-2xl shadow-[0_8px_20px_-8px_rgba(15,23,42,0.35)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 group-active:scale-95`}
       >
         {icon}
       </div>
