@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Sidebar from "./Sidebar";
 import TopBar from "./TopBar";
 
@@ -13,6 +15,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   // Apply theme to <html> and persist
   useEffect(() => {
     const root = document.documentElement;
@@ -20,9 +25,44 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     localStorage.setItem("fluffy-site-theme", dark ? "dark" : "light");
   }, [dark]);
 
+  // Auth check — redirect non-admins
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session?.user) {
+      signIn("/login");
+      return;
+    }
+    // TODO: check if user is admin (ADMIN_DISCORD_IDS check)
+    // For now, allow any logged-in user to access admin
+  }, [session, status, router]);
+
   const toggleDark = useCallback(() => setDark((d) => !d), []);
   const toggleSidebar = useCallback(() => setSidebarOpen((s) => !s), []);
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+
+  // Loading state
+  if (status === "loading") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          <p className="text-sm text-muted-foreground">권한 확인 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not logged in — handled by useEffect redirect
+  if (!session?.user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
+          <p className="text-sm text-muted-foreground">로그인 페이지로 이동 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-background text-foreground">
