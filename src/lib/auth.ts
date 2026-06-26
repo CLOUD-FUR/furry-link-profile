@@ -75,11 +75,14 @@ export const authOptions: NextAuthOptions = {
   providers: providers as any,
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, account, profile }) {
-      // Credentials sign-in: authorize() already returned user with id
+    async jwt({ token, account, user, profile }) {
+      // Credentials sign-in: authorize() returned { id, name, image }
       if (account?.provider === "credentials") {
-        // token.id was set by the returned user.id
-        if ((token as any).id) return token;
+        if (user) {
+          token.id = (user as any).id;
+          token.name = (user as any).name ?? token.name;
+          token.picture = (user as any).image ?? token.picture;
+        }
         return token;
       }
 
