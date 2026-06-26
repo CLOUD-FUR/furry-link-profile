@@ -1,0 +1,43 @@
+import { prisma } from "@/lib/prisma";
+import { Container } from "@/components/ui";
+import { UserListClient } from "@/components/user-list-client";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "유저 리스트 | Fluffy Link",
+  description: "플러피 링크 사용자 목록",
+};
+
+export default async function UserListPage() {
+  const rows = await prisma.user.findMany({
+    where: {
+      isPublic: true,
+      listPublic: true,
+    },
+    select: {
+      handle: true,
+      handleLower: true,
+      bio: true,
+      image: true,
+      discordImage: true,
+      lastBumpedAt: true,
+    },
+    orderBy: { handleLower: "asc" },
+  });
+
+  const users = [...rows].sort((a, b) => {
+    const at = a.lastBumpedAt?.getTime() ?? 0;
+    const bt = b.lastBumpedAt?.getTime() ?? 0;
+    if (bt !== at) return bt - at;
+    return (a.handleLower ?? "").localeCompare(b.handleLower ?? "");
+  }).map(({ lastBumpedAt: _, ...u }) => u);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 relative overflow-hidden transition-colors">
+      <div className="absolute inset-0 noise opacity-40 dark:opacity-20" />
+      <Container className="relative py-10 pb-16">
+        <UserListClient users={users} />
+      </Container>
+    </div>
+  );
+}

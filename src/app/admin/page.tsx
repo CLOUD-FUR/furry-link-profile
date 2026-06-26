@@ -6,11 +6,33 @@ import Chart from "./components/Chart";
 import ActivityFeed from "./components/ActivityFeed";
 import QuickStats from "./components/QuickStats";
 
+type MonthlyPoint = {
+  label: string;
+  users: number;
+  links: number;
+  visits: number;
+};
+
 type Stats = {
   totalUsers: number;
   totalLinks: number;
   activeLinks: number;
   profileVisits: number;
+  monthlyData: MonthlyPoint[];
+  platformDistribution: Record<string, number>;
+  quickStats: {
+    newUsersThisWeek: number;
+    newLinksThisWeek: number;
+    avgLinksPerUser: number;
+    disabledLinks: number;
+  };
+  activities: Array<{
+    id: string;
+    type: "user" | "link" | "system" | "alert" | "login";
+    message: string;
+    time: string;
+    actorUserId: string | null;
+  }>;
 };
 
 export default function AdminPage() {
@@ -36,8 +58,6 @@ export default function AdminPage() {
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
-
-  const fmt = (n: number) => n.toLocaleString("ko-KR");
 
   return (
     <div className="space-y-6">
@@ -75,7 +95,7 @@ export default function AdminPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="총 사용자 수"
-          value={loading ? "…" : fmt(stats?.totalUsers ?? 0)}
+          value={loading ? 0 : stats?.totalUsers ?? 0}
           change="실시간"
           trend="up"
           accent="from-indigo-500 to-purple-600"
@@ -89,7 +109,7 @@ export default function AdminPage() {
         />
         <StatCard
           label="총 링크 수"
-          value={loading ? "…" : fmt(stats?.totalLinks ?? 0)}
+          value={loading ? 0 : stats?.totalLinks ?? 0}
           change="실시간"
           trend="up"
           accent="from-purple-500 to-pink-600"
@@ -102,7 +122,7 @@ export default function AdminPage() {
         />
         <StatCard
           label="활성 링크"
-          value={loading ? "…" : fmt(stats?.activeLinks ?? 0)}
+          value={loading ? 0 : stats?.activeLinks ?? 0}
           change="활성화됨"
           trend="up"
           accent="from-blue-500 to-cyan-600"
@@ -115,7 +135,7 @@ export default function AdminPage() {
         />
         <StatCard
           label="프로필 방문 수"
-          value={loading ? "…" : fmt(stats?.profileVisits ?? 0)}
+          value={loading ? 0 : stats?.profileVisits ?? 0}
           change="누적"
           trend="up"
           accent="from-amber-500 to-orange-600"
@@ -131,17 +151,21 @@ export default function AdminPage() {
       {/* Chart + Quick stats */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Chart />
+          <Chart monthlyData={stats?.monthlyData ?? []} loading={loading} />
         </div>
         <div className="lg:col-span-1">
-          <QuickStats />
+          <QuickStats
+            quickStats={stats?.quickStats}
+            platformDistribution={stats?.platformDistribution}
+            loading={loading}
+          />
         </div>
       </div>
 
       {/* Activity feed + Recent logs preview */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <ActivityFeed />
+          <ActivityFeed activities={stats?.activities ?? []} loading={loading} />
         </div>
         <div className="lg:col-span-2">
           <RecentLogsCard />
@@ -152,9 +176,9 @@ export default function AdminPage() {
       <div className="flex items-center justify-between border-t border-border pt-4 text-xs text-muted-foreground">
         <p>© 2026 Fluffy Link. 모든 권리 보유.</p>
         <div className="flex items-center gap-4">
-          <a href="#" className="transition-colors hover:text-foreground">개인정보처리방침</a>
-          <a href="#" className="transition-colors hover:text-foreground">이용약관</a>
-          <a href="#" className="transition-colors hover:text-foreground">지원</a>
+          <a href="/terms" className="transition-colors hover:text-foreground">개인정보처리방침</a>
+          <a href="/terms" className="transition-colors hover:text-foreground">이용약관</a>
+          <a href="/questions" className="transition-colors hover:text-foreground">지원</a>
         </div>
       </div>
     </div>

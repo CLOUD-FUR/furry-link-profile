@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { signOut } from "next-auth/react";
+
+type AdminProfile = {
+  id: string;
+  name: string | null;
+  handle: string | null;
+  image: string | null;
+  discordImage: string | null;
+};
 
 export default function TopBar({
   dark,
@@ -13,8 +22,19 @@ export default function TopBar({
 }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [admin, setAdmin] = useState<AdminProfile | null>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Fetch admin profile from stats API
+  useEffect(() => {
+    fetch("/api/admin/stats", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.adminUser) setAdmin(d.adminUser);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -28,6 +48,24 @@ export default function TopBar({
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  const avatarUrl = admin
+    ? admin.image?.startsWith("http") || admin.image?.startsWith("data:")
+      ? admin.image
+      : admin.discordImage?.startsWith("http")
+        ? admin.discordImage
+        : null
+    : null;
+
+  const displayName = admin?.name || admin?.handle || "관리자";
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    } finally {
+      await signOut({ callbackUrl: "/login" });
+    }
+  };
 
   return (
     <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-md sm:px-6 lg:px-8">
@@ -104,7 +142,10 @@ export default function TopBar({
             <div className="absolute right-0 mt-2 w-80 origin-top-right rounded-xl border border-border bg-card p-2 shadow-lg shadow-black/5 animate-fade-in">
               <div className="flex items-center justify-between px-3 py-2">
                 <p className="text-sm font-semibold">알림</p>
-                <button className="text-xs text-indigo-600 hover:underline dark:text-indigo-400">
+                <button
+                  onClick={() => setNotifOpen(false)}
+                  className="text-xs text-indigo-600 hover:underline dark:text-indigo-400"
+                >
                   모두 읽음
                 </button>
               </div>
@@ -123,7 +164,10 @@ export default function TopBar({
                 ))}
               </div>
               <div className="border-t border-border pt-1">
-                <button className="w-full rounded-lg px-3 py-2 text-center text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                <button
+                  onClick={() => setNotifOpen(false)}
+                  className="w-full rounded-lg px-3 py-2 text-center text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
                   모든 알림 보기
                 </button>
               </div>
@@ -137,12 +181,20 @@ export default function TopBar({
             onClick={() => setProfileOpen((v) => !v)}
             className="flex items-center gap-2 rounded-lg p-1 pl-1.5 transition-colors hover:bg-muted"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-semibold text-white">
-              관리자
-            </div>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-xs font-semibold text-white">
+                {displayName.charAt(0).toUpperCase()}
+              </div>
+            )}
             <div className="hidden text-left sm:block">
-              <p className="text-xs font-semibold leading-tight">관리자</p>
-              <p className="text-[11px] text-muted-foreground">admin@fluffy.link</p>
+              <p className="text-xs font-semibold leading-tight">{displayName}</p>
+              <p className="text-[11px] text-muted-foreground">플러피링크 관리자</p>
             </div>
             <svg viewBox="0 0 24 24" fill="none" className="hidden h-4 w-4 text-muted-foreground sm:block" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
               <path d="m6 9 6 6 6-6" />
@@ -152,20 +204,35 @@ export default function TopBar({
           {profileOpen && (
             <div className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-border bg-card p-1.5 shadow-lg shadow-black/5 animate-fade-in">
               <div className="px-3 py-2">
-                <p className="text-sm font-semibold">관리자</p>
-                <p className="text-xs text-muted-foreground">admin@fluffy.link</p>
+                <p className="text-sm font-semibold">{displayName}</p>
+                <p className="text-xs text-muted-foreground">플러피링크 관리자</p>
               </div>
               <div className="my-1 h-px bg-border" />
-              {profileMenu.map((m) => (
-                <button
-                  key={m}
-                  className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                >
-                  {m}
-                </button>
-              ))}
+              <a
+                href={admin?.handle ? `/@${admin.handle}` : "/admin"}
+                target="_blank"
+                rel="noreferrer"
+                className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                프로필
+              </a>
+              <a
+                href="/admin/settings"
+                className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                계정 설정
+              </a>
+              <a
+                href="/admin/logs"
+                className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                관리자 로그
+              </a>
               <div className="my-1 h-px bg-border" />
-              <button className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-500/10">
+              <button
+                onClick={handleLogout}
+                className="flex w-full items-center rounded-lg px-3 py-2 text-left text-sm text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-500/10"
+              >
                 로그아웃
               </button>
             </div>
@@ -182,5 +249,3 @@ const notifications = [
   { title: "프로필 방문수가 증가했습니다", time: "3시간 전", color: "bg-amber-500" },
   { title: "비활성화된 링크가 발견되었습니다", time: "5시간 전", color: "bg-red-500" },
 ];
-
-const profileMenu = ["프로필", "계정 설정", "관리자 로그"];

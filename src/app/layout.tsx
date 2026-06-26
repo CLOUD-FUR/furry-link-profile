@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SessionProvider from "@/components/SessionProvider";
+import DarkLightToggle from "@/components/dark-light-toggle";
+import LegalButtons from "@/components/LegalButtons";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +16,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fluffy Link — Admin",
-  description: "Fluffy Link 관리자 대시보드",
+  title: {
+    default: "Fluffy Link — 여러 링크를 한 곳에",
+    template: "%s | Fluffy Link",
+  },
+  description: "여러 개의 링크를 한 곳에! Discord 로그인으로 바로 시작하세요.",
+  openGraph: {
+    title: "Fluffy Link — 여러 링크를 한 곳에",
+    description: "여러 개의 링크를 한 곳에! Discord 로그인으로 바로 시작하세요.",
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +39,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          {children}
+          <DarkLightToggle />
+          <LegalButtons />
+        </SessionProvider>
       </body>
     </html>
   );

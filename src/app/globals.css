@@ -3,6 +3,62 @@
 /* Class-based dark mode (toggled via .dark on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ===== Pretendard font faces ===== */
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraLight.woff2") format("woff2");
+  font-weight: 200;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pretendard";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #0a0a0a;
@@ -39,6 +95,64 @@
   --color-accent-foreground: var(--accent-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Custom shadows from old project */
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 24px rgba(147, 197, 253, 0.45);
+  /* Custom backdrop blur */
+  --backdrop-blur-glass: 18px;
+  /* slide-in-right animation */
+  --animate-slide-in-right: slideInRight 0.5s ease-out forwards;
+}
+
+/* ===== Keyframes (old project) ===== */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+/* Noise texture */
+.noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+}
+
+/* Profile effect: gradient drift */
+@keyframes fluffyGradientDrift {
+  0% {
+    transform: translate3d(-6%, -4%, 0);
+  }
+  50% {
+    transform: translate3d(6%, 4%, 0);
+  }
+  100% {
+    transform: translate3d(-6%, -4%, 0);
+  }
+}
+
+.profile-effect-gradientDrift {
+  position: relative;
+}
+.profile-effect-gradientDrift::after {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  background: radial-gradient(circle at 20% 20%, rgba(147, 197, 253, 0.28), transparent 55%),
+    radial-gradient(circle at 80% 30%, rgba(196, 181, 253, 0.28), transparent 60%),
+    radial-gradient(circle at 55% 85%, rgba(252, 211, 77, 0.18), transparent 58%);
+  filter: blur(6px);
+  opacity: 1;
+  mix-blend-mode: overlay;
+  animation: fluffyGradientDrift 10.5s ease-in-out infinite;
 }
 
 html {
@@ -52,7 +166,7 @@ html.dark {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family: "Pretendard", var(--font-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
