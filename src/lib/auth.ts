@@ -86,13 +86,15 @@ export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account, user, profile }) {
-      // Credentials sign-in: authorize() returned { id, name, image }
+      // 첫 로그인 시 user 객체가 전달됨 — token에 id 저장
+      if (user) {
+        token.id = String((user as any).id);
+        token.name = (user as any).name ?? token.name;
+        token.picture = (user as any).image ?? token.picture;
+      }
+
+      // Credentials 로그인은 여기서 끝
       if (account?.provider === "credentials") {
-        if (user) {
-          token.id = (user as any).id;
-          token.name = (user as any).name ?? token.name;
-          token.picture = (user as any).image ?? token.picture;
-        }
         return token;
       }
 
@@ -204,7 +206,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = (token as any).id;
+        (session.user as any).id = (token as any).id ?? null;
       }
       return session;
     },
