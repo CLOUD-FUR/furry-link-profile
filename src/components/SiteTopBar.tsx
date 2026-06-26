@@ -50,9 +50,11 @@ type Props = {
   userAvatarUrl?: string | null;
   /** Hide nav items (e.g. on public profile page where space is tight). */
   showNav?: boolean;
+  /** Optional action buttons rendered on the right side (e.g. Save/Revert/Logout for dashboard). */
+  actions?: React.ReactNode;
 };
 
-export function SiteTopBar({ activePage, userAvatarUrl, showNav = true }: Props) {
+export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, actions }: Props) {
   const pathname = usePathname() ?? "/";
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
@@ -128,6 +130,11 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true }: Props)
 
           {/* Right side */}
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {/* Custom actions (e.g. Save/Revert/Logout for dashboard) */}
+            {actions ? (
+              <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">{actions}</div>
+            ) : null}
+
             {/* Theme toggle */}
             <button
               type="button"

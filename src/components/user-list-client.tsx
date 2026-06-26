@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import NextImage from "next/image";
 
 const FIXED_AVATAR_HANDLE = "cloud";
 const FIXED_AVATAR_URL =
@@ -44,12 +43,6 @@ export function UserListClient({ users }: { users: UserItem[] }) {
   return (
     <>
       <header className="mb-8 flex flex-col items-center gap-4">
-        <Link href="/" className="group inline-flex items-center gap-2 font-black tracking-tight text-xl text-slate-900 dark:text-white hover:opacity-90">
-          <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15">
-            <NextImage src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover" />
-          </span>
-          Fluffy Link
-        </Link>
         <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
           플러피링크 유저 리스트
         </h1>

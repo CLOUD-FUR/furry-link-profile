@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import NextLink from "next/link";
-import NextImage from "next/image";
 import clsx from "clsx";
+import { SiteTopBar } from "@/components/SiteTopBar";
 
 type Lang = "ko" | "en";
 
@@ -214,16 +214,17 @@ export function QuestionsClient() {
   const [openId, setOpenId] = useState<string | null>(FAQ_DATA[0]?.id ?? null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 relative overflow-hidden transition-colors">
-      <div className="absolute inset-0 opacity-30 dark:opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')]" />
+    <div className="min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 relative overflow-hidden transition-colors">
+      {/* Decorative blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-pink-300/40 dark:bg-fuchsia-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full bg-violet-300/40 dark:bg-indigo-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-sky-300/40 dark:bg-sky-500/10 blur-3xl" />
+      <div className="absolute inset-0 noise opacity-[0.35] dark:opacity-[0.15]" />
+
+      <SiteTopBar activePage="home" />
+
       <div className="relative mx-auto max-w-2xl px-4 py-10">
-        <header className="flex flex-wrap items-center justify-between gap-4 mb-8">
-          <NextLink href="/" className="group inline-flex items-center gap-2 font-black tracking-tight text-xl text-slate-800 dark:text-white hover:text-slate-900 dark:hover:text-slate-200">
-            <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15">
-              <NextImage src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover" />
-            </span>
-            Fluffy Link
-          </NextLink>
+        <header className="flex flex-wrap items-center justify-end gap-4 mb-8">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-slate-600 dark:text-slate-400">Language</span>
             <button

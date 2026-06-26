@@ -26,7 +26,7 @@ export function DarkLightToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   const showOnPaths = ["/", "/login", "/user", "/questions", "/dashboard"];
-  const show = showOnPaths.includes(pathname) || pathname.startsWith("/p/");
+  const show = showOnPaths.includes(pathname) || pathname.startsWith("/p/") || pathname.startsWith("/dashboard/");
 
   useEffect(() => {
     const t = getStoredTheme();

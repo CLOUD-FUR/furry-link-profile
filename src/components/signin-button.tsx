@@ -25,7 +25,7 @@ export function SignInButton() {
         ? "확인 중..."
         : session?.user
           ? "대시보드로 이동"
-          : "Discord로 시작하기"}
+          : "플러피링크 이용하기"}
     </button>
   );
 }

@@ -502,37 +502,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       <SiteTopBar
         activePage="dashboard"
         userAvatarUrl={topBarAvatarUrl}
-      />
-
-      <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
-        {/* Page header + action buttons */}
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }}>
-              대시보드
-            </h1>
-            <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300" style={{ wordBreak: "keep-all" }}>
-              프로필을 수정하고 링크를 관리하세요. 변경사항은 우측 상단 저장 버튼을 눌러야 적용돼요!
-            </p>
-            <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
-              <span className="opacity-80">프로필 페이지: </span>
-              <a
-                href={fullUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="font-semibold underline break-all hover:text-slate-900 dark:hover:text-slate-100"
-              >
-                {fullUrl}
-              </a>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
+        showNav={false}
+        actions={
+          <>
             <button
               disabled={!dirty || saving}
               onClick={saveAll}
               className={clsx(
-                "inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold shadow-soft transition-all active:scale-[0.98] hover:scale-[1.02]",
+                "inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold shadow-soft transition-all active:scale-[0.98] hover:scale-[1.02]",
                 dirty
                   ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white border-transparent hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 shadow-[0_10px_30px_-12px_rgba(124,58,237,0.55)]"
                   : "bg-white/60 dark:bg-white/10 text-slate-500 dark:text-slate-400 border border-white/60 dark:border-white/15",
@@ -547,7 +524,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               disabled={!dirty || saving}
               onClick={resetDraft}
               className={clsx(
-                "inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold border transition-all active:scale-[0.98] hover:scale-[1.02]",
+                "inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border transition-all active:scale-[0.98] hover:scale-[1.02]",
                 dirty
                   ? "border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20"
                   : "border-white/40 bg-white/40 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
@@ -561,10 +538,35 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                 await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
                 signOut({ callbackUrl: "/" });
               }}
-              className="inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold border border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20 transition-all active:scale-[0.98] hover:scale-[1.02]"
+              className="inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20 transition-all active:scale-[0.98] hover:scale-[1.02]"
             >
               로그아웃
             </button>
+          </>
+        }
+      />
+
+      <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
+        {/* Page header */}
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }}>
+              대시보드
+            </h1>
+            <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300" style={{ wordBreak: "keep-all" }}>
+              프로필을 수정하고 링크를 관리하세요. 변경사항은 상단 저장 버튼을 눌러야 적용돼요!
+            </p>
+            <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+              <span className="opacity-80">프로필 페이지: </span>
+              <a
+                href={fullUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold underline break-all hover:text-slate-900 dark:hover:text-slate-100"
+              >
+                {fullUrl}
+              </a>
+            </div>
           </div>
         </div>
 
@@ -573,7 +575,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
           {/* === Left panel: tabs + content === */}
           <div className="rounded-3xl border border-white/60 dark:border-white/15 bg-white/55 dark:bg-slate-900/40 backdrop-blur-glass shadow-soft overflow-hidden">
             {/* Tab bar */}
-            <div className="flex gap-1 p-2 overflow-x-auto">
+            <div className="flex gap-1 p-2 overflow-x-auto bg-white/30 dark:bg-white/5">
               {TABS.map(([k, label, icon]) => (
                 <button
                   key={k}
@@ -581,8 +583,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   className={clsx(
                     "flex-1 whitespace-nowrap rounded-2xl px-3 py-2 text-sm font-semibold transition-all",
                     tab === k
-                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
-                      : "text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-white/10"
+                      ? "bg-gradient-to-r from-slate-900 to-slate-800 text-white dark:from-white dark:to-slate-100 dark:text-slate-900 shadow-sm"
+                      : "text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
                   <span className="mr-1" aria-hidden>{icon}</span>
@@ -1125,6 +1127,25 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
               {tab === "settings" ? (
                 <div className="space-y-4">
+                  {/* 연결된 계정 */}
+                  <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                    <div className={clsx("font-bold", uiText)}>연결된 계정</div>
+                    <div className={clsx("mt-1 text-xs", uiSub)}>
+                      Discord · Google · 아이디/비밀번호 연동을 관리할 수 있어요.
+                    </div>
+                    <a
+                      href="/dashboard/settings"
+                      className={clsx(
+                        "mt-3 inline-flex w-full items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold transition-colors duration-200",
+                        isDark
+                          ? "bg-white text-slate-900 hover:bg-white/90"
+                          : "bg-slate-900 text-white hover:bg-slate-800"
+                      )}
+                    >
+                      연결된 계정 관리하기 →
+                    </a>
+                  </div>
+
                   <div className={clsx("flex items-center justify-between gap-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                     <div>
                       <div className={clsx("font-bold", uiText)}>페이지 공개</div>

@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Container, GlassCard } from "@/components/ui";
+import { SiteTopBar } from "@/components/SiteTopBar";
 
 type AccountInfo = {
   id: string;
@@ -200,8 +201,13 @@ function SettingsContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-200 via-pink-200 to-violet-200 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 relative overflow-hidden transition-colors">
-      <div className="absolute inset-0 noise opacity-40 dark:opacity-20" />
+    <div className="min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 relative overflow-hidden transition-colors">
+      {/* Decorative blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-pink-300/40 dark:bg-fuchsia-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full bg-violet-300/40 dark:bg-indigo-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-sky-300/40 dark:bg-sky-500/10 blur-3xl" />
+      <div className="absolute inset-0 noise opacity-[0.35] dark:opacity-[0.15]" />
+      <SiteTopBar activePage="dashboard" showNav={false} />
       <Container className="relative py-10">
         <div className="mb-6 flex items-center gap-3">
           <Link

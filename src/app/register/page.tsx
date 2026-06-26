@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Container, GlassCard } from "@/components/ui";
 
 const HANDLE_REGEX = /^[a-z0-9가-힣._]+$/u;
@@ -97,8 +98,12 @@ export default function RegisterPage() {
   const confirmErr = confirmPassword && password !== confirmPassword ? "비밀번호 확인이 일치하지 않아요." : null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-200 via-pink-200 to-violet-200 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 relative overflow-hidden transition-colors">
-      <div className="absolute inset-0 noise opacity-40 dark:opacity-20" />
+    <div className="min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 relative overflow-hidden transition-colors">
+      {/* Decorative blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-pink-300/40 dark:bg-fuchsia-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full bg-violet-300/40 dark:bg-indigo-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-sky-300/40 dark:bg-sky-500/10 blur-3xl" />
+      <div className="absolute inset-0 noise opacity-[0.35] dark:opacity-[0.15]" />
       <Container className="relative py-16 pb-28">
         <GlassCard className="bg-white/45 border-white/50 dark:bg-white/10 dark:border-white/15 p-8 max-w-md mx-auto">
           {checking ? (
@@ -107,12 +112,17 @@ export default function RegisterPage() {
             </div>
           ) : (
             <>
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                회원가입
-              </h1>
-              <p className="mt-2 text-slate-700 dark:text-slate-300">
-                Fluffy Link에서 나만의 프로필을 만들어보세요!
-              </p>
+              <div className="flex flex-col items-center mb-2">
+                <span className="relative inline-flex h-14 w-14 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/70 dark:ring-white/20 shadow-sm mb-3">
+                  <Image src="/logo.png" alt="Fluffy Link" width="56" height="56" className="h-full w-full object-cover" priority />
+                </span>
+                <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                  회원가입
+                </h1>
+                <p className="mt-2 text-slate-700 dark:text-slate-300">
+                  Fluffy Link에서 나만의 프로필을 만들어보세요!
+                </p>
+              </div>
 
               <form onSubmit={handleSubmit} className="mt-6 space-y-4">
                 <div>

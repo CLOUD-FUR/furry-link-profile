@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Container, GlassCard, ButtonLink } from "@/components/ui";
 import { HomeFeatureList } from "@/components/home-feature-list";
 import { HomePreviewCard } from "@/components/home-preview-card";
+import { HomeUserCount } from "@/components/home-user-count";
 
 export default function HomePage() {
   return (
@@ -64,7 +65,7 @@ export default function HomePage() {
                 variant="primary"
                 className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 border-transparent text-white hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 dark:from-indigo-500 dark:via-violet-500 dark:to-fuchsia-500 dark:text-white dark:border-transparent shadow-[0_15px_35px_-12px_rgba(124,58,237,0.55)]"
               >
-                Discord로 시작하기
+                플러피링크 이용하기
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
                   <path fillRule="evenodd" d="M7.293 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 10 7.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
                 </svg>
@@ -82,7 +83,7 @@ export default function HomePage() {
                 ))}
               </div>
               <span>
-                <strong className="text-slate-900 dark:text-slate-100 font-bold">수많은 퍼리</strong>들이 사용 중 🐾
+                <HomeUserCount />
               </span>
             </div>
 
@@ -167,7 +168,7 @@ export default function HomePage() {
                   variant="secondary"
                   className="w-full sm:w-auto bg-white text-slate-900 border-white hover:bg-slate-100 dark:bg-white dark:text-slate-900 dark:border-white dark:hover:bg-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]"
                 >
-                  Discord로 무료 시작
+                  플러피링크 무료로 시작
                   <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
                     <path fillRule="evenodd" d="M7.293 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 10 7.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
                   </svg>
