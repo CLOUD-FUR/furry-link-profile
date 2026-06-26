@@ -10,6 +10,7 @@ import { CUSTOM_THEMES } from "@/lib/custom-themes";
 import clsx from "clsx";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
+import { SiteTopBar } from "@/components/SiteTopBar";
 
 type UserWithLinks = User & { links: DbLink[] };
 type DraftLink = DbLink & { handleInput?: string };
@@ -100,14 +101,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const [toast, setToast] = useState<{ kind: ToastKind; message: string } | null>(null);
   const toastTimer = useRef<number | null>(null);
 
-  // 복사 버튼 피드백 (버튼 옆에 "복사가 완료되었어요!" 표시 후 원상복귀)
+  // 복사 버튼 피드백
   const [copyDone, setCopyDone] = useState(false);
   const [qrDone, setQrDone] = useState(false);
 
   // 랜덤 추천 테마 버튼 피드백
   const [randomThemeDone, setRandomThemeDone] = useState(false);
 
-  // 끌어올리기: 성공 피드백 + 쿨타임 표시용 1초 틱
+  // 끌어올리기
   const [bumpDone, setBumpDone] = useState(false);
   const [tick, setTick] = useState(0);
   const BUMP_COOLDOWN_MS = 12 * 60 * 60 * 1000;
@@ -132,16 +133,12 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         ? `${Math.floor(bumpRemainingMs / 60000)}분 뒤에 다시 시도해주세요!`
         : `${Math.ceil(bumpRemainingMs / 1000)}초 뒤에 다시 시도해주세요!`;
 
-  const activeTag = PROFILE_TAGS.find(
-    (t) => t.id === draftUser.profileTag
-  );
+  const activeTag = PROFILE_TAGS.find((t) => t.id === draftUser.profileTag);
 
-  // ✅ 최초 마운트 시 서버 기준으로 다시 동기화
   useEffect(() => {
     refreshFromServer();
   }, []);
 
-  // ✅ 가입/로그인 시 디스코드 웹훅 로그 (한 번만)
   useEffect(() => {
     fetch("/api/auth/log-event", { method: "POST", credentials: "include" }).catch(() => {});
   }, []);
@@ -181,7 +178,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       .catch(() => {});
   }, [saving]);
 
-  // 방문자 수 카운트업: stats 탭 열릴 때 0 → 실제 값으로 애니메이션
+  // 방문자 수 카운트업
   const countUpRaf = useRef<number>(0);
   useEffect(() => {
     if (tab !== "stats") {
@@ -230,8 +227,6 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     if (refreshed?.user) {
       setSavedUser(refreshed.user);
       setDraftUser(refreshed.user);
-
-      // 🔥 여기서 handleInput 복원
       setDraftLinks(
         refreshed.user.links.map((l: DraftLink) => ({
           ...l,
@@ -246,12 +241,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     setHandleError("");
 
     try {
-      // 이모지 에러가 남아 있으면 저장 막기
       if (Object.values(emojiErrors).some((v) => v)) {
         showToast("error", "❌ 이모지 입력을 다시 확인해주세요.");
         return;
       }
-      // 1️⃣ 프로필 저장
       const effectValue =
         draftUser.profileEffect &&
         ALLOWED_PROFILE_EFFECTS.has(String(draftUser.profileEffect))
@@ -266,8 +259,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         image: draftUser.image,
         isPublic: draftUser.isPublic,
         listPublic: draftUser.listPublic,
-        profileTag: draftUser.profileTag, // ✅ 프로필 태그
-        profileEffect: effectValue, // ✅ 프로필 효과 (지원하는 값만)
+        profileTag: draftUser.profileTag,
+        profileEffect: effectValue,
       };
 
       const resU = await fetch("/api/profile", {
@@ -287,7 +280,6 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         return;
       }
 
-      // 2️⃣ 링크 bulk 저장
       const r = await fetch("/api/links/bulk", {
         method: "PUT",
         headers: { "content-type": "application/json" },
@@ -300,7 +292,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
             subtitle: l.subtitle,
             enabled: l.enabled,
             order: i,
-            handle: l.handleInput ?? undefined, // UI 전용 → 서버에서 URL로 변환
+            handle: l.handleInput ?? undefined,
             icon:
               l.platform === "other" && l.icon && l.icon !== "link"
                 ? l.icon
@@ -315,7 +307,6 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         return;
       }
 
-      // 3️⃣ 🔥 서버 기준으로 재동기화 (핵심)
       await refreshFromServer();
 
       setDirty(false);
@@ -325,43 +316,41 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     }
   }
 
-
-async function addLink() {
-  const res = await fetch("/api/links", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({
-      platform: "other",
-      title: "New Link",
-      url: "https://example.com",
-    }),
-  });
-
-  const data = await safeJson(res);
-
-  if (res.ok && data?.links) {
-    setSavedUser((u) => ({ ...u, links: data.links }));
-
-    setDraftLinks((prev) => {
-      const prevIds = new Set(prev.map((l) => l.id));
-
-      const merged = [
-        ...prev,
-        ...(data.links as DbLink[])
-          .filter((l) => !prevIds.has(l.id))
-          .map((l) => ({ ...l })),
-      ];
-
-      return merged.sort((a, b) => a.order - b.order);
+  async function addLink() {
+    const res = await fetch("/api/links", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        platform: "other",
+        title: "New Link",
+        url: "https://example.com",
+      }),
     });
 
-    setDirty(true);
-    showToast("success", "✅ 링크를 추가했어요! 저장을 눌러 적용해주세요!");
-  } else {
-    showToast("error", (data as any)?.error ?? "❌ 링크 추가를 실패했어요");
-  }
-}
+    const data = await safeJson(res);
 
+    if (res.ok && data?.links) {
+      setSavedUser((u) => ({ ...u, links: data.links }));
+
+      setDraftLinks((prev) => {
+        const prevIds = new Set(prev.map((l) => l.id));
+
+        const merged = [
+          ...prev,
+          ...(data.links as DbLink[])
+            .filter((l) => !prevIds.has(l.id))
+            .map((l) => ({ ...l })),
+        ];
+
+        return merged.sort((a, b) => a.order - b.order);
+      });
+
+      setDirty(true);
+      showToast("success", "✅ 링크를 추가했어요! 저장을 눌러 적용해주세요!");
+    } else {
+      showToast("error", (data as any)?.error ?? "❌ 링크 추가를 실패했어요");
+    }
+  }
 
   async function deleteLink(id: string) {
     if (!confirm("정말로 삭제 하시겠습니까?")) return;
@@ -375,12 +364,10 @@ async function addLink() {
     const data = await safeJson(res);
 
     if (res.ok) {
-      // ✅ savedUser는 서버 기준으로 갱신
       if (data?.links) {
         setSavedUser((u) => ({ ...u, links: data.links }));
       }
 
-      // ✅ draftLinks는 현재 상태에서 해당 id만 제거
       setDraftLinks((prev) => prev.filter((l) => l.id !== id));
 
       markDirty();
@@ -389,7 +376,6 @@ async function addLink() {
       showToast("error", (data as any)?.error ?? "❌ 링크 삭제를 실패했어요");
     }
   }
-
 
   function moveLink(id: string, dir: -1 | 1) {
     const idx = draftLinks.findIndex((l) => l.id === id);
@@ -454,8 +440,6 @@ async function addLink() {
   }
 
   function resetAvatarToDiscord() {
-    // savedUser.image is what server stores; but we want Discord default.
-    // If user has Discord image at login, it is stored in DB. We'll request refresh and use savedUser.image from server after save.
     setDraftUser((u) => ({ ...u, image: (savedUser.discordImage ?? savedUser.image ?? "") }));
     markDirty();
     showToast("info", "✅ 프로필이 기본으로 변경되었어요! 저장을 눌러 적용해주세요!");
@@ -488,47 +472,55 @@ async function addLink() {
     window.setTimeout(() => setRandomThemeDone(false), 1600);
   }
 
-  // ✅ 여기 추가 (return 위)
   const cleanPath = publicPath.trim();
   const fullUrl = `https://fluffy-link.xyz${cleanPath}`;
 
+  // Avatar URL for top bar
+  const topBarAvatarUrl =
+    draftUser.image ||
+    draftUser.discordImage ||
+    null;
+
+  // Tab config
+  const TABS: Array<[typeof tab, string, string]> = [
+    ["profile", "프로필", "👤"],
+    ["links", "링크", "🔗"],
+    ["theme", "테마", "🎨"],
+    ["stats", "방문자", "📊"],
+    ["settings", "설정", "⚙️"],
+  ];
+
   return (
-    <div className={clsx("min-h-screen relative overflow-hidden", theme.bg)}>
-      <div className="absolute inset-0 noise opacity-30" />
-      {draftUser.theme === "custom" && parseThemeBg() ? (
-        <div
-          className="absolute inset-0 opacity-35"
-          style={{
-            backgroundImage: `url(${parseThemeBg()})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        />
-      ) : null}
+    <div className="min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 relative overflow-hidden transition-colors">
+      {/* Decorative blobs */}
+      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-pink-300/40 dark:bg-fuchsia-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full bg-violet-300/40 dark:bg-indigo-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-sky-300/40 dark:bg-sky-500/10 blur-3xl" />
+      <div className="absolute inset-0 noise opacity-[0.35] dark:opacity-[0.15]" />
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-10">
-        <header className="flex flex-wrap items-center justify-between gap-3">
+      {/* === Floating capsule top bar === */}
+      <SiteTopBar
+        activePage="dashboard"
+        userAvatarUrl={topBarAvatarUrl}
+      />
+
+      <div className="relative mx-auto w-full max-w-6xl px-4 sm:px-6 pt-6 sm:pt-10 pb-24">
+        {/* Page header + action buttons */}
+        <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-          <NextLink
-            href="/"
-            className={clsx(
-              "group inline-flex items-center gap-2 text-xl font-black tracking-tight cursor-pointer",
-              uiText ?? ""
-            )}
-          >
-            <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15">
-              <NextImage src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover" />
-            </span>
-            Dashboard | 프로필 수정하기
-          </NextLink>
-
-            <div className={clsx("text-sm", uiSub)}>
-              프로필 페이지 바로가기:
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }}>
+              대시보드
+            </h1>
+            <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300" style={{ wordBreak: "keep-all" }}>
+              프로필을 수정하고 링크를 관리하세요. 변경사항은 우측 상단 저장 버튼을 눌러야 적용돼요!
+            </p>
+            <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+              <span className="opacity-80">프로필 페이지: </span>
               <a
                 href={fullUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="ml-1 underline break-all"
+                className="font-semibold underline break-all hover:text-slate-900 dark:hover:text-slate-100"
               >
                 {fullUrl}
               </a>
@@ -540,14 +532,10 @@ async function addLink() {
               disabled={!dirty || saving}
               onClick={saveAll}
               className={clsx(
-                "rounded-2xl px-4 py-2 font-semibold shadow-soft transition",
+                "inline-flex items-center justify-center gap-1.5 rounded-full px-5 py-2.5 text-sm font-semibold shadow-soft transition-all active:scale-[0.98] hover:scale-[1.02]",
                 dirty
-                  ? isDark
-                    ? "bg-white text-slate-900 hover:bg-white/90"
-                    : "bg-slate-900 text-white hover:opacity-95"
-                  : isDark
-                  ? "bg-white/20 text-white/50"
-                  : "bg-white/40 text-slate-500",
+                  ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white border-transparent hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 shadow-[0_10px_30px_-12px_rgba(124,58,237,0.55)]"
+                  : "bg-white/60 dark:bg-white/10 text-slate-500 dark:text-slate-400 border border-white/60 dark:border-white/15",
                 saving ? "opacity-70" : ""
               )}
               title={dirty ? "저장" : "변경 사항 없음"}
@@ -559,14 +547,10 @@ async function addLink() {
               disabled={!dirty || saving}
               onClick={resetDraft}
               className={clsx(
-                "rounded-2xl border px-4 py-2 font-semibold transition",
+                "inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold border transition-all active:scale-[0.98] hover:scale-[1.02]",
                 dirty
-                  ? isDark
-                    ? "border-white/30 bg-white/15 text-white hover:bg-white/20"
-                    : "border-white/50 bg-white/55 hover:bg-white/70"
-                  : isDark
-                  ? "border-white/15 bg-white/10 text-white/40"
-                  : "border-white/30 bg-white/35 text-slate-500"
+                  ? "border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20"
+                  : "border-white/40 bg-white/40 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
               )}
             >
               되돌리기
@@ -577,42 +561,32 @@ async function addLink() {
                 await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
                 signOut({ callbackUrl: "/" });
               }}
-              className={clsx(
-                "rounded-2xl px-4 py-2 font-semibold shadow-soft transition",
-                isDark ? "bg-white/20 text-white hover:bg-white/25" : "bg-slate-900/90 text-white hover:opacity-95"
-              )}
+              className="inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold border border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20 transition-all active:scale-[0.98] hover:scale-[1.02]"
             >
               로그아웃
             </button>
           </div>
-        </header>
+        </div>
 
+        {/* Main grid */}
         <div className="mt-8 grid gap-6 lg:grid-cols-[380px_1fr]">
-          {/* Left panel */}
-          <div className={clsx("rounded-2xl border backdrop-blur-glass shadow-soft overflow-hidden", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/35")}>
-            <div className="flex gap-1 p-2">
-              {[
-                ["profile", "프로필"],
-                ["links", "링크"],
-                ["theme", "테마"],
-                ["stats", "방문자"],
-                ["settings", "설정"],
-              ].map(([k, label]) => (
+          {/* === Left panel: tabs + content === */}
+          <div className="rounded-3xl border border-white/60 dark:border-white/15 bg-white/55 dark:bg-slate-900/40 backdrop-blur-glass shadow-soft overflow-hidden">
+            {/* Tab bar */}
+            <div className="flex gap-1 p-2 overflow-x-auto">
+              {TABS.map(([k, label, icon]) => (
                 <button
                   key={k}
-                  onClick={() => setTab(k as any)}
+                  onClick={() => setTab(k)}
                   className={clsx(
-                    "flex-1 rounded-xl px-3 py-2 text-sm font-semibold transition",
+                    "flex-1 whitespace-nowrap rounded-2xl px-3 py-2 text-sm font-semibold transition-all",
                     tab === k
-                      ? isDark
-                        ? "bg-white text-slate-900"
-                        : "bg-slate-900 text-white"
-                      : isDark
-                      ? "bg-white/10 text-white/80 hover:bg-white/15"
-                      : "bg-white/40 hover:bg-white/55"
+                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
+                      : "text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-white/10"
                   )}
                 >
-                  {label}
+                  <span className="mr-1" aria-hidden>{icon}</span>
+                  <span className="hidden sm:inline">{label}</span>
                 </button>
               ))}
             </div>
@@ -717,7 +691,7 @@ async function addLink() {
                         }));
                         markDirty();
                       }}
-                      style={{ colorScheme: isDark ? "dark" : "light" }} // ✅ 추가
+                      style={{ colorScheme: isDark ? "dark" : "light" }}
                       className={clsx(
                         "w-full rounded-xl border px-3 py-2",
                         isDark
@@ -803,7 +777,6 @@ async function addLink() {
                       1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
                     </p>
                   </Field>
-
                 </div>
               ) : null}
 
@@ -811,17 +784,17 @@ async function addLink() {
                 <div>
                   <button
                     onClick={addLink}
-                    className={clsx("w-full rounded-2xl px-4 py-2 font-semibold", isDark ? "bg-white text-slate-900" : "bg-slate-900 text-white")}
+                    className={clsx("w-full rounded-2xl px-4 py-2.5 font-semibold transition-all hover:scale-[1.01] active:scale-[0.99]", isDark ? "bg-white text-slate-900" : "bg-slate-900 text-white")}
                   >
-                    링크 추가
+                    + 링크 추가
                   </button>
 
                   <div className="mt-4 space-y-3">
                     {draftLinks.map((l) => (
                       <div key={l.id} className={clsx("rounded-2xl border p-3", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
                         <div className="flex items-center justify-between gap-2">
-                          <div className={clsx("font-bold", uiText)}>{l.title}</div>
-                          <div className="flex gap-1">
+                          <div className={clsx("font-bold truncate", uiText)}>{l.title}</div>
+                          <div className="flex gap-1 shrink-0">
                             <button
                               onClick={() => moveLink(l.id, -1)}
                               className={clsx("rounded-xl border px-2 py-1 text-xs", isDark ? "border-white/15 bg-white/10 text-white/90" : "border-white/50 bg-white/60")}
@@ -838,7 +811,7 @@ async function addLink() {
                             </button>
                             <button
                               onClick={() => deleteLink(l.id)}
-                              className="rounded-xl bg-rose-600 px-2 py-1 text-xs font-semibold text-white"
+                              className="rounded-xl bg-rose-600 px-2 py-1 text-xs font-semibold text-white hover:bg-rose-500 transition-colors"
                               title="삭제"
                             >
                               삭제
@@ -873,7 +846,6 @@ async function addLink() {
                             ))}
                           </select>
 
-
                             <input
                               value={l.title}
                               maxLength={60}
@@ -900,7 +872,6 @@ async function addLink() {
                                 const handleInput = e.target.value;
                                 setLink(l.id, { handleInput });
                               }}
-
                               className={clsx("rounded-xl border px-3 py-2 text-sm", isDark ? "border-white/15 bg-white/10 text-white placeholder:text-white/40" : "border-white/50 bg-white/60")}
                               placeholder={l.platform === "bluesky" ? "예시) cloud.bsky.social" : "예시) CLOUD (@ 없이)"}
                             />
@@ -932,7 +903,6 @@ async function addLink() {
                                       }
                                       onChange={(e) => {
                                         const raw = e.target.value;
-                                        // 비우기(백스페이스로 전부 지우기) 허용
                                         if (raw === "") {
                                           setLink(l.id, { icon: "link" });
                                           setEmojiErrors((prev) => {
@@ -1001,7 +971,7 @@ async function addLink() {
                                       placeholder="🔗"
                                     />
                                     <span className={clsx("text-xs", uiSub)}>
-                                      이모지(1개)만 입력할 수 있어요. 
+                                      이모지(1개)만 입력할 수 있어요.
                                       공백으로 둘 시 링크이모지 (🔗) 로 자동적용 돼요.
                                     </span>
                                   </div>
@@ -1032,7 +1002,7 @@ async function addLink() {
                     ))}
                     {draftLinks.length === 0 ? (
                       <div className={clsx("rounded-2xl border p-4 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/35 text-slate-700")}>
-                        아직 링크가 없어요! “링크 추가” 버튼을 눌러서 설정해주세요!
+                        아직 링크가 없어요! &ldquo;링크 추가&rdquo; 버튼을 눌러서 설정해주세요!
                       </div>
                     ) : null}
                   </div>
@@ -1066,7 +1036,6 @@ async function addLink() {
                         )}
                       >
                         Reset
-                        
                       </button>
                     </div>
 
@@ -1320,90 +1289,103 @@ async function addLink() {
             </div>
           </div>
 
-          {/* Right preview */}
+          {/* === Right preview === */}
           <div className="flex justify-center">
             <div className="w-full max-w-md">
-              <div className={clsx("rounded-[2rem] border backdrop-blur-glass shadow-soft overflow-hidden", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/30")}>
-                <div
-                  className="h-40 bg-gradient-to-r from-sky-300/50 to-violet-300/50"
-                  style={
-                    draftUser.bannerUrl
-                      ? { backgroundImage: `url(${draftUser.bannerUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
-                      : undefined
-                  }
-                />
-                <div className="-mt-10 flex justify-center">
-                  <img
-                    src={draftUser.image || "https://placehold.co/128x128/png"}
-                    alt="avatar"
-                    className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
-                  />
-                </div>
-                <div className="px-6 pb-8 pt-4 text-center">
-                  <div className={clsx("text-2xl font-black", uiText)}>
-                    @{draftUser.handle}
-                  </div>
-
-                  {activeTag ? (
-                    <div
-                      className={`mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold ${
-                        isDark ? "text-white" : "text-slate-900"
-                      }`}
-                    >
-                      <img
-                        src={activeTag.image}
-                        alt={activeTag.label}
-                        className="h-4 w-4"
-                      />
-                      {activeTag.label}
-                    </div>
-                  ) : null}
-
-                  {draftUser.bio ? (
-                    <p className={clsx("mt-1 text-sm whitespace-pre-wrap", uiSub)}>
-                      {draftUser.bio}
-                    </p>
-                  ) : null}
-
-                  <div className="mt-5 grid gap-3">
-                    {draftLinks.filter((l) => l.enabled).map((l) => (
-                      <div
-                        key={l.id}
-                        className={clsx("group flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 font-semibold", theme.button)}
-                      >
-                        <span className="flex items-center gap-3">
-                          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/35">
-                            {l.platform === "other" ? (
-                              <span className="inline-flex items-center justify-center text-xl leading-none">{getOtherLinkDisplayIcon(l.icon)}</span>
-                            ) : PLATFORM_ICONS[l.platform] ? (
-                              <img
-                                src={PLATFORM_ICONS[l.platform]!}
-                                alt={l.platform}
-                                className="h-5 w-5 object-contain"
-                              />
-                            ) : (
-                              <span className="inline-flex items-center justify-center text-lg leading-none">🔗</span>
-                            )}
-                          </span>
-                          <span className="text-left">
-                            <span className={clsx("block", uiText)}>{l.title}</span>
-                            {l.subtitle ? <span className={clsx("block text-xs font-medium opacity-70", uiSub)}>{l.subtitle}</span> : null}
-                          </span>
-                        </span>
-                        <span className="opacity-60 group-hover:opacity-100">↗</span>
-                      </div>
-                    ))}
-                    {draftLinks.filter((l) => l.enabled).length === 0 ? (
-                      <div className={clsx("rounded-2xl border px-4 py-6 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/40 bg-white/30 text-slate-700")}>
-                        아직 설정된 링크가 없어요!
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
+              {/* Preview label */}
+              <div className="mb-3 flex items-center justify-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900/90 dark:bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white dark:text-slate-900 shadow-soft">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Live Preview
+                </span>
               </div>
 
-              <div className={clsx("mt-4 rounded-2xl border backdrop-blur-glass p-4 text-xs", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/35 text-slate-700")}>
-                변경사항은 우측 상단 <b>저장</b> 버튼을 눌러야 실제로 적용돼요!
+              {/* Outer soft glow */}
+              <div className="pointer-events-none absolute -inset-3 bg-gradient-to-br from-pink-300/30 via-violet-300/25 to-sky-300/30 dark:from-fuchsia-500/10 dark:via-violet-500/10 dark:to-sky-500/10 rounded-[3rem] blur-2xl" />
+
+              <div className="relative">
+                <div className={clsx("rounded-[2rem] border backdrop-blur-glass shadow-soft overflow-hidden", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/30")}>
+                  <div
+                    className="h-40 bg-gradient-to-r from-sky-300/50 to-violet-300/50"
+                    style={
+                      draftUser.bannerUrl
+                        ? { backgroundImage: `url(${draftUser.bannerUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+                        : undefined
+                    }
+                  />
+                  <div className="-mt-10 flex justify-center">
+                    <img
+                      src={draftUser.image || "https://placehold.co/128x128/png"}
+                      alt="avatar"
+                      className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
+                    />
+                  </div>
+                  <div className="px-6 pb-8 pt-4 text-center">
+                    <div className={clsx("text-2xl font-black", uiText)}>
+                      @{draftUser.handle}
+                    </div>
+
+                    {activeTag ? (
+                      <div
+                        className={`mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold ${
+                          isDark ? "text-white" : "text-slate-900"
+                        }`}
+                      >
+                        <img
+                          src={activeTag.image}
+                          alt={activeTag.label}
+                          className="h-4 w-4"
+                        />
+                        {activeTag.label}
+                      </div>
+                    ) : null}
+
+                    {draftUser.bio ? (
+                      <p className={clsx("mt-1 text-sm whitespace-pre-wrap", uiSub)}>
+                        {draftUser.bio}
+                      </p>
+                    ) : null}
+
+                    <div className="mt-5 grid gap-3">
+                      {draftLinks.filter((l) => l.enabled).map((l) => (
+                        <div
+                          key={l.id}
+                          className={clsx("group flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 font-semibold", theme.button)}
+                        >
+                          <span className="flex items-center gap-3">
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/35">
+                              {l.platform === "other" ? (
+                                <span className="inline-flex items-center justify-center text-xl leading-none">{getOtherLinkDisplayIcon(l.icon)}</span>
+                              ) : PLATFORM_ICONS[l.platform] ? (
+                                <img
+                                  src={PLATFORM_ICONS[l.platform]!}
+                                  alt={l.platform}
+                                  className="h-5 w-5 object-contain"
+                                />
+                              ) : (
+                                <span className="inline-flex items-center justify-center text-lg leading-none">🔗</span>
+                              )}
+                            </span>
+                            <span className="text-left">
+                              <span className={clsx("block", uiText)}>{l.title}</span>
+                              {l.subtitle ? <span className={clsx("block text-xs font-medium opacity-70", uiSub)}>{l.subtitle}</span> : null}
+                            </span>
+                          </span>
+                          <span className="opacity-60 group-hover:opacity-100">↗</span>
+                        </div>
+                      ))}
+                      {draftLinks.filter((l) => l.enabled).length === 0 ? (
+                        <div className={clsx("rounded-2xl border px-4 py-6 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/40 bg-white/30 text-slate-700")}>
+                          아직 설정된 링크가 없어요!
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+
+                <div className={clsx("mt-4 rounded-2xl border backdrop-blur-glass p-4 text-xs", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/35 text-slate-700")}>
+                  변경사항은 우측 상단 <b>저장</b> 버튼을 눌러야 실제로 적용돼요!
+                </div>
               </div>
             </div>
           </div>

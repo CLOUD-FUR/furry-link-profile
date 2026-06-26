@@ -6,6 +6,7 @@ import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import Script from "next/script";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 import { ProfileHandleShare } from "@/components/profile-handle-share";
+import { SiteTopBar } from "@/components/SiteTopBar";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
@@ -169,6 +170,8 @@ export default async function PublicProfile({
           strategy="afterInteractive"
         />
       ) : null}
+
+      <SiteTopBar activePage="profile" showNav={true} />
 
       <div
       className={`min-h-screen flex justify-center ${theme.bg}`}
