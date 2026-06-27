@@ -6,7 +6,7 @@ import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 import { ProfileHandleShare } from "@/components/profile-handle-share";
 import { SafeAvatar } from "@/components/safe-avatar";
-import { ProfileParticles, TSPARTICLES_EFFECTS } from "@/components/profile-particles";
+import { ProfileParticles } from "@/components/profile-particles";
 import Script from "next/script";
 import type { Metadata } from "next";
 
@@ -162,7 +162,7 @@ export default async function PublicProfile({
       {user.profileEffect === "confetti" ? (
         <Script src="https://app.embed.im/confetti.js" strategy="afterInteractive" />
       ) : null}
-      {user.profileEffect && TSPARTICLES_EFFECTS.includes(user.profileEffect) ? (
+      {user.profileEffect && ["stars", "fireworks", "sakura", "hearts", "bubbles"].includes(user.profileEffect) ? (
         <ProfileParticles effect={user.profileEffect} />
       ) : null}
 

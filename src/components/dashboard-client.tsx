@@ -549,7 +549,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               className={clsx(
                 "inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold shadow-soft transition-all active:scale-[0.98] hover:scale-[1.02]",
                 dirty
-                  ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white border-transparent hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 shadow-[0_10px_30px_-12px_rgba(124,58,237,0.55)]"
+                  ? "bg-slate-900 text-white border-transparent hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 shadow-soft"
                   : "bg-white/60 dark:bg-white/10 text-slate-500 dark:text-slate-400 border border-white/60 dark:border-white/15",
                 saving ? "opacity-70" : ""
               )}
