@@ -504,7 +504,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const topBarAvatarUrl =
     draftUser.image ||
     draftUser.discordImage ||
-    null;
+    "/logo.png";
 
   // Tab config
   const TABS: Array<[typeof tab, string, string]> = [
@@ -1387,7 +1387,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   />
                   <div className="-mt-10 flex justify-center">
                     <img
-                      src={draftUser.image || "https://placehold.co/128x128/png"}
+                      src={draftUser.image || draftUser.discordImage || "/logo.png"}
                       alt="avatar"
                       className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
                     />

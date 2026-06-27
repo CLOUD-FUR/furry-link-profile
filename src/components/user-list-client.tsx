@@ -21,7 +21,7 @@ function getAvatarUrl(u: UserItem): string {
   if (u.handleLower === FIXED_AVATAR_HANDLE) return FIXED_AVATAR_URL;
   if (u.image?.startsWith("http") || u.image?.startsWith("data:")) return u.image;
   if (u.discordImage?.startsWith("http")) return u.discordImage;
-  return "/discord-avatar-placeholder.png";
+  return "/logo.png";
 }
 
 function matchQuery(u: UserItem, q: string): boolean {

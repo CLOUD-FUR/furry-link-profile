@@ -206,7 +206,7 @@ export default async function PublicProfile({
               src={
                 isFixedAvatarUser
                   ? FIXED_AVATAR_URL
-                  : user.image || user.discordImage || "https://placehold.co/128x128/png"
+                  : user.image || user.discordImage || "/logo.png"
               }
               alt="avatar"
               className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
