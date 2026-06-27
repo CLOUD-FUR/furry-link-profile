@@ -6,7 +6,8 @@ import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 import { ProfileHandleShare } from "@/components/profile-handle-share";
 import { SafeAvatar } from "@/components/safe-avatar";
-import { ProfileParticles } from "@/components/profile-particles";
+import { ProfileParticles, TSPARTICLES_EFFECTS } from "@/components/profile-particles";
+import Script from "next/script";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
@@ -155,6 +156,15 @@ export default async function PublicProfile({
   return (
     <>
       <ProfileVisitTracker handle={handleParam} />
+      {user.profileEffect === "snow" ? (
+        <Script src="https://app.embed.im/snow.js" strategy="afterInteractive" />
+      ) : null}
+      {user.profileEffect === "confetti" ? (
+        <Script src="https://app.embed.im/confetti.js" strategy="afterInteractive" />
+      ) : null}
+      {user.profileEffect && TSPARTICLES_EFFECTS.includes(user.profileEffect) ? (
+        <ProfileParticles effect={user.profileEffect} />
+      ) : null}
 
       <div
       className={`min-h-screen flex justify-center ${theme.bg}`}
@@ -172,9 +182,6 @@ export default async function PublicProfile({
         <div
           className={`relative rounded-[2rem] border ${theme.card} backdrop-blur-glass shadow-soft overflow-hidden`}
         >
-          {user.profileEffect && user.profileEffect !== "" ? (
-            <ProfileParticles effect={user.profileEffect} />
-          ) : null}
           {/* Banner */}
           <div
             className="h-40 bg-gradient-to-r from-sky-300/50 to-violet-300/50"

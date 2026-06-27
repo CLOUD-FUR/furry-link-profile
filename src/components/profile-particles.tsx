@@ -1,34 +1,40 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Particles, ParticlesProvider } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import type { Engine, ISourceOptions } from "@tsparticles/engine";
 
 /**
- * 프로필 카드 내부에 렌더링되는 tsParticles 기반 효과 컴포넌트.
+ * tsParticles 기반 프로필 효과 컴포넌트.
  *
- * 지원 효과:
- *  - snow      : 눈송이가 위에서 아래로 떨어짐 (커스텀 config, preset-snow와 유사)
- *  - confetti  : 색종이 조각이 폭발하며 떨어짐 (커스텀 config, preset-confetti와 유사)
- *  - stars     : 별이 반짝이며 떠다님 (커스텀 config, preset-stars와 유사)
- *  - fireworks : 불꽃놀이 (emitter 기반 커스텀 config)
- *  - sakura    : 분홍 꽃잎이 위에서 아래로 흩날리며 회전 (emoji char "🌸" 기반)
- *  - hearts    : 빨간/분홍 하트가 아래에서 위로 떠오름 (emoji char "♥"/"❤" 기반)
- *  - bubbles   : 투명한 거품이 아래에서 위로 올라감 (circle 기반)
+ * snow / confetti 는 app.embed.im Script 방식을 사용하므로 여기서 제외.
+ * 이 컴포넌트가 처리하는 효과 (5개):
+ *  - stars     : 별이 반짝이며 떠다님
+ *  - fireworks : 불꽃놀이 (emitter 기반)
+ *  - sakura    : 분홍 꽃잎이 흩날림 (emoji "🌸" 기반)
+ *  - hearts    : 하트가 아래에서 위로 떠오름 (emoji "♥"/"❤" 기반)
+ *  - bubbles   : 거품이 아래에서 위로 올라감
  *
- * 모든 효과는 fullScreen: false 로 프로필 카드 영역에만 적용된다.
+ * 모든 효과는 fullScreen: enable 로 뷰포트 전체에 렌더링된다.
  * 컴포넌트 언마운트 시 tsParticles가 container.destroy()를 자동으로 호출한다.
  */
 
 type ProfileEffect =
-  | "snow"
-  | "confetti"
   | "stars"
   | "fireworks"
   | "sakura"
   | "hearts"
   | "bubbles";
+
+/** ProfileParticles 가 처리하는 효과 목록 (page.tsx 에서도 사용) */
+export const TSPARTICLES_EFFECTS: string[] = [
+  "stars",
+  "fireworks",
+  "sakura",
+  "hearts",
+  "bubbles",
+];
 
 /* ---------- engine 초기화 (한 번만) ---------- */
 
@@ -42,108 +48,9 @@ async function initEngine(engine: Engine): Promise<void> {
 
 /* ---------- 효과별 options ---------- */
 
-function snowOptions(): ISourceOptions {
-  return {
-    fullScreen: { enable: false },
-    background: { color: "transparent" },
-    particles: {
-      number: { value: 80, density: { enable: true } },
-      color: { value: "#ffffff" },
-      shape: { type: "circle" },
-      opacity: {
-        value: { min: 0.4, max: 0.9 },
-        animation: { enable: true, speed: 0.5, sync: false },
-      },
-      size: {
-        value: { min: 1, max: 4 },
-      },
-      move: {
-        enable: true,
-        direction: "bottom" as any,
-        straight: false,
-        speed: { min: 1, max: 2.5 },
-        outModes: { default: "out" as any },
-      },
-      wobble: {
-        enable: true,
-        distance: 10,
-        speed: { min: -2, max: 2 },
-      },
-    },
-    detectRetina: true,
-  };
-}
-
-function confettiOptions(): ISourceOptions {
-  return {
-    fullScreen: { enable: false },
-    background: { color: "transparent" },
-    particles: {
-      number: { value: 0, density: { enable: false } },
-      color: {
-        value: [
-          "#fbbf24",
-          "#f87171",
-          "#60a5fa",
-          "#34d399",
-          "#a78bfa",
-          "#f472b6",
-          "#facc15",
-        ],
-      },
-      shape: {
-        type: ["square", "circle"],
-      },
-      opacity: {
-        value: { min: 0.7, max: 1 },
-      },
-      size: {
-        value: { min: 3, max: 7 },
-      },
-      move: {
-        enable: true,
-        gravity: { enable: true, acceleration: 15 },
-        direction: "none" as any,
-        straight: false,
-        speed: { min: 10, max: 25 },
-        outModes: { default: "destroy" as any, top: "destroy" as any },
-      },
-      rotate: {
-        enable: true,
-        animation: { enable: true, speed: { min: 5, max: 15 }, sync: false },
-      },
-      tilt: {
-        enable: true,
-        animation: { enable: true, speed: { min: 0, max: 10 }, sync: false },
-        direction: "random" as any,
-      },
-      wobble: {
-        enable: true,
-        distance: 10,
-        speed: { min: -5, max: 5 },
-      },
-    },
-    emitters: [
-      {
-        life: { count: 0, duration: 0.1 },
-        rate: { delay: 0.2, quantity: 8 },
-        size: { width: 0, height: 0 },
-        position: { x: 50, y: 0 },
-        particles: {
-          move: {
-            direction: "bottom" as any,
-            speed: { min: 10, max: 25 },
-          },
-        },
-      },
-    ],
-    detectRetina: true,
-  };
-}
-
 function starsOptions(): ISourceOptions {
   return {
-    fullScreen: { enable: false },
+    fullScreen: { enable: true, zIndex: 1 },
     background: { color: "transparent" },
     particles: {
       number: { value: 60, density: { enable: true } },
@@ -175,7 +82,7 @@ function starsOptions(): ISourceOptions {
 
 function fireworksOptions(): ISourceOptions {
   return {
-    fullScreen: { enable: false },
+    fullScreen: { enable: true, zIndex: 1 },
     background: { color: "transparent" },
     particles: {
       number: { value: 0 },
@@ -268,7 +175,7 @@ function sakuraOptions(): ISourceOptions {
   // 벚꽃 꽃잎 — emoji char "🌸" 을 shape로 사용
   // @tsparticles/slim 에는 shape-emoji 가 포함되어 있음
   return {
-    fullScreen: { enable: false },
+    fullScreen: { enable: true, zIndex: 1 },
     background: { color: "transparent" },
     particles: {
       number: { value: 40, density: { enable: true } },
@@ -325,7 +232,7 @@ function heartsOptions(): ISourceOptions {
   // 하트 — emoji char "❤" / "♥" / "💗" 을 shape로 사용
   // 아래에서 위로 떠오르도록 direction: top
   return {
-    fullScreen: { enable: false },
+    fullScreen: { enable: true, zIndex: 1 },
     background: { color: "transparent" },
     particles: {
       number: { value: 30, density: { enable: true } },
@@ -377,7 +284,7 @@ function heartsOptions(): ISourceOptions {
 function bubblesOptions(): ISourceOptions {
   // 거품 — 투명한 원형 입자가 아래에서 위로
   return {
-    fullScreen: { enable: false },
+    fullScreen: { enable: true, zIndex: 1 },
     background: { color: "transparent" },
     particles: {
       number: { value: 35, density: { enable: true } },
@@ -420,10 +327,6 @@ function bubblesOptions(): ISourceOptions {
 
 function optionsFor(effect: ProfileEffect): ISourceOptions {
   switch (effect) {
-    case "snow":
-      return snowOptions();
-    case "confetti":
-      return confettiOptions();
     case "stars":
       return starsOptions();
     case "fireworks":
@@ -435,7 +338,7 @@ function optionsFor(effect: ProfileEffect): ISourceOptions {
     case "bubbles":
       return bubblesOptions();
     default:
-      return snowOptions();
+      return starsOptions();
   }
 }
 
@@ -448,8 +351,6 @@ export function ProfileParticles({ effect }: { effect: string }) {
 
   const options = useMemo(() => {
     const valid: ProfileEffect[] = [
-      "snow",
-      "confetti",
       "stars",
       "fireworks",
       "sakura",
@@ -457,31 +358,16 @@ export function ProfileParticles({ effect }: { effect: string }) {
       "bubbles",
     ];
     return optionsFor(
-      (valid as string[]).includes(effect) ? (effect as ProfileEffect) : "snow"
+      (valid as string[]).includes(effect) ? (effect as ProfileEffect) : "stars"
     );
   }, [effect]);
 
-  // 엔진 초기화는 ParticlesProvider init prop 으로 전달하면 된다.
-  // ParticlesProvider 가 마운트될 때 한 번 호출된다.
-
+  // fullScreen: enable 이므로 tsParticles 가 document.body 에 canvas 를
+  // position:fixed; inset:0 로 직접 append 한다.
+  // 별도 wrapper div 불필요 (canvas 가 pointer-events:none 기본).
   return (
     <ParticlesProvider init={initEngine}>
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-          zIndex: 1,
-          overflow: "hidden",
-        }}
-        aria-hidden="true"
-      >
-        <Particles
-          id={id}
-          options={options}
-          style={{ width: "100%", height: "100%" }}
-        />
-      </div>
+      <Particles id={id} options={options} />
     </ParticlesProvider>
   );
 }
