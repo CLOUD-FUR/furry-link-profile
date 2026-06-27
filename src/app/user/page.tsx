@@ -31,7 +31,10 @@ export default async function UserListPage() {
     const bt = b.lastBumpedAt?.getTime() ?? 0;
     if (bt !== at) return bt - at;
     return (a.handleLower ?? "").localeCompare(b.handleLower ?? "");
-  }).map(({ lastBumpedAt: _, ...u }) => u);
+  }).map(({ lastBumpedAt, ...u }) => ({
+    ...u,
+    bumpedRecently: lastBumpedAt ? Date.now() - lastBumpedAt.getTime() < 24 * 60 * 60 * 1000 : false,
+  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 relative overflow-hidden transition-colors">
