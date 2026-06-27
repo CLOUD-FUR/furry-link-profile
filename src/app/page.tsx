@@ -26,6 +26,9 @@ export default function HomePage() {
               </span>
             </a>
             <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              <ButtonLink href="/login" variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
+                로그인
+              </ButtonLink>
               <ButtonLink href="/user" variant="secondary" size="sm" className="rounded-full">
                 유저 리스트
               </ButtonLink>
