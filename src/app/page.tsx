@@ -26,9 +26,6 @@ export default function HomePage() {
               </span>
             </a>
             <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-              <ButtonLink href="/login" variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
-                로그인
-              </ButtonLink>
               <ButtonLink href="/user" variant="secondary" size="sm" className="rounded-full">
                 유저 리스트
               </ButtonLink>
@@ -70,8 +67,8 @@ export default function HomePage() {
                   <path fillRule="evenodd" d="M7.293 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 10 7.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
                 </svg>
               </ButtonLink>
-              <ButtonLink href="/user" variant="secondary" size="lg" className="w-full sm:w-auto">
-                유저 리스트 보기
+              <ButtonLink href="/@CLOUD" variant="secondary" size="lg" className="w-full sm:w-auto">
+                개발자 프로필
               </ButtonLink>
             </div>
 
