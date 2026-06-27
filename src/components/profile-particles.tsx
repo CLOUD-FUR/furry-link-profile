@@ -27,15 +27,6 @@ type ProfileEffect =
   | "hearts"
   | "bubbles";
 
-/** ProfileParticles 가 처리하는 효과 목록 (page.tsx 에서도 사용) */
-export const TSPARTICLES_EFFECTS: string[] = [
-  "stars",
-  "fireworks",
-  "sakura",
-  "hearts",
-  "bubbles",
-];
-
 /* ---------- engine 초기화 (한 번만) ---------- */
 
 let enginePromise: Promise<void> | null = null;

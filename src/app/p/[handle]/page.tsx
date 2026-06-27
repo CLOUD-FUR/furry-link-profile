@@ -12,6 +12,8 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
 
+const TSPARTICLES_EFFECTS = new Set(["stars", "fireworks", "sakura", "hearts", "bubbles"]);
+
 /**
  * @CLOUD 계정만 고정 아바타 이미지를 사용.
  * 나머지 핸들(ex. @Tiger_Rangi)은 항상 현재 프로필 이미지/디스코드 이미지를 사용.
@@ -162,7 +164,7 @@ export default async function PublicProfile({
       {user.profileEffect === "confetti" ? (
         <Script src="https://app.embed.im/confetti.js" strategy="afterInteractive" />
       ) : null}
-      {user.profileEffect && ["stars", "fireworks", "sakura", "hearts", "bubbles"].includes(user.profileEffect) ? (
+      {user.profileEffect && TSPARTICLES_EFFECTS.has(user.profileEffect) ? (
         <ProfileParticles effect={user.profileEffect} />
       ) : null}
 
