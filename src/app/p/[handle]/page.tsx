@@ -3,10 +3,10 @@ import { getThemeById } from "@/lib/themes";
 import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { notFound } from "next/navigation";
 import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
-import Script from "next/script";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 import { ProfileHandleShare } from "@/components/profile-handle-share";
 import { SafeAvatar } from "@/components/safe-avatar";
+import { ProfileParticles } from "@/components/profile-particles";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
@@ -152,28 +152,9 @@ export default async function PublicProfile({
 
   const isFixedAvatarUser = handleLower === FIXED_AVATAR_HANDLE;
 
-  const cardEffectClass =
-    user.profileEffect === "gradientDrift"
-      ? "profile-effect-gradientDrift"
-      : user.profileEffect === "starfield"
-      ? "profile-effect-starfield"
-      : user.profileEffect === "aurora"
-      ? "profile-effect-aurora"
-      : user.profileEffect === "waves"
-      ? "profile-effect-waves"
-      : user.profileEffect === "gridDrift"
-      ? "profile-effect-gridDrift"
-      : "";
-
   return (
     <>
       <ProfileVisitTracker handle={handleParam} />
-      {user.profileEffect === "snow" ? (
-        <Script src="https://app.embed.im/snow.js" strategy="afterInteractive" />
-      ) : null}
-      {user.profileEffect === "confetti" ? (
-        <Script src="https://app.embed.im/confetti.js" strategy="afterInteractive" />
-      ) : null}
 
       <div
       className={`min-h-screen flex justify-center ${theme.bg}`}
@@ -189,8 +170,11 @@ export default async function PublicProfile({
     >
       <div className="relative mx-auto w-full max-w-md px-4 py-10">
         <div
-          className={`rounded-[2rem] border ${theme.card} backdrop-blur-glass shadow-soft overflow-hidden ${cardEffectClass}`}
+          className={`relative rounded-[2rem] border ${theme.card} backdrop-blur-glass shadow-soft overflow-hidden`}
         >
+          {user.profileEffect && user.profileEffect !== "" ? (
+            <ProfileParticles effect={user.profileEffect} />
+          ) : null}
           {/* Banner */}
           <div
             className="h-40 bg-gradient-to-r from-sky-300/50 to-violet-300/50"

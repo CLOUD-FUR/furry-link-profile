@@ -193,11 +193,11 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       new Set([
         "snow",
         "confetti",
-        "gradientDrift",
-        "starfield",
-        "aurora",
-        "waves",
-        "gridDrift",
+        "stars",
+        "fireworks",
+        "sakura",
+        "hearts",
+        "bubbles",
       ]),
     []
   );
@@ -809,39 +809,39 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         색종이 조각
                       </option>
                       <option
-                        value="gradientDrift"
+                        value="stars"
                         className={isDark ? "bg-slate-900 text-white" : ""}
                       >
-                        그라데이션 드리프트
+                        별빛
                       </option>
                       <option
-                        value="starfield"
+                        value="fireworks"
                         className={isDark ? "bg-slate-900 text-white" : ""}
                       >
-                        별빛 배경
+                        불꽃놀이
                       </option>
                       <option
-                        value="aurora"
+                        value="sakura"
                         className={isDark ? "bg-slate-900 text-white" : ""}
                       >
-                        오로라
+                        벚꽃
                       </option>
                       <option
-                        value="waves"
+                        value="hearts"
                         className={isDark ? "bg-slate-900 text-white" : ""}
                       >
-                        파도
+                        하트
                       </option>
                       <option
-                        value="gridDrift"
+                        value="bubbles"
                         className={isDark ? "bg-slate-900 text-white" : ""}
                       >
-                        그리드 드리프트
+                        버블
                       </option>
                     </select>
 
                     <p className={clsx("mt-1 text-xs", uiSub)}>
-                      프로필 페이지에 스노우 / 색종이 조각 / 그라데이션 드리프트 / 별빛 배경 / 오로라 / 파도 / 그리드 드리프트 효과를 1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
+                      프로필 페이지에 스노우 / 색종이 조각 / 별빛 / 불꽃놀이 / 벚꽃 / 하트 / 버블 효과를 1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
                     </p>
                   </Field>
                 </div>

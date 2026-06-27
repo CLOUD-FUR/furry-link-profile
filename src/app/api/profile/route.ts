@@ -53,11 +53,11 @@ const PatchSchema = z.object({
     .enum([
       "snow",
       "confetti",
-      "gradientDrift",
-      "starfield",
-      "aurora",
-      "waves",
-      "gridDrift",
+      "stars",
+      "fireworks",
+      "sakura",
+      "hearts",
+      "bubbles",
     ])
     .optional()
     .nullable(),
