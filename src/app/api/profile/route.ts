@@ -54,9 +54,6 @@ const PatchSchema = z.object({
       "snow",
       "confetti",
       "stars",
-      "fireworks",
-      "sakura",
-      "hearts",
       "bubbles",
     ])
     .optional()

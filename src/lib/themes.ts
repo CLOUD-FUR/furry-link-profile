@@ -17,7 +17,7 @@ export const themes: ThemePreset[] = [
     bg: "bg-gradient-to-br from-pink-200 via-sky-200 to-violet-200",
     card: "bg-white/40 border-white/40",
     button: "bg-white/55 hover:bg-white/70 border-white/50",
-    accent: "text-violet-700",
+    accent: "text-violet-800",
     isDark: false,
   },
   {
@@ -37,7 +37,7 @@ export const themes: ThemePreset[] = [
     bg: "bg-gradient-to-b from-sky-100 via-white to-sky-200",
     card: "bg-white/55 border-white/60",
     button: "bg-white/70 hover:bg-white/85 border-white/60",
-    accent: "text-sky-700",
+    accent: "text-sky-800",
     isDark: false,
   },
   {
@@ -47,7 +47,7 @@ export const themes: ThemePreset[] = [
     bg: "bg-gradient-to-br from-emerald-200 via-yellow-100 to-pink-200",
     card: "bg-white/45 border-white/45",
     button: "bg-white/60 hover:bg-white/75 border-white/50",
-    accent: "text-emerald-700",
+    accent: "text-emerald-800",
     isDark: false,
   },
   {
@@ -57,7 +57,7 @@ export const themes: ThemePreset[] = [
     bg: "bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950",
     card: "bg-white/10 border-white/15",
     button: "bg-white/10 hover:bg-white/15 border-white/15",
-    accent: "text-blue-200",
+    accent: "text-sky-200",
     isDark: true,
   },
   {
@@ -67,7 +67,7 @@ export const themes: ThemePreset[] = [
     bg: "bg-gradient-to-br from-rose-200 via-amber-100 to-sky-200",
     card: "bg-white/45 border-white/50",
     button: "bg-white/60 hover:bg-white/75 border-white/50",
-    accent: "text-rose-700",
+    accent: "text-rose-800",
     isDark: false,
   },
 ];

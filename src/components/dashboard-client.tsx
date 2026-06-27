@@ -194,9 +194,6 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         "snow",
         "confetti",
         "stars",
-        "fireworks",
-        "sakura",
-        "hearts",
         "bubbles",
       ]),
     []
@@ -530,10 +527,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       {/* Theme background */}
       <ThemeBackground theme={draftUser.theme} themeJson={draftUser.themeJson} />
       {/* Decorative blobs */}
-      <div className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full bg-pink-300/40 dark:bg-fuchsia-500/15 blur-3xl" />
-      <div className="pointer-events-none absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full bg-violet-300/40 dark:bg-indigo-500/15 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-sky-300/40 dark:bg-sky-500/10 blur-3xl" />
-      <div className="absolute inset-0 noise opacity-[0.35] dark:opacity-[0.15]" />
+      <div className={clsx("pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full blur-3xl", isDark ? "bg-fuchsia-500/15" : "bg-pink-300/40")} />
+      <div className={clsx("pointer-events-none absolute top-1/3 -right-32 h-[28rem] w-[28rem] rounded-full blur-3xl", isDark ? "bg-indigo-500/15" : "bg-violet-300/40")} />
+      <div className={clsx("pointer-events-none absolute bottom-0 left-1/4 h-80 w-80 rounded-full blur-3xl", isDark ? "bg-sky-500/10" : "bg-sky-300/40")} />
+      <div className={clsx("absolute inset-0 noise", isDark ? "opacity-[0.15]" : "opacity-[0.35]")} />
 
       {/* === Floating capsule top bar === */}
       <SiteTopBar
@@ -541,6 +538,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         activePage="dashboard"
         userAvatarUrl={topBarAvatarUrl}
         showNav={false}
+        forceDark={isDark}
         actions={
           <>
             <button
@@ -549,8 +547,12 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               className={clsx(
                 "inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold shadow-soft transition-all active:scale-[0.98] hover:scale-[1.02]",
                 dirty
-                  ? "bg-slate-900 text-white border-transparent hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 shadow-soft"
-                  : "bg-white/60 dark:bg-white/10 text-slate-500 dark:text-slate-400 border border-white/60 dark:border-white/15",
+                  ? isDark
+                    ? "bg-white text-slate-900 border-transparent hover:bg-slate-100 shadow-soft"
+                    : "bg-slate-900 text-white border-transparent hover:bg-slate-800 shadow-soft"
+                  : isDark
+                    ? "bg-white/10 text-slate-400 border border-white/15"
+                    : "bg-white/60 text-slate-500 border border-white/60",
                 saving ? "opacity-70" : ""
               )}
               title={dirty ? "저장" : "변경 사항 없음"}
@@ -564,8 +566,12 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
               className={clsx(
                 "inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border transition-all active:scale-[0.98] hover:scale-[1.02]",
                 dirty
-                  ? "border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20"
-                  : "border-white/40 bg-white/40 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+                  ? isDark
+                    ? "border-white/20 bg-white/15 text-white hover:bg-white/20"
+                    : "border-white/70 bg-white/80 text-slate-900 hover:bg-white"
+                  : isDark
+                    ? "border-white/10 bg-white/5 text-slate-500"
+                    : "border-white/40 bg-white/40 text-slate-400"
               )}
               title="되돌리기"
             >
@@ -578,7 +584,12 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                 await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
                 signOut({ callbackUrl: "/" });
               }}
-              className="inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border border-white/70 bg-white/80 text-slate-900 hover:bg-white dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/20 transition-all active:scale-[0.98] hover:scale-[1.02]"
+              className={clsx(
+                "inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border transition-all active:scale-[0.98] hover:scale-[1.02]",
+                isDark
+                  ? "border-white/20 bg-white/15 text-white hover:bg-white/20"
+                  : "border-white/70 bg-white/80 text-slate-900 hover:bg-white"
+              )}
               title="로그아웃"
             >
               <span className="sm:hidden" aria-hidden>⎋</span>
@@ -592,19 +603,19 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         {/* Page header */}
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }}>
+            <h1 className={clsx("text-2xl sm:text-3xl font-black tracking-tight", isDark ? "text-slate-50" : "text-slate-900")} style={{ wordBreak: "keep-all" }}>
               대시보드
             </h1>
-            <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300" style={{ wordBreak: "keep-all" }}>
+            <p className={clsx("mt-1.5 text-sm", isDark ? "text-slate-300" : "text-slate-700")} style={{ wordBreak: "keep-all" }}>
               프로필을 수정하고 링크를 관리하세요. 변경사항은 상단 저장 버튼을 눌러야 적용돼요!
             </p>
-            <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+            <div className={clsx("mt-2 text-xs", isDark ? "text-slate-400" : "text-slate-600")}>
               <span className="opacity-80">프로필 페이지: </span>
               <a
                 href={fullUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="font-semibold underline break-all hover:text-slate-900 dark:hover:text-slate-100"
+                className={clsx("font-semibold underline break-all", isDark ? "hover:text-slate-100" : "hover:text-slate-900")}
               >
                 {fullUrl}
               </a>
@@ -615,9 +626,9 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         {/* Main grid */}
         <div className="mt-8 grid gap-6 lg:grid-cols-[380px_1fr]">
           {/* === Left panel: tabs + content === */}
-          <div className="rounded-3xl border border-white/60 dark:border-white/15 bg-white/55 dark:bg-slate-900/40 backdrop-blur-glass shadow-soft overflow-hidden">
+          <div className={clsx("rounded-3xl border backdrop-blur-glass shadow-soft overflow-hidden", isDark ? "border-white/15 bg-slate-900/40" : "border-white/60 bg-white/55")}>
             {/* Tab bar */}
-            <div className="flex gap-1 p-2 overflow-x-auto bg-white/30 dark:bg-white/5">
+            <div className={clsx("flex gap-1 p-2 overflow-x-auto", isDark ? "bg-white/5" : "bg-white/30")}>
               {TABS.map(([k, label, icon]) => (
                 <button
                   key={k}
@@ -625,8 +636,12 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   className={clsx(
                     "flex-1 whitespace-nowrap rounded-2xl px-3 py-2 text-sm font-semibold transition-all",
                     tab === k
-                      ? "bg-gradient-to-r from-slate-900 to-slate-800 text-white dark:from-white dark:to-slate-100 dark:text-slate-900 shadow-sm"
-                      : "text-slate-600 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white"
+                      ? isDark
+                        ? "bg-gradient-to-r from-white to-slate-100 text-slate-900 shadow-sm"
+                        : "bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-sm"
+                      : isDark
+                        ? "text-slate-300 hover:bg-white/10 hover:text-white"
+                        : "text-slate-600 hover:bg-white/60 hover:text-slate-900"
                   )}
                 >
                   <span className="mr-1" aria-hidden>{icon}</span>
@@ -815,24 +830,6 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         별빛
                       </option>
                       <option
-                        value="fireworks"
-                        className={isDark ? "bg-slate-900 text-white" : ""}
-                      >
-                        불꽃놀이
-                      </option>
-                      <option
-                        value="sakura"
-                        className={isDark ? "bg-slate-900 text-white" : ""}
-                      >
-                        벚꽃
-                      </option>
-                      <option
-                        value="hearts"
-                        className={isDark ? "bg-slate-900 text-white" : ""}
-                      >
-                        하트
-                      </option>
-                      <option
                         value="bubbles"
                         className={isDark ? "bg-slate-900 text-white" : ""}
                       >
@@ -841,7 +838,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     </select>
 
                     <p className={clsx("mt-1 text-xs", uiSub)}>
-                      프로필 페이지에 스노우 / 색종이 조각 / 별빛 / 불꽃놀이 / 벚꽃 / 하트 / 버블 효과를 1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
+                      프로필 페이지에 스노우 / 색종이 조각 / 별빛 / 버블 효과를 1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
                     </p>
                   </Field>
                 </div>
@@ -1399,14 +1396,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
             <div className="w-full max-w-md">
               {/* Preview label */}
               <div className="mb-3 flex items-center justify-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900/90 dark:bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white dark:text-slate-900 shadow-soft">
+                <span className={clsx("inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider shadow-soft", isDark ? "bg-white/90 text-slate-900" : "bg-slate-900/90 text-white")}>
                   <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
                   Live Preview
                 </span>
               </div>
 
               {/* Outer soft glow */}
-              <div className="pointer-events-none absolute -inset-3 bg-gradient-to-br from-pink-300/30 via-violet-300/25 to-sky-300/30 dark:from-fuchsia-500/10 dark:via-violet-500/10 dark:to-sky-500/10 rounded-[3rem] blur-2xl" />
+              <div className={clsx("pointer-events-none absolute -inset-3 rounded-[3rem] blur-2xl", isDark ? "bg-gradient-to-br from-fuchsia-500/10 via-violet-500/10 to-sky-500/10" : "bg-gradient-to-br from-pink-300/30 via-violet-300/25 to-sky-300/30")} />
 
               <div className="relative">
                 <div className={clsx("rounded-[2rem] border backdrop-blur-glass shadow-soft overflow-hidden", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/30")}>

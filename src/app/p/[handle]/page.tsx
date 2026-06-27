@@ -12,7 +12,7 @@ import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
 
-const TSPARTICLES_EFFECTS = new Set(["stars", "fireworks", "sakura", "hearts", "bubbles"]);
+const TSPARTICLES_EFFECTS = new Set(["stars", "bubbles"]);
 
 /**
  * @CLOUD 계정만 고정 아바타 이미지를 사용.

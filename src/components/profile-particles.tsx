@@ -9,23 +9,15 @@ import type { Engine, ISourceOptions } from "@tsparticles/engine";
  * tsParticles 기반 프로필 효과 컴포넌트.
  *
  * snow / confetti 는 app.embed.im Script 방식을 사용하므로 여기서 제외.
- * 이 컴포넌트가 처리하는 효과 (5개):
+ * 이 컴포넌트가 처리하는 효과 (2개):
  *  - stars     : 별이 반짝이며 떠다님
- *  - fireworks : 불꽃놀이 (emitter 기반)
- *  - sakura    : 분홍 꽃잎이 흩날림 (emoji "🌸" 기반)
- *  - hearts    : 하트가 아래에서 위로 떠오름 (emoji "♥"/"❤" 기반)
  *  - bubbles   : 거품이 아래에서 위로 올라감
  *
  * 모든 효과는 fullScreen: enable 로 뷰포트 전체에 렌더링된다.
  * 컴포넌트 언마운트 시 tsParticles가 container.destroy()를 자동으로 호출한다.
  */
 
-type ProfileEffect =
-  | "stars"
-  | "fireworks"
-  | "sakura"
-  | "hearts"
-  | "bubbles";
+type ProfileEffect = "stars" | "bubbles";
 
 /* ---------- engine 초기화 (한 번만) ---------- */
 
@@ -65,207 +57,6 @@ function starsOptions(): ISourceOptions {
         straight: false,
         speed: { min: 0.1, max: 0.4 },
         outModes: { default: "out" as any },
-      },
-    },
-    detectRetina: true,
-  };
-}
-
-function fireworksOptions(): ISourceOptions {
-  return {
-    fullScreen: { enable: true, zIndex: 1 },
-    background: { color: "transparent" },
-    particles: {
-      number: { value: 0 },
-      color: {
-        value: [
-          "#fbbf24",
-          "#f87171",
-          "#60a5fa",
-          "#34d399",
-          "#a78bfa",
-          "#f472b6",
-          "#ffffff",
-        ],
-      },
-      shape: { type: "circle" },
-      opacity: {
-        value: { min: 0.4, max: 0.9 },
-        animation: {
-          enable: true,
-          speed: 1.5,
-          sync: false,
-          startValue: "max" as any,
-          destroy: "min" as any,
-        },
-      },
-      size: {
-        value: { min: 1, max: 3 },
-        animation: {
-          enable: true,
-          speed: 2,
-          sync: false,
-          startValue: "min" as any,
-          destroy: "max" as any,
-        },
-      },
-      move: {
-        enable: true,
-        gravity: { enable: true, acceleration: 8 },
-        speed: { min: 5, max: 15 },
-        direction: "none" as any,
-        random: true,
-        straight: false,
-        outModes: { default: "destroy" as any },
-      },
-      life: {
-        duration: { value: { min: 1, max: 2.5 } },
-        count: 1,
-      },
-    },
-    emitters: [
-      {
-        life: { count: 0, duration: 0.1, delay: 0.4 },
-        rate: { delay: 0.15, quantity: 1 },
-        size: { width: 0, height: 0 },
-        position: { x: 50, y: 30 },
-        particles: {
-          move: {
-            direction: "none" as any,
-            speed: { min: 8, max: 16 },
-          },
-          number: { value: 0 },
-          color: {
-            value: [
-              "#fbbf24",
-              "#f87171",
-              "#60a5fa",
-              "#34d399",
-              "#a78bfa",
-              "#f472b6",
-            ],
-          },
-          size: {
-            value: { min: 2, max: 4 },
-          },
-          opacity: {
-            value: { min: 0.6, max: 1 },
-          },
-          life: {
-            duration: { value: { min: 0.8, max: 1.8 } },
-            count: 1,
-          },
-        },
-      },
-    ],
-    detectRetina: true,
-  };
-}
-
-function sakuraOptions(): ISourceOptions {
-  // 벚꽃 꽃잎 — emoji char "🌸" 을 shape로 사용
-  // @tsparticles/slim 에는 shape-emoji 가 포함되어 있음
-  return {
-    fullScreen: { enable: true, zIndex: 1 },
-    background: { color: "transparent" },
-    particles: {
-      number: { value: 40, density: { enable: true } },
-      color: { value: ["#fbcfe8", "#f9a8d4", "#fda4af", "#fecdd3"] },
-      shape: {
-        type: "emoji",
-        options: {
-          emoji: {
-            value: ["🌸", "🌺", "💮"],
-          },
-        },
-      },
-      opacity: {
-        value: { min: 0.6, max: 1 },
-      },
-      size: {
-        value: { min: 8, max: 16 },
-      },
-      move: {
-        enable: true,
-        direction: "bottom" as any,
-        straight: false,
-        speed: { min: 0.8, max: 2 },
-        outModes: { default: "out" as any },
-      },
-      rotate: {
-        enable: true,
-        animation: {
-          enable: true,
-          speed: { min: -3, max: 3 },
-          sync: false,
-        },
-      },
-      wobble: {
-        enable: true,
-        distance: 12,
-        speed: { min: -2, max: 2 },
-      },
-      tilt: {
-        enable: true,
-        animation: {
-          enable: true,
-          speed: { min: 0, max: 10 },
-          sync: false,
-        },
-        direction: "random" as any,
-      },
-    },
-    detectRetina: true,
-  };
-}
-
-function heartsOptions(): ISourceOptions {
-  // 하트 — emoji char "❤" / "♥" / "💗" 을 shape로 사용
-  // 아래에서 위로 떠오르도록 direction: top
-  return {
-    fullScreen: { enable: true, zIndex: 1 },
-    background: { color: "transparent" },
-    particles: {
-      number: { value: 30, density: { enable: true } },
-      color: { value: ["#ef4444", "#f472b6", "#fb7185", "#fda4af"] },
-      shape: {
-        type: "emoji",
-        options: {
-          emoji: {
-            value: ["❤", "♥", "💗", "💕"],
-          },
-        },
-      },
-      opacity: {
-        value: { min: 0.5, max: 1 },
-        animation: {
-          enable: true,
-          speed: 0.8,
-          sync: false,
-        },
-      },
-      size: {
-        value: { min: 8, max: 18 },
-      },
-      move: {
-        enable: true,
-        direction: "top" as any,
-        straight: false,
-        speed: { min: 0.8, max: 2 },
-        outModes: { default: "out" as any },
-      },
-      wobble: {
-        enable: true,
-        distance: 10,
-        speed: { min: -2, max: 2 },
-      },
-      rotate: {
-        enable: true,
-        animation: {
-          enable: true,
-          speed: { min: -2, max: 2 },
-          sync: false,
-        },
       },
     },
     detectRetina: true,
@@ -320,12 +111,6 @@ function optionsFor(effect: ProfileEffect): ISourceOptions {
   switch (effect) {
     case "stars":
       return starsOptions();
-    case "fireworks":
-      return fireworksOptions();
-    case "sakura":
-      return sakuraOptions();
-    case "hearts":
-      return heartsOptions();
     case "bubbles":
       return bubblesOptions();
     default:
@@ -341,13 +126,7 @@ export function ProfileParticles({ effect }: { effect: string }) {
   );
 
   const options = useMemo(() => {
-    const valid: ProfileEffect[] = [
-      "stars",
-      "fireworks",
-      "sakura",
-      "hearts",
-      "bubbles",
-    ];
+    const valid: ProfileEffect[] = ["stars", "bubbles"];
     return optionsFor(
       (valid as string[]).includes(effect) ? (effect as ProfileEffect) : "stars"
     );

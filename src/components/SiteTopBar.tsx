@@ -54,13 +54,19 @@ type Props = {
   hideTheme?: boolean;
   /** Optional action buttons rendered on the right side (e.g. Save/Revert/Logout for dashboard). */
   actions?: React.ReactNode;
+  /** Force dark/light styling regardless of OS dark mode (used by dashboard which follows selected theme). */
+  forceDark?: boolean | null;
 };
 
-export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideTheme = false, actions }: Props) {
+export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideTheme = false, actions, forceDark }: Props) {
   const pathname = usePathname() ?? "/";
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // When forceDark is provided, use it instead of OS/stored theme.
+  // This makes the top bar follow the dashboard's selected theme.
+  const useDark = forceDark != null ? forceDark : (mounted && theme === "dark");
 
   useEffect(() => {
     const t = getStoredTheme();
@@ -86,13 +92,13 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
   return (
     <header className="sticky top-3 sm:top-4 z-30 px-3 sm:px-4">
       <div className="mx-auto w-full max-w-6xl">
-        <div className="relative flex items-center justify-between gap-2 sm:gap-3 rounded-full border border-white/60 dark:border-white/15 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl shadow-soft px-2.5 py-1.5 sm:px-4 sm:py-2">
+        <div className={clsx("relative flex items-center justify-between gap-2 sm:gap-3 rounded-full border backdrop-blur-xl shadow-soft px-2.5 py-1.5 sm:px-4 sm:py-2", useDark ? "border-white/15 bg-slate-900/50" : "border-white/60 bg-white/60")}>
           {/* Logo */}
           <NextLink
             href="/"
             className="group flex items-center gap-2.5 shrink-0 pl-1"
           >
-            <span className="relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/70 dark:ring-white/20 shadow-sm transition-transform group-hover:rotate-6">
+            <span className={clsx("relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 shadow-sm transition-transform group-hover:rotate-6", useDark ? "ring-white/20" : "ring-white/70")}>
               <NextImage
                 src="/logo.png"
                 alt="Fluffy Link"
@@ -102,7 +108,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
                 priority
               />
             </span>
-            <span className="font-black tracking-tight text-lg sm:text-xl text-slate-900 dark:text-slate-50">
+            <span className={clsx("font-black tracking-tight text-lg sm:text-xl", useDark ? "text-slate-50" : "text-slate-900")}>
               Fluffy Link
             </span>
           </NextLink>
@@ -119,8 +125,12 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
                     className={clsx(
                       "rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all",
                       active
-                        ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-sm"
-                        : "text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-white/10"
+                        ? useDark
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "bg-slate-900 text-white shadow-sm"
+                        : useDark
+                          ? "text-slate-200 hover:bg-white/10"
+                          : "text-slate-700 hover:bg-white/60"
                     )}
                   >
                     {item.label}
@@ -143,7 +153,10 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
                 type="button"
                 onClick={handleToggleTheme}
                 className={clsx(
-                  "relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/70 dark:border-white/15 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/15 transition-all",
+                  "relative inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all",
+                  useDark
+                    ? "border-white/15 bg-white/10 text-slate-200 hover:bg-white/15"
+                    : "border-white/70 bg-white/70 text-slate-700 hover:bg-white",
                   actions ? "hidden sm:inline-flex" : "inline-flex"
                 )}
                 aria-label={theme === "light" ? "다크 모드로 전환" : "라이트 모드로 전환"}
@@ -180,7 +193,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
             {userAvatarUrl ? (
               <NextLink
                 href="/dashboard"
-                className="inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/70 dark:ring-white/20 shadow-sm hover:scale-105 transition-transform"
+                className={clsx("inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full shadow-sm hover:scale-105 transition-transform", useDark ? "ring-white/20" : "ring-white/70")}
                 aria-label="대시보드"
                 title="대시보드"
               >
@@ -197,7 +210,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
               <button
                 type="button"
                 onClick={() => setMobileOpen((v) => !v)}
-                className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/70 bg-white/70 dark:border-white/15 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:bg-white dark:hover:bg-white/15 transition-all"
+                className={clsx("md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full border transition-all", useDark ? "border-white/15 bg-white/10 text-slate-200 hover:bg-white/15" : "border-white/70 bg-white/70 text-slate-700 hover:bg-white")}
                 aria-label="메뉴 열기"
                 aria-expanded={mobileOpen}
               >
@@ -215,7 +228,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
 
         {/* Mobile dropdown */}
         {showNav && mobileOpen ? (
-          <div className="md:hidden mt-2 mx-auto w-fit rounded-2xl border border-white/60 dark:border-white/15 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-soft px-2 py-2 animate-fade-in">
+          <div className={clsx("md:hidden mt-2 mx-auto w-fit rounded-2xl border backdrop-blur-xl shadow-soft px-2 py-2 animate-fade-in", useDark ? "border-white/15 bg-slate-900/70" : "border-white/60 bg-white/70")}>
             {NAV_ITEMS.map((item) => {
               const active = resolveActive(item);
               return (
@@ -226,8 +239,12 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
                   className={clsx(
                     "block rounded-xl px-4 py-2 text-sm font-semibold transition-all",
                     active
-                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                      : "text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-white/10"
+                      ? useDark
+                        ? "bg-white text-slate-900"
+                        : "bg-slate-900 text-white"
+                      : useDark
+                        ? "text-slate-200 hover:bg-white/10"
+                        : "text-slate-700 hover:bg-white/60"
                   )}
                 >
                   {item.label}
@@ -241,10 +258,9 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
                 onClick={() => {
                   handleToggleTheme();
                 }}
-                className="block w-full rounded-xl px-4 py-2 text-sm font-semibold transition-all text-slate-700 dark:text-slate-200 hover:bg-white/60 dark:hover:bg-white/10 text-left"
+                className={clsx("block w-full rounded-xl px-4 py-2 text-sm font-semibold transition-all text-left", useDark ? "text-slate-200 hover:bg-white/10" : "text-slate-700 hover:bg-white/60")}
               >
                 {theme === "light" ? "🌙 다크 모드" : "☀️ 라이트 모드"}
-              )
               </button>
             ) : null}
           </div>
