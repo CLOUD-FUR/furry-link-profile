@@ -189,7 +189,16 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const [emojiErrors, setEmojiErrors] = useState<Record<string, string>>({});
 
   const ALLOWED_PROFILE_EFFECTS = useMemo(
-    () => new Set(["snow", "confetti", "gradientDrift"]),
+    () =>
+      new Set([
+        "snow",
+        "confetti",
+        "gradientDrift",
+        "starfield",
+        "aurora",
+        "waves",
+        "gridDrift",
+      ]),
     []
   );
 
@@ -805,11 +814,34 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                       >
                         그라데이션 드리프트
                       </option>
+                      <option
+                        value="starfield"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        별빛 배경
+                      </option>
+                      <option
+                        value="aurora"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        오로라
+                      </option>
+                      <option
+                        value="waves"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        파도
+                      </option>
+                      <option
+                        value="gridDrift"
+                        className={isDark ? "bg-slate-900 text-white" : ""}
+                      >
+                        그리드 드리프트
+                      </option>
                     </select>
 
                     <p className={clsx("mt-1 text-xs", uiSub)}>
-                      프로필 페이지에 스노우 / 색종이 조각 / 그라데이션 드리프트 효과를
-                      1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
+                      프로필 페이지에 스노우 / 색종이 조각 / 그라데이션 드리프트 / 별빛 배경 / 오로라 / 파도 / 그리드 드리프트 효과를 1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
                     </p>
                   </Field>
                 </div>

@@ -54,6 +54,10 @@ const PatchSchema = z.object({
       "snow",
       "confetti",
       "gradientDrift",
+      "starfield",
+      "aurora",
+      "waves",
+      "gridDrift",
     ])
     .optional()
     .nullable(),

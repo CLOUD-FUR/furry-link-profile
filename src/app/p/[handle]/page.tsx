@@ -153,7 +153,17 @@ export default async function PublicProfile({
   const isFixedAvatarUser = handleLower === FIXED_AVATAR_HANDLE;
 
   const cardEffectClass =
-    user.profileEffect === "gradientDrift" ? "profile-effect-gradientDrift" : "";
+    user.profileEffect === "gradientDrift"
+      ? "profile-effect-gradientDrift"
+      : user.profileEffect === "starfield"
+      ? "profile-effect-starfield"
+      : user.profileEffect === "aurora"
+      ? "profile-effect-aurora"
+      : user.profileEffect === "waves"
+      ? "profile-effect-waves"
+      : user.profileEffect === "gridDrift"
+      ? "profile-effect-gridDrift"
+      : "";
 
   return (
     <>
