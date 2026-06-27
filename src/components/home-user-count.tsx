@@ -4,13 +4,15 @@ import { useEffect, useState } from "react";
 
 /**
  * 메인 페이지에 표시되는 실시간 가입자 수.
- * 하이드레이션 전에는 정적 텍스트를 보여주고,
- * 하이드레이션 후 /api/users 에서 실제 수를 가져와 표시합니다.
+ * SSR로 전달된 initialCount가 있으면 그것을 먼저 보여주고,
+ * 없으면 클라이언트에서 /api/users 로 fetch.
+ * 새로고침 시 "수많은 퍼리" → "N명" 깜빡임 방지.
  */
-export function HomeUserCount() {
-  const [count, setCount] = useState<number | null>(null);
+export function HomeUserCount({ initialCount }: { initialCount?: number | null }) {
+  const [count, setCount] = useState<number | null>(initialCount ?? null);
 
   useEffect(() => {
+    // SSR 값이 있어도 주기적으로 최신화 (선택적)
     let cancelled = false;
     fetch("/api/users", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))

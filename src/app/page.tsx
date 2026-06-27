@@ -3,8 +3,19 @@ import { Container, GlassCard, ButtonLink } from "@/components/ui";
 import { HomeFeatureList } from "@/components/home-feature-list";
 import { HomePreviewCard } from "@/components/home-preview-card";
 import { HomeUserCount } from "@/components/home-user-count";
+import { prisma } from "@/lib/prisma";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // SSR로 유저 수 미리 조회 (새로고침 시 깜빡임 방지)
+  let initialCount: number | null = null;
+  try {
+    initialCount = await prisma.user.count({
+      where: { isPublic: true, listPublic: true },
+    });
+  } catch {
+    initialCount = null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-200 via-sky-200 to-violet-300 dark:from-slate-950 dark:via-indigo-950 dark:to-fuchsia-950 relative overflow-hidden transition-colors">
       {/* Decorative blobs */}
@@ -83,7 +94,7 @@ export default function HomePage() {
                 ))}
               </div>
               <span>
-                <HomeUserCount />
+                <HomeUserCount initialCount={initialCount} />
               </span>
             </div>
 
