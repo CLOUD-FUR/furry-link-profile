@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
+import { SafeAvatar } from "@/components/safe-avatar";
 
 const FIXED_AVATAR_HANDLE = "cloud";
 const FIXED_AVATAR_URL =
@@ -119,12 +120,11 @@ export function UserListClient({ users }: { users: UserItem[] }) {
                 {/* Avatar */}
                 <div className="relative shrink-0">
                   <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-violet-400/40 to-fuchsia-400/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
-                  <img
+                  <SafeAvatar
                     src={getAvatarUrl(u)}
                     alt={`@${u.handle}`}
+                    fallback="/logo.png"
                     className="relative h-16 w-16 sm:h-20 sm:w-20 rounded-2xl border-2 border-white/70 dark:border-white/20 object-cover shadow-md group-hover:scale-105 transition-transform duration-300"
-                    width={80}
-                    height={80}
                   />
                 </div>
 

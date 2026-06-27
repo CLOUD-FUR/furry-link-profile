@@ -6,6 +6,7 @@ import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import Script from "next/script";
 import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 import { ProfileHandleShare } from "@/components/profile-handle-share";
+import { SafeAvatar } from "@/components/safe-avatar";
 import type { Metadata } from "next";
 
 const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
@@ -158,16 +159,10 @@ export default async function PublicProfile({
     <>
       <ProfileVisitTracker handle={handleParam} />
       {user.profileEffect === "snow" ? (
-        <Script
-          src="https://app.embed.im/snow.js"
-          strategy="afterInteractive"
-        />
+        <Script src="https://app.embed.im/snow.js" strategy="afterInteractive" />
       ) : null}
       {user.profileEffect === "confetti" ? (
-        <Script
-          src="https://app.embed.im/confetti.js"
-          strategy="afterInteractive"
-        />
+        <Script src="https://app.embed.im/confetti.js" strategy="afterInteractive" />
       ) : null}
 
       <div
@@ -202,13 +197,14 @@ export default async function PublicProfile({
 
           {/* Avatar */}
           <div className="-mt-10 flex justify-center">
-            <img
+            <SafeAvatar
               src={
                 isFixedAvatarUser
                   ? FIXED_AVATAR_URL
                   : user.image || user.discordImage || "/logo.png"
               }
               alt="avatar"
+              fallback="/logo.png"
               className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
             />
           </div>

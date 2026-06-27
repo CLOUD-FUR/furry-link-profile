@@ -12,6 +12,7 @@ import { PROFILE_TAGS } from "@/lib/profile-tags";
 import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import { SiteTopBar } from "@/components/SiteTopBar";
 import { ChannelTalk } from "@/components/channel-talk";
+import { SafeAvatar } from "@/components/safe-avatar";
 
 /** Theme background for dashboard — shows selected theme's gradient in real-time */
 function ThemeBackground({ theme, themeJson }: { theme: string; themeJson: string }) {
@@ -1386,9 +1387,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     }
                   />
                   <div className="-mt-10 flex justify-center">
-                    <img
+                    <SafeAvatar
                       src={draftUser.image || draftUser.discordImage || "/logo.png"}
                       alt="avatar"
+                      fallback="/logo.png"
                       className="h-24 w-24 rounded-full border-4 border-white/70 bg-white/60 shadow-glow object-cover"
                     />
                   </div>
