@@ -4,9 +4,62 @@ import { UserListClient } from "@/components/user-list-client";
 import { SiteTopBar } from "@/components/SiteTopBar";
 import type { Metadata } from "next";
 
+const SITE_URL = process.env.NEXTAUTH_URL ?? "https://fluffy-link.xyz";
+
 export const metadata: Metadata = {
   title: "유저 리스트 | Fluffy Link",
-  description: "플러피 링크 사용자 목록",
+  description:
+    "플러피링크(Fluffy Link)에 등록된 퍼리·퍼슈터 유저 리스트. 다양한 프로필을 둘러보고 팔로우하세요. 퍼리 커뮤니티 프로필 링크 모음.",
+  keywords: [
+    // 한국어
+    "플러피링크 유저",
+    "플러피링크 사용자",
+    "퍼리 유저",
+    "퍼슈터 리스트",
+    "퍼슈터 유저",
+    "퍼리 커뮤니티",
+    "퍼리 한국",
+    "한국 퍼리",
+    "링크 모음 유저",
+    "프로필 리스트",
+    "유저 디렉토리",
+    // English
+    "fluffy link users",
+    "furry users",
+    "fursuiters list",
+    "fursuiter directory",
+    "furry community",
+    "furry profiles",
+    "fursuit bio",
+    "fursona profiles",
+    "linktree users",
+  ],
+  alternates: {
+    canonical: "/user",
+  },
+  openGraph: {
+    type: "website",
+    title: "Fluffy Link | 유저 리스트",
+    description:
+      "플러피링크에 등록된 퍼리·퍼슈터 유저 리스트. 다양한 프로필을 둘러보세요.",
+    siteName: "Fluffy Link",
+    url: `${SITE_URL.replace(/\/$/, "")}/user`,
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Fluffy Link 로고",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Fluffy Link | 유저 리스트",
+    description:
+      "플러피링크에 등록된 퍼리·퍼슈터 유저 리스트.",
+    images: ["/logo.png"],
+  },
 };
 
 export default async function UserListPage() {

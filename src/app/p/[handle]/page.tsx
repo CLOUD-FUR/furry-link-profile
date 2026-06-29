@@ -88,11 +88,37 @@ export async function generateMetadata({
   return {
     title,
     description: description,
-    keywords: [user.handle, "플러피 링크", "Fluffy Link"],
+    keywords: [
+      user.handle,
+      `@${user.handle}`,
+      // 공통 키워드 (한국어)
+      "플러피링크",
+      "플러피 링크",
+      "퍼리",
+      "퍼슈터",
+      "링크 모음",
+      "프로필 링크",
+      "바이오 링크",
+      "Linktree 대체",
+      // 공통 키워드 (English)
+      "Fluffy Link",
+      "fluffy link",
+      "furry",
+      "fursuit",
+      "fursuiter",
+      "furry profile",
+      "fursuit bio",
+      "fursona",
+      "link in bio",
+      "linktree",
+    ],
     metadataBase: new URL(SITE_URL),
+    alternates: {
+      canonical: `/p/${encodeURIComponent(user.handle)}`,
+    },
     themeColor: "#ffffff",
     openGraph: {
-      type: "website",
+      type: "profile",
       title,
       description: description,
       siteName: "Fluffy Link",
@@ -155,8 +181,41 @@ export default async function PublicProfile({
 
   const isFixedAvatarUser = handleLower === FIXED_AVATAR_HANDLE;
 
+  // SEO: ProfilePage / Person 구조화 데이터
+  const profileJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    url: `${SITE_URL.replace(/\/$/, "")}/@${encodeURIComponent(user.handle)}`,
+    name: `@${user.handle}`,
+    description: user.bio || `${user.handle}의 Fluffy Link 프로필`,
+    inLanguage: ["ko-KR", "en-US"],
+    isPartOf: {
+      "@type": "WebSite",
+      name: "Fluffy Link",
+      url: SITE_URL,
+    },
+    mainEntity: {
+      "@type": "Person",
+      name: user.handle,
+      alternateName: `@${user.handle}`,
+      identifier: user.handle,
+      url: `${SITE_URL.replace(/\/$/, "")}/@${encodeURIComponent(user.handle)}`,
+      description: user.bio || undefined,
+      image:
+        isFixedAvatarUser || user.image || user.discordImage
+          ? isFixedAvatarUser
+            ? FIXED_AVATAR_URL
+            : user.image || user.discordImage
+          : undefined,
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(profileJsonLd) }}
+      />
       <ProfileVisitTracker handle={handleParam} />
       {user.profileEffect === "snow" ? (
         <Script src="https://app.embed.im/snow.js" strategy="afterInteractive" />
