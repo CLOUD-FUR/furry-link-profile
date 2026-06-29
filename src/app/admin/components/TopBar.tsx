@@ -11,6 +11,13 @@ type AdminProfile = {
   discordImage: string | null;
 };
 
+type Notification = {
+  title: string;
+  time: string;
+  color: string;
+  href?: string;
+};
+
 export default function TopBar({
   dark,
   onToggleDark,
@@ -23,6 +30,8 @@ export default function TopBar({
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [admin, setAdmin] = useState<AdminProfile | null>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifLoading, setNotifLoading] = useState(true);
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +43,31 @@ export default function TopBar({
         if (d?.adminUser) setAdmin(d.adminUser);
       })
       .catch(() => {});
+  }, []);
+
+  // Fetch real notifications
+  useEffect(() => {
+    let mounted = true;
+    const loadNotifs = () => {
+      fetch("/api/admin/notifications", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (mounted && d?.notifications) {
+            setNotifications(d.notifications);
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (mounted) setNotifLoading(false);
+        });
+    };
+    loadNotifs();
+    // 60초마다 갱신
+    const interval = setInterval(loadNotifs, 60000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {
@@ -135,7 +169,9 @@ export default function TopBar({
               <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
               <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
             </svg>
-            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+            {notifications.length > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-background" />
+            )}
           </button>
 
           {notifOpen && (
@@ -150,18 +186,29 @@ export default function TopBar({
                 </button>
               </div>
               <div className="space-y-1">
-                {notifications.map((n, i) => (
-                  <div
-                    key={i}
-                    className="flex gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
-                  >
-                    <div className={`mt-0.5 h-2 w-2 shrink-0 rounded-full ${n.color}`} />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium leading-snug">{n.title}</p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">{n.time}</p>
-                    </div>
+                {notifLoading ? (
+                  <div className="px-3 py-4 text-center text-xs text-muted-foreground">
+                    불러오는 중...
                   </div>
-                ))}
+                ) : notifications.length === 0 ? (
+                  <div className="px-3 py-6 text-center text-xs text-muted-foreground">
+                    🔔 새 알림이 없습니다
+                  </div>
+                ) : (
+                  notifications.map((n, i) => (
+                    <a
+                      key={i}
+                      href={n.href || "#"}
+                      className="flex gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted"
+                    >
+                      <div className={`mt-0.5 h-2 w-2 shrink-0 rounded-full ${n.color}`} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium leading-snug">{n.title}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{n.time}</p>
+                      </div>
+                    </a>
+                  ))
+                )}
               </div>
               <div className="border-t border-border pt-1">
                 <button
@@ -243,9 +290,4 @@ export default function TopBar({
   );
 }
 
-const notifications = [
-  { title: "새 사용자 5명이 가입했습니다", time: "3분 전", color: "bg-indigo-500" },
-  { title: "새 링크 12개가 생성되었습니다", time: "1시간 전", color: "bg-emerald-500" },
-  { title: "프로필 방문수가 증가했습니다", time: "3시간 전", color: "bg-amber-500" },
-  { title: "비활성화된 링크가 발견되었습니다", time: "5시간 전", color: "bg-red-500" },
-];
+
