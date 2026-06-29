@@ -16,7 +16,7 @@ const HOME_DESCRIPTION_EN =
 export const metadata: Metadata = {
   title: {
     absolute:
-      "Fluffy Link — 퍼리·퍼슈터 링크 모음 | Linktree for Furries",
+      "Fluffy Link — 모든 링크를 하나의 링크로",
   },
   description: HOME_DESCRIPTION_KO,
   keywords: [
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     alternateLocale: ["en_US"],
     url: SITE_URL,
     siteName: "Fluffy Link",
-    title: "Fluffy Link — 퍼리·퍼슈터 링크 모음",
+    title: "Fluffy Link — 모든 링크를 하나의 링크로",
     description: HOME_DESCRIPTION_KO,
     images: [
       {
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fluffy Link — 퍼리·퍼슈터 링크 모음",
+    title: "Fluffy Link — 모든 링크를 하나의 링크로",
     description: HOME_DESCRIPTION_KO,
     images: ["/logo.png"],
   },
