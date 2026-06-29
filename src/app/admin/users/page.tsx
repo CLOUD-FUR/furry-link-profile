@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
@@ -11,10 +12,12 @@ type User = {
   isPublic: boolean;
   listPublic: boolean;
   createdAt: string;
+  liveVisitors: number;
   _count: { links: number; profileVisits: number };
 };
 
 export default function AdminUsersPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -28,6 +31,7 @@ export default function AdminUsersPage() {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -54,6 +58,15 @@ export default function AdminUsersPage() {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  // 30초 자동 갱신 (실시간 방문자 수)
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(() => {
+      fetchUsers();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [autoRefresh, fetchUsers]);
 
   const startEdit = (u: User) => {
     setEditing(u.id);
@@ -153,6 +166,22 @@ export default function AdminUsersPage() {
               초기화
             </button>
           )}
+          <button
+            onClick={() => setAutoRefresh((v) => !v)}
+            className={`inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors ${
+              autoRefresh
+                ? "border-emerald-300/40 bg-emerald-50 text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400"
+                : "border-border bg-card text-muted-foreground hover:bg-muted"
+            }`}
+          >
+            <span className={`relative flex h-2 w-2 ${autoRefresh ? "" : "opacity-40"}`}>
+              {autoRefresh && (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              )}
+              <span className={`relative inline-flex h-2 w-2 rounded-full ${autoRefresh ? "bg-emerald-500" : "bg-zinc-400"}`} />
+            </span>
+            실시간 {autoRefresh ? "ON" : "OFF"}
+          </button>
         </div>
       </div>
 
@@ -174,6 +203,7 @@ export default function AdminUsersPage() {
                 <th className="px-3 py-3 font-medium">ID</th>
                 <th className="px-3 py-3 font-medium">링크</th>
                 <th className="px-3 py-3 font-medium">방문</th>
+                <th className="px-3 py-3 font-medium">실시간</th>
                 <th className="px-3 py-3 font-medium">공개</th>
                 <th className="px-3 py-3 font-medium">리스트</th>
                 <th className="px-3 py-3 font-medium">가입일</th>
@@ -183,24 +213,25 @@ export default function AdminUsersPage() {
             <tbody className="divide-y divide-border">
               {loading ? (
                 <tr>
-                  <td colSpan={9} className="px-5 py-12 text-center text-muted-foreground">
+                  <td colSpan={10} className="px-5 py-12 text-center text-muted-foreground">
                     불러오는 중…
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="px-5 py-12 text-center text-muted-foreground">
+                  <td colSpan={10} className="px-5 py-12 text-center text-muted-foreground">
                     결과가 없습니다
                   </td>
                 </tr>
               ) : (
                 users.map((u) => (
-                  <tr key={u.id} className="group transition-colors hover:bg-muted/40">
+                  <tr key={u.id} className="group cursor-pointer transition-colors hover:bg-muted/40" onClick={() => router.push(`/admin/users/${u.id}`)}>
                     <td className="px-5 py-3">
                       <a
                         href={`/@${u.handle}`}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
                         className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
                       >
                         @{u.handle}
@@ -210,6 +241,19 @@ export default function AdminUsersPage() {
                     <td className="px-3 py-3 font-mono text-xs text-muted-foreground">{u.id}</td>
                     <td className="px-3 py-3 text-muted-foreground">{u._count.links}</td>
                     <td className="px-3 py-3 text-muted-foreground">{u._count.profileVisits}</td>
+                    <td className="px-3 py-3">
+                      {u.liveVisitors > 0 ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          </span>
+                          {u.liveVisitors}명
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">-</span>
+                      )}
+                    </td>
                     <td className="px-3 py-3">
                       {editing === u.id ? (
                         <label className="flex items-center gap-2 text-xs">
@@ -275,13 +319,13 @@ export default function AdminUsersPage() {
                       ) : (
                         <div className="flex items-center justify-end gap-2 opacity-60 transition-opacity group-hover:opacity-100">
                           <button
-                            onClick={() => startEdit(u)}
+                            onClick={(e) => { e.stopPropagation(); startEdit(u); }}
                             className="rounded-lg border border-border px-3 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted"
                           >
                             수정
                           </button>
                           <button
-                            onClick={() => deleteUser(u.id, u.handle)}
+                            onClick={(e) => { e.stopPropagation(); deleteUser(u.id, u.handle); }}
                             disabled={u.id === "1362203848713703514"}
                             className="rounded-lg bg-rose-600 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-rose-700 disabled:opacity-40"
                           >

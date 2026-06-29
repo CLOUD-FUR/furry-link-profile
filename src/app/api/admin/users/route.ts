@@ -40,5 +40,28 @@ export async function GET(req: Request) {
     },
   });
 
-  return NextResponse.json({ users });
+  // 각 유저별 최근 5분 실시간 방문자 수 (고유 sessionId)
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const userIds = users.map((u) => u.id);
+  const liveVisits = await prisma.profileVisit.findMany({
+    where: {
+      userId: { in: userIds },
+      createdAt: { gte: fiveMinAgo },
+    },
+    select: { userId: true, sessionId: true },
+    distinct: ["userId", "sessionId"],
+  });
+
+  // userId별 고유 sessionId 카운트
+  const liveMap: Record<string, number> = {};
+  for (const v of liveVisits) {
+    liveMap[v.userId] = (liveMap[v.userId] ?? 0) + 1;
+  }
+
+  const usersWithLive = users.map((u) => ({
+    ...u,
+    liveVisitors: liveMap[u.id] ?? 0,
+  }));
+
+  return NextResponse.json({ users: usersWithLive });
 }

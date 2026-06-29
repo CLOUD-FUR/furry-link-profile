@@ -128,6 +128,15 @@ export async function GET() {
     where: { enabled: false },
   });
 
+  // ===== Live visitors (최근 5분 고유 sessionId) =====
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const liveVisitorRows = await prisma.profileVisit.findMany({
+    where: { createdAt: { gte: fiveMinAgo } },
+    select: { sessionId: true },
+    distinct: ["sessionId"],
+  });
+  const liveVisitors = liveVisitorRows.length;
+
   // ===== Recent activity (from logs) =====
   const activities = recentLogs.map((log) => {
     let type: "user" | "link" | "system" | "alert" | "login" = "system";
@@ -174,5 +183,7 @@ export async function GET() {
     },
     // Recent activities
     activities,
+    // Live visitors (최근 5분)
+    liveVisitors,
   });
 }
