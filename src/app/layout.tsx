@@ -123,7 +123,7 @@ export const metadata: Metadata = {
   },
   other: {
     "theme-color": "#ffffff",
-    "google-site-verification": "",
+    "google-site-verification": "kOoygl4m4Mt5tfKnneq__1pPhVTGZtiG6zzeaH6NU9w",
   },
 };
 
