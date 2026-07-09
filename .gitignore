@@ -41,3 +41,6 @@ yarn-error.log*
 next-env.d.ts
 google-indexing-key.json
 scripts/google-indexing-key.json
+
+# local Claude settings (contains secrets)
+.claude/

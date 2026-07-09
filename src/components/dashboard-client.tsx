@@ -13,6 +13,25 @@ import { PLATFORM_ICONS, getOtherLinkDisplayIcon } from "@/lib/platform-icons";
 import { SiteTopBar } from "@/components/SiteTopBar";
 import { ChannelTalk } from "@/components/channel-talk";
 import { SafeAvatar } from "@/components/safe-avatar";
+import { StatsCharts } from "@/components/stats-charts";
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 /** Theme background for dashboard — shows selected theme's gradient in real-time */
 function ThemeBackground({ theme, themeJson }: { theme: string; themeJson: string }) {
@@ -407,6 +426,48 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     } else {
       showToast("error", (data as any)?.error ?? "❌ 링크 삭제를 실패했어요");
     }
+  }
+
+  // 드래그앤드롭 정렬
+  const dndSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  async function persistOrder(orders: { id: string; order: number }[]) {
+    try {
+      const res = await fetch("/api/links/reorder", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ orders }),
+      });
+      const data = await safeJson(res);
+      if (res.ok && data?.links) {
+        setSavedUser((u) => ({ ...u, links: data.links }));
+        showToast("success", "✅ 링크 순서를 저장했어요!");
+      } else {
+        showToast("error", (data as any)?.error ?? "❌ 순서 저장에 실패했어요");
+      }
+    } catch {
+      showToast("error", "❌ 순서 저장에 실패했어요");
+    }
+  }
+
+  function onLinkDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = draftLinks.findIndex((l) => l.id === active.id);
+    const newIndex = draftLinks.findIndex((l) => l.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const reordered = arrayMove(draftLinks, oldIndex, newIndex).map((l, i) => ({
+      ...l,
+      order: i,
+    }));
+    setDraftLinks(reordered);
+    persistOrder(reordered.map((l) => ({ id: l.id, order: l.order })));
   }
 
   function moveLink(id: string, dir: -1 | 1) {
@@ -853,9 +914,22 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     + 링크 추가
                   </button>
 
-                  <div className="mt-4 space-y-3">
+                  <p className={clsx("mt-3 text-xs", uiSub)}>
+                    ↕️ 왼쪽 손잡이를 잡고 드래그하면 순서를 바꿀 수 있어요! 순서는 바로 저장돼요.
+                  </p>
+
+                  <DndContext
+                    sensors={dndSensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={onLinkDragEnd}
+                  >
+                    <SortableContext
+                      items={draftLinks.map((l) => l.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                  <div className="mt-3 space-y-3">
                     {draftLinks.map((l) => (
-                      <div key={l.id} className={clsx("rounded-2xl border p-3", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                      <SortableLinkCard key={l.id} id={l.id} isDark={isDark}>
                         <div className="flex items-center justify-between gap-2">
                           <div className={clsx("font-bold truncate", uiText)}>{l.title}</div>
                           <div className="flex gap-1 shrink-0">
@@ -1062,7 +1136,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                             방문자 수: <b className={uiText}>{counts[l.id] ?? 0}명</b>
                           </div>
                         </div>
-                      </div>
+                      </SortableLinkCard>
                     ))}
                     {draftLinks.length === 0 ? (
                       <div className={clsx("rounded-2xl border p-4 text-sm", isDark ? "border-white/15 bg-white/10 text-white/70" : "border-white/45 bg-white/35 text-slate-700")}>
@@ -1070,6 +1144,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                       </div>
                     ) : null}
                   </div>
+                    </SortableContext>
+                  </DndContext>
                 </div>
               ) : null}
 
@@ -1184,6 +1260,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                       ))}
                     </div>
                   </div>
+
+                  <StatsCharts isDark={isDark} refreshKey={saving} />
                 </div>
               ) : null}
 
@@ -1515,6 +1593,60 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
       {/* ChannelTalk inquiry widget */}
       <ChannelTalk />
+    </div>
+  );
+}
+
+function SortableLinkCard({
+  id,
+  isDark,
+  children,
+}: {
+  id: string;
+  isDark: boolean;
+  children: React.ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 30 : undefined,
+      }}
+      className={clsx(
+        "relative flex items-stretch gap-2 rounded-2xl border p-3",
+        isDragging && "opacity-90 shadow-soft ring-2 ring-violet-400/50",
+        isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40"
+      )}
+    >
+      <button
+        type="button"
+        ref={setActivatorNodeRef}
+        {...attributes}
+        {...listeners}
+        aria-label="드래그해서 순서 변경"
+        title="드래그해서 순서 변경"
+        className={clsx(
+          "flex w-6 shrink-0 cursor-grab touch-none select-none items-center justify-center rounded-xl text-base transition-colors active:cursor-grabbing",
+          isDark
+            ? "text-white/40 hover:bg-white/10 hover:text-white/90"
+            : "text-slate-400 hover:bg-white/60 hover:text-slate-700"
+        )}
+      >
+        ⠿
+      </button>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }
