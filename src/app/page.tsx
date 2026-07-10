@@ -64,20 +64,20 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Fluffy Link",
     title: "Fluffy Link — 모든 링크를 하나의 링크로",
-    description: HOME_DESCRIPTION_KO,
+    description: "여러개의 링크를 하나의 링크로!",
     images: [
       {
         url: "/logo.png",
-        width: 512,
-        height: 512,
+        width: 231,
+        height: 231,
         alt: "Fluffy Link 로고",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Fluffy Link — 모든 링크를 하나의 링크로",
-    description: HOME_DESCRIPTION_KO,
+    description: "여러개의 링크를 하나의 링크로!",
     images: ["/logo.png"],
   },
 };

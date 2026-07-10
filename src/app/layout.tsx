@@ -97,14 +97,14 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.png",
-        width: 512,
-        height: 512,
+        width: 231,
+        height: 231,
         alt: "Fluffy Link 로고",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "Fluffy Link — 모든 링크를 하나의 링크로",
     description: SITE_DESC_KO,
     images: ["/logo.png"],
