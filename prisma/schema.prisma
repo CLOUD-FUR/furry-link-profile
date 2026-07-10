@@ -65,6 +65,12 @@ model ProfileVisit {
   id        String   @id @default(cuid())
   userId    String
   sessionId String
+  /// 유입 경로 (raw referrer URL). null = 직접 유입
+  referrer  String?
+  /// 2글자 국가 코드 (x-vercel-ip-country)
+  country   String?
+  /// "mobile" | "desktop" | "tablet"
+  device    String?
   createdAt DateTime @default(now())
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

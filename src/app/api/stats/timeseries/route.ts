@@ -36,7 +36,7 @@ export async function GET() {
       : Promise.resolve([] as { createdAt: Date }[]),
     prisma.profileVisit.findMany({
       where: { userId, createdAt: { gte: since } },
-      select: { createdAt: true },
+      select: { createdAt: true, referrer: true, country: true, device: true },
     }),
     linkIds.length
       ? prisma.visit.groupBy({
@@ -74,5 +74,39 @@ export async function GET() {
     .sort((a, b) => b.clicks - a.clicks)
     .slice(0, 10);
 
-  return Response.json({ days, topLinks });
+  // 유입 소스(도메인) / 국가 / 기기 집계 (최근 30일)
+  const refCount: Record<string, number> = {};
+  const countryCount: Record<string, number> = {};
+  const deviceCount: Record<string, number> = {};
+  for (const v of profileVisits) {
+    const host = refHost(v.referrer);
+    refCount[host] = (refCount[host] ?? 0) + 1;
+    const c = v.country ?? "unknown";
+    countryCount[c] = (countryCount[c] ?? 0) + 1;
+    const dv = v.device ?? "unknown";
+    deviceCount[dv] = (deviceCount[dv] ?? 0) + 1;
+  }
+
+  const referrers = Object.entries(refCount)
+    .map(([source, count]) => ({ source, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+  const countries = Object.entries(countryCount)
+    .map(([country, count]) => ({ country, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+  const devices = Object.entries(deviceCount)
+    .map(([device, count]) => ({ device, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return Response.json({ days, topLinks, referrers, countries, devices });
+}
+
+function refHost(referrer: string | null) {
+  if (!referrer) return "direct";
+  try {
+    return new URL(referrer).hostname.replace(/^www\./, "") || "direct";
+  } catch {
+    return "direct";
+  }
 }

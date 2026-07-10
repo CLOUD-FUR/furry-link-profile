@@ -5,7 +5,12 @@ import { useEffect } from "react";
 export function ProfileVisitTracker({ handle }: { handle: string }) {
   useEffect(() => {
     if (!handle) return;
-    fetch(`/api/profile-visit?handle=${encodeURIComponent(handle)}`).catch(
+    // fetch의 referer 헤더는 현재 페이지 URL이라 실제 유입 경로를 담지 못함
+    // → document.referrer를 쿼리로 넘겨 서버에서 유입 소스로 기록
+    const ref = document.referrer
+      ? `&ref=${encodeURIComponent(document.referrer)}`
+      : "";
+    fetch(`/api/profile-visit?handle=${encodeURIComponent(handle)}${ref}`).catch(
       () => {}
     );
   }, [handle]);
