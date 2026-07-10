@@ -122,9 +122,8 @@ export default async function HomePage() {
   // SSR로 유저 수 미리 조회 (새로고침 시 깜빡임 방지)
   let initialCount: number | null = null;
   try {
-    initialCount = await prisma.user.count({
-      where: { isPublic: true, listPublic: true },
-    });
+    // /api/users(전체 유저)와 기준을 맞춰 홈 카운트가 튀지 않도록 필터 없이 전체 집계
+    initialCount = await prisma.user.count();
   } catch {
     initialCount = null;
   }
