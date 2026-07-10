@@ -12,10 +12,8 @@ export type CustomThemePreset = {
  * 이미지는 `public/custom-themes` 폴더 안에 넣고,
  * 아래 `imageUrl`에 `/custom-themes/파일이름.jpg` 형태로 적어주세요.
  *
- * 예시)
- *  - public/custom-themes/joa-1.jpg  -> imageUrl: "/custom-themes/joa-1.jpg"
- *
- * 기본값은 비어 있고, 이미지를 추가하면 자동으로 랜덤 추천에 사용됩니다.
+ * ⚠️ 여기 등록한 파일은 반드시 public/custom-themes 안에 실제로 존재해야 해요.
+ *    없는 파일을 등록하면 랜덤 추천에서 깨진 이미지("theme preview")가 떠요.
  */
 export const CUSTOM_THEMES: CustomThemePreset[] = [
   {
@@ -34,19 +32,9 @@ export const CUSTOM_THEMES: CustomThemePreset[] = [
     imageUrl: "/custom-themes/5160549.jpg",
   },
   {
-    id: "bg5170396",
-    label: "BG 5170396",
-    imageUrl: "/custom-themes/5170396.jpg",
-  },
-  {
     id: "bg6487685",
     label: "BG 6487685",
     imageUrl: "/custom-themes/6487685.jpg",
-  },
-  {
-    id: "bgSunsetWatercolor",
-    label: "Sunset Watercolor",
-    imageUrl: "/custom-themes/6_sunset_cloudy_sky_watercolor_b.jpg",
   },
   {
     id: "bg7175949",
@@ -62,51 +50,6 @@ export const CUSTOM_THEMES: CustomThemePreset[] = [
     id: "bg9051050",
     label: "BG 9051050",
     imageUrl: "/custom-themes/9051050.jpg",
-  },
-  {
-    id: "cozyCatCandle",
-    label: "Cozy Cat Candle",
-    imageUrl: "/custom-themes/cozy-cat-by-candlelight.jpg",
-  },
-  {
-    id: "felixNewYear1280",
-    label: "Felix New Year",
-    imageUrl: "/custom-themes/felix-mittermeier-new-year-background-3625405_1280.jpg",
-  },
-  {
-    id: "ksushlaBackground",
-    label: "Ksushla Background",
-    imageUrl: "/custom-themes/ksushlapush-background-6556413.jpg",
-  },
-  {
-    id: "pexels6985001",
-    label: "Codioful 6985001",
-    imageUrl: "/custom-themes/pexels-codioful-6985001.jpg",
-  },
-  {
-    id: "pexels6985003",
-    label: "Codioful 6985003",
-    imageUrl: "/custom-themes/pexels-codioful-6985003.jpg",
-  },
-  {
-    id: "pexels6985265",
-    label: "Codioful 6985265",
-    imageUrl: "/custom-themes/pexels-codioful-6985265.jpg",
-  },
-  {
-    id: "pexels7130465",
-    label: "Codioful 7130465",
-    imageUrl: "/custom-themes/pexels-codioful-7130465.jpg",
-  },
-  {
-    id: "pexels7130498",
-    label: "Codioful 7130498",
-    imageUrl: "/custom-themes/pexels-codioful-7130498.jpg",
-  },
-  {
-    id: "pexels7130555",
-    label: "Codioful 7130555",
-    imageUrl: "/custom-themes/pexels-codioful-7130555.jpg",
   },
   {
     id: "rm456004",

@@ -1207,7 +1207,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     </button>
                   </div>
 
-                  {themes.slice(0, 6).map((t) => {
+                  {themes.map((t) => {
                     const selected = draftUser.theme === t.id;
                     return (
                       <button
@@ -1217,7 +1217,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                           markDirty();
                         }}
                         className={clsx(
-                          "w-full rounded-2xl border p-4 text-left backdrop-blur-glass transition",
+                          "flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left backdrop-blur-glass transition",
                           isDark ? "border-white/15" : "border-white/40",
                           selected
                             ? isDark
@@ -1228,8 +1228,11 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                             : "bg-white/45 hover:bg-white/55"
                         )}
                       >
-                        <div className="font-black">{t.name}</div>
-                        <div className="mt-1 text-xs opacity-80">{t.description}</div>
+                        <span className={clsx("h-8 w-8 shrink-0 rounded-lg border", isDark ? "border-white/20" : "border-black/10", t.bg)} />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-sm font-bold">{t.name}</span>
+                          <span className="mt-0.5 block truncate text-[11px] opacity-70">{t.description}</span>
+                        </span>
                       </button>
                     );
                   })}
