@@ -1326,7 +1326,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         "relative flex h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors duration-300 after:absolute after:left-0.5 after:top-0.5 after:h-7 after:w-7 after:rounded-full after:bg-white after:shadow-sm after:transition-[translate] after:duration-300 after:ease-[cubic-bezier(0.34,1.56,0.64,1)] after:content-['']",
                         draftUser.isPublic
                           ? "bg-emerald-400 after:translate-x-6"
-                          : isDark ? "bg-white/25" : "bg-slate-300"
+                          : isDark ? "bg-white/25 after:translate-x-0" : "bg-slate-300 after:translate-x-0"
                       )}
                     />
                   </div>
@@ -1352,7 +1352,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         "relative flex h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors duration-300 after:absolute after:left-0.5 after:top-0.5 after:h-7 after:w-7 after:rounded-full after:bg-white after:shadow-sm after:transition-[translate] after:duration-300 after:ease-[cubic-bezier(0.34,1.56,0.64,1)] after:content-['']",
                         draftUser.listPublic !== false
                           ? "bg-emerald-400 after:translate-x-6"
-                          : isDark ? "bg-white/25" : "bg-slate-300"
+                          : isDark ? "bg-white/25 after:translate-x-0" : "bg-slate-300 after:translate-x-0"
                       )}
                     />
                   </div>
