@@ -687,7 +687,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         {/* Main grid */}
         <div className="mt-8 grid gap-6 lg:grid-cols-[380px_1fr]">
           {/* === Left panel: tabs + content === */}
-          <div className={clsx("rounded-3xl border backdrop-blur-glass shadow-soft overflow-hidden", isDark ? "border-white/15 bg-slate-900/40" : "border-white/60 bg-white/55")}>
+          <div className={clsx("rounded-3xl border backdrop-blur-glass shadow-soft overflow-hidden", isDark ? "border-white/15 bg-slate-900/40 text-white" : "border-white/60 bg-white/55 text-slate-800")}>
             {/* Tab bar */}
             <div className={clsx("flex gap-1 p-2 overflow-x-auto", isDark ? "bg-white/5" : "bg-white/30")}>
               {TABS.map(([k, label, icon]) => (
