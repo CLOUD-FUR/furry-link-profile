@@ -714,7 +714,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
             <div className="p-5">
               {tab === "profile" ? (
                 <div className="space-y-4">
-                  <Field label="프로필 이미지 (파일)">
+                  <Field label="프로필 이미지 (파일)" isDark={isDark}>
                     <div className="flex items-center gap-2">
                       <input
                         type="file"
@@ -736,7 +736,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     <p className={clsx("mt-1 text-xs", uiSub)}>권장 사이즈는 256×256이에요!</p>
                   </Field>
 
-                  <Field label="배너 이미지 (파일)">
+                  <Field label="배너 이미지 (파일)" isDark={isDark}>
                     <div className="flex items-center gap-2">
                       <input
                         type="file"
@@ -758,7 +758,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     <p className={clsx("mt-1 text-xs", uiSub)}>권장 사이즈는 1400×500이에요!</p>
                   </Field>
 
-                  <Field label="핸들 (@handle_name)">
+                  <Field label="핸들 (@handle_name)" isDark={isDark}>
                     <input
                       value={draftUser.handle}
                       maxLength={20}
@@ -781,7 +781,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     {handleError ? <p className="mt-1 text-xs text-red-300 font-semibold">{handleError}</p> : null}
                   </Field>
 
-                  <Field label="소개글">
+                  <Field label="소개글" isDark={isDark}>
                     <textarea
                       value={draftUser.bio}
                       maxLength={500}
@@ -800,7 +800,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     </p>
                   </Field>
 
-                  <Field label="프로필 태그">
+                  <Field label="프로필 태그" isDark={isDark}>
                     <select
                       value={draftUser.profileTag ?? ""}
                       onChange={(e) => {
@@ -842,7 +842,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     </p>
                   </Field>
 
-                  <Field label="프로필 효과">
+                  <Field label="프로필 효과" isDark={isDark}>
                     <select
                       value={
                         draftUser.profileEffect &&
@@ -1654,10 +1654,10 @@ function SortableLinkCard({
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, isDark, children }: { label: string; isDark?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-sm font-bold">{label}</div>
+      <div className={clsx("text-sm font-bold", isDark ? "text-white/90" : "text-slate-800")}>{label}</div>
       <div className="mt-2">{children}</div>
     </div>
   );
