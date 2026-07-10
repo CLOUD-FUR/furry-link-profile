@@ -208,3 +208,25 @@ body {
 .animate-grow {
   animation: grow-up 0.6s ease-out;
 }
+
+/* Floating animation (404 fox etc.) */
+@keyframes fl-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(3deg);
+  }
+}
+
+.fl-float {
+  display: inline-block;
+  animation: fl-float 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-float {
+    animation: none;
+  }
+}
