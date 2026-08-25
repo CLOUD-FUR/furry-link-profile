@@ -3,6 +3,7 @@ import { Container, GlassCard, ButtonLink } from "@/components/ui";
 import { HomeFeatureList } from "@/components/home-feature-list";
 import { HomePreviewCard } from "@/components/home-preview-card";
 import { HomeUserCount } from "@/components/home-user-count";
+import ScrollReveal from "@/components/scroll-reveal";
 import { prisma } from "@/lib/prisma";
 import type { Metadata } from "next";
 
@@ -166,27 +167,28 @@ export default async function HomePage() {
       </header>
 
       <Container className="relative py-8 sm:py-12 pb-32">
+        <ScrollReveal />
 
         {/* Hero */}
         <section className="mt-10 sm:mt-20 grid gap-12 lg:gap-16 lg:grid-cols-[1.05fr_0.95fr] items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/55 dark:border-white/15 dark:bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 backdrop-blur">
+            <div className="reveal inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/55 dark:border-white/15 dark:bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 backdrop-blur" data-reveal-delay="0">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
               퍼리·퍼슈터를 위한 링크 모음 서비스
             </div>
 
-            <h1 className="mt-5 text-4xl sm:text-6xl font-black tracking-tight leading-[1.1] text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }}>
+            <h1 className="reveal mt-5 text-4xl sm:text-6xl font-black tracking-tight leading-[1.1] text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }} data-reveal-delay="80">
               모든 링크를
               <span className="block bg-gradient-to-r from-pink-500 via-violet-500 to-sky-500 bg-clip-text text-transparent">
                 하나의 링크로
               </span>
             </h1>
 
-            <p className="mt-5 max-w-md text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed" style={{ wordBreak: "keep-all" }}>
+            <p className="reveal mt-5 max-w-md text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed" style={{ wordBreak: "keep-all" }} data-reveal-delay="160">
               Discord로 간편하게 로그인하고, 나만의 프로필을 1분 안에 만들어 보세요. ✨
             </p>
 
-            <div className="mt-7 flex flex-col sm:flex-row gap-3">
+            <div className="reveal mt-7 flex flex-col sm:flex-row gap-3" data-reveal-delay="240">
               <ButtonLink
                 href="/login"
                 size="lg"
@@ -223,7 +225,7 @@ export default async function HomePage() {
 
         {/* Feature highlights */}
         <section className="mt-24 sm:mt-40">
-          <div className="text-center max-w-2xl mx-auto">
+          <div className="reveal text-center max-w-2xl mx-auto" data-reveal-delay="0">
             <span className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">Features</span>
             <h2 className="mt-2 text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }}>
               왜 Fluffy Link인가요?
@@ -239,46 +241,54 @@ export default async function HomePage() {
               title="감각적인 테마"
               desc="여러가지 기본 테마와 커스텀 컬러로 나만의 프로필을 꾸며요."
               gradient="from-pink-400 to-rose-500"
+              revealDelay={80}
             />
             <FeatureCard
               icon="🔗"
               title="무제한 링크"
               desc="Twitter, Discord, Instagram 등 원하는 만큼 링크를 추가할 수 있어요."
               gradient="from-sky-400 to-indigo-500"
+              revealDelay={160}
             />
             <FeatureCard
               icon="🔐"
               title="간편 로그인"
               desc="Discord 계정 하나면 끝. 별도 가입 절차가 필요 없어요."
               gradient="from-violet-400 to-fuchsia-500"
+              revealDelay={240}
             />
             <FeatureCard
               icon="📱"
               title="모바일 최적화"
               desc="PC와 모바일 어디서나 깔끔하게 보이는 반응형 디자인이에요."
               gradient="from-emerald-400 to-teal-500"
+              revealDelay={320}
             />
             <FeatureCard
               icon="📊"
               title="방문자 통계"
               desc="내 프로필이 얼마나 인기 있는지 한눈에 확인할 수 있어요."
               gradient="from-amber-400 to-orange-500"
+              revealDelay={400}
             />
             <FeatureCard
               icon="💬"
               title="실시간 지원"
               desc="궁금한 점은 채팅으로 바로 문의해 주세요. 빠르게 답해드려요."
               gradient="from-cyan-400 to-blue-500"
+              revealDelay={480}
             />
           </div>
         </section>
 
         {/* CTA */}
         <section className="mt-24 sm:mt-40">
-          <div className="relative overflow-hidden rounded-[2rem] border border-white/15 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 dark:from-indigo-700 dark:via-violet-700 dark:to-fuchsia-700 p-8 sm:p-16 text-center shadow-[0_30px_80px_-20px_rgba(124,58,237,0.55)]">
-            <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-pink-400/40 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-sky-400/40 blur-3xl" />
-            <div className="absolute inset-0 noise opacity-20" />
+          <div className="reveal relative overflow-hidden rounded-[2rem] border border-white/15 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 dark:from-indigo-700 dark:via-violet-700 dark:to-fuchsia-700 p-8 sm:p-16 text-center shadow-[0_30px_80px_-20px_rgba(124,58,237,0.55)]" data-reveal-delay="0">
+            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem] [clip-path:inset(0_round_2rem)]">
+              <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-pink-400/40 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-sky-400/40 blur-3xl" />
+              <div className="absolute inset-0 noise opacity-20" />
+            </div>
             <div className="relative">
               <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/25 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur">
                 🐾 무료로 시작하기
@@ -314,7 +324,7 @@ export default async function HomePage() {
           </div>
 
           {/* Footer */}
-          <footer className="mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600 dark:text-slate-400">
+          <footer className="reveal mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600 dark:text-slate-400" data-reveal-delay="100">
             <div className="flex items-center gap-2">
               <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15">
                 <Image src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover" />
@@ -338,14 +348,16 @@ function FeatureCard({
   title,
   desc,
   gradient,
+  revealDelay = 0,
 }: {
   icon: string;
   title: string;
   desc: string;
   gradient: string;
+  revealDelay?: number;
 }) {
   return (
-    <div className="group rounded-3xl border border-white/70 bg-white/65 dark:border-white/10 dark:bg-white/5 p-6 backdrop-blur-glass shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-[0_25px_60px_-25px_rgba(124,58,237,0.35)] dark:hover:bg-white/10 active:scale-[0.97] active:translate-y-0 cursor-pointer">
+    <div className="reveal group rounded-3xl border border-white/70 bg-white/65 dark:border-white/10 dark:bg-white/5 p-6 backdrop-blur-glass shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-[0_25px_60px_-25px_rgba(124,58,237,0.35)] dark:hover:bg-white/10 active:scale-[0.97] active:translate-y-0 cursor-pointer" data-reveal-delay={revealDelay}>
       <div
         className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-2xl shadow-[0_8px_20px_-8px_rgba(15,23,42,0.35)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 group-active:scale-95`}
       >

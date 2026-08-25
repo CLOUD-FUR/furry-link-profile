@@ -178,6 +178,11 @@ export default function RootLayout({
           }}
         />
         <script
+          dangerouslySetInnerHTML={{
+            __html: `document.documentElement.classList.add('reveal-ready');`,
+          }}
+        />
+        <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_JSON_LD) }}
         />

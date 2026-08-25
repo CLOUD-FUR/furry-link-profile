@@ -230,3 +230,30 @@ body {
     animation: none;
   }
 }
+
+/* ===== Scroll reveal (IntersectionObserver) ===== */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* html.reveal-ready: layout head 스크립트가 첫 페인트 전에 설정.
+   JS 미지원(클래스 없음)이면 숨기지 않아 콘텐츠가 항상 보인다. */
+@media (prefers-reduced-motion: no-preference) {
+  html.reveal-ready .reveal:not(.reveal-visible) {
+    opacity: 0;
+    transform: translateY(30px);
+    will-change: opacity, transform;
+  }
+
+  html.reveal-ready .reveal.reveal-visible {
+    animation: reveal-up 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+}
