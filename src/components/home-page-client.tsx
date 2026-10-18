@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { Container, ButtonLink } from "@/components/ui";
+import { Container, GlassCard, ButtonLink } from "@/components/ui";
 import { HomeFeatureList } from "@/components/home-feature-list";
 import { HomePreviewCard } from "@/components/home-preview-card";
 import { HomeUserCount } from "@/components/home-user-count";
 import ScrollReveal from "@/components/scroll-reveal";
+import { LanguageSelector } from "@/components/language-selector";
 
 export default function HomePageClient({ initialCount }: { initialCount: number | null }) {
   return (
@@ -27,6 +28,7 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
               </span>
             </a>
             <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              <LanguageSelector />
               <ButtonLink href="/login" variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
                 로그인
               </ButtonLink>
@@ -113,41 +115,97 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
               revealDelay={80}
             />
             <FeatureCard
-              icon="📊"
-              title="방문자 통계"
-              desc="프로필 조회수, 링크 클릭 수, 국가별 통계 확인"
+              icon="🔗"
+              title="무제한 링크"
+              desc="Twitter, YouTube, Discord 등 원하는 만큼 링크 추가"
               gradient="from-sky-400 to-indigo-500"
               revealDelay={160}
             />
             <FeatureCard
-              icon="🎭"
-              title="프로필 뱃지"
-              desc="퍼슈터, 아티스트, 스트리머 등 나를 표현하는 뱃지"
-              gradient="from-violet-400 to-purple-500"
+              icon="🔐"
+              title="간편한 로그인"
+              desc="Discord 계정으로 빠르고 안전하게 시작"
+              gradient="from-violet-400 to-fuchsia-500"
               revealDelay={240}
             />
             <FeatureCard
-              icon="✨"
-              title="프로필 효과"
-              desc="눈 내리는 효과, 색종이, 별똥별 등 화려한 배경 효과"
-              gradient="from-fuchsia-400 to-pink-500"
+              icon="📱"
+              title="모바일 최적화"
+              desc="PC와 모바일에서 모두 완벽한 반응형 디자인"
+              gradient="from-emerald-400 to-teal-500"
               revealDelay={320}
             />
             <FeatureCard
-              icon="🔗"
-              title="무제한 링크"
-              desc="Twitter, YouTube, Discord 등 원하는 만큼 링크 추가"
+              icon="📊"
+              title="방문자 통계"
+              desc="프로필 조회수와 링크 클릭 수를 한눈에 확인"
               gradient="from-amber-400 to-orange-500"
               revealDelay={400}
             />
             <FeatureCard
-              icon="🚀"
-              title="빠른 시작"
-              desc="Discord 로그인만으로 1분 안에 프로필 완성"
-              gradient="from-emerald-400 to-teal-500"
+              icon="💬"
+              title="커뮤니티"
+              desc="다른 유저들의 프로필을 탐색하고 영감을 얻으세요"
+              gradient="from-cyan-400 to-blue-500"
               revealDelay={480}
             />
           </div>
+        </section>
+
+        <section className="mt-24 sm:mt-40">
+          <div className="reveal relative overflow-hidden rounded-[2rem] border border-white/15 bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 dark:from-indigo-700 dark:via-violet-700 dark:to-fuchsia-700 p-8 sm:p-16 text-center shadow-[0_30px_80px_-20px_rgba(124,58,237,0.55)]" data-reveal-delay="0">
+            <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem] [clip-path:inset(0_round_2rem)]">
+              <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-pink-400/40 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-sky-400/40 blur-3xl" />
+              <div className="absolute inset-0 noise opacity-20" />
+            </div>
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/15 border border-white/25 px-3.5 py-1.5 text-xs font-semibold text-white backdrop-blur">
+                지금 바로 시작
+              </div>
+              <h2 className="mt-5 text-3xl sm:text-5xl font-black tracking-tight text-white" style={{ wordBreak: "keep-all" }}>
+                나만의 프로필 페이지를 만들어보세요
+              </h2>
+              <p className="mt-4 text-white/85 text-base sm:text-lg" style={{ wordBreak: "keep-all" }}>
+                가입비 없이 지금 바로 무료로 시작하세요
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap justify-center gap-3">
+                <ButtonLink
+                  href="/login"
+                  size="lg"
+                  variant="secondary"
+                  className="w-full sm:w-auto bg-white text-slate-900 border-white hover:bg-slate-100 dark:bg-white/10 dark:text-white dark:border-white/20 dark:hover:bg-white/15 dark:backdrop-blur shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)]"
+                >
+                  무료로 시작하기
+                  <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                    <path fillRule="evenodd" d="M7.293 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 10 7.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
+                  </svg>
+                </ButtonLink>
+                <ButtonLink
+                  href="/user"
+                  size="lg"
+                  variant="ghost"
+                  className="w-full sm:w-auto text-white border-white/30 hover:bg-white/15 dark:text-white dark:hover:bg-white/15"
+                >
+                  유저 목록 보기
+                </ButtonLink>
+              </div>
+            </div>
+          </div>
+
+          <footer className="reveal mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600 dark:text-slate-400" data-reveal-delay="100">
+            <div className="flex items-center gap-2">
+              <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15">
+                <Image src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover" />
+              </span>
+              <span className="font-bold text-slate-700 dark:text-slate-200">Fluffy Link</span>
+              <span className="text-slate-500">© {new Date().getFullYear()}</span>
+            </div>
+            <div className="flex items-center gap-5">
+              <a href="/terms" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">이용약관</a>
+              <a href="/questions" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">문의하기</a>
+            </div>
+          </footer>
         </section>
       </Container>
     </div>
@@ -159,24 +217,23 @@ function FeatureCard({
   title,
   desc,
   gradient,
-  revealDelay,
+  revealDelay = 0,
 }: {
   icon: string;
   title: string;
   desc: string;
   gradient: string;
-  revealDelay: number;
+  revealDelay?: number;
 }) {
   return (
-    <div
-      className="reveal group rounded-3xl border border-white/60 dark:border-white/15 bg-white/55 dark:bg-white/10 p-6 backdrop-blur-glass shadow-soft transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.3)]"
-      data-reveal-delay={revealDelay}
-    >
-      <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-2xl leading-none shadow-sm`}>
+    <div className="reveal group rounded-3xl border border-white/70 bg-white/65 dark:border-white/10 dark:bg-white/5 p-6 backdrop-blur-glass shadow-[0_20px_50px_-25px_rgba(15,23,42,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-[0_25px_60px_-25px_rgba(124,58,237,0.35)] dark:hover:bg-white/10 active:scale-[0.97] active:translate-y-0 cursor-pointer" data-reveal-delay={revealDelay}>
+      <div
+        className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-2xl shadow-[0_8px_20px_-8px_rgba(15,23,42,0.35)] transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 group-active:scale-95`}
+      >
         {icon}
       </div>
-      <h3 className="mt-4 text-lg font-bold text-slate-900 dark:text-slate-50">{title}</h3>
-      <p className="mt-1.5 text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{desc}</p>
+      <h3 className="mt-5 text-xl font-black tracking-tight text-slate-900 dark:text-slate-50">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">{desc}</p>
     </div>
   );
 }
