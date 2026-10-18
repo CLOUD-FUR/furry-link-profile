@@ -14,6 +14,8 @@ import { SiteTopBar } from "@/components/SiteTopBar";
 import { ChannelTalk } from "@/components/channel-talk";
 import { SafeAvatar } from "@/components/safe-avatar";
 import { StatsCharts } from "@/components/stats-charts";
+import { calculateBirthdayDday } from "@/lib/birthday-utils";
+import { ImageCropper } from "@/components/image-cropper";
 import {
   DndContext,
   closestCenter,
@@ -108,6 +110,25 @@ async function resizeImageToDataUrl(file: File, maxW: number, maxH: number, qual
   return canvas.toDataURL("image/jpeg", quality);
 }
 
+async function validateAndConvertMedia(file: File): Promise<{ dataUrl: string; error?: string }> {
+  const isVideo = file.type.startsWith("video/");
+  const isGif = file.type === "image/gif";
+
+  if (!isVideo && !isGif) {
+    return { dataUrl: "", error: "비디오(mp4, webm) 또는 GIF 파일만 업로드 가능해요!" };
+  }
+
+  // Size limits: 20MB for video, 10MB for GIF
+  const maxSize = isVideo ? 20 * 1024 * 1024 : 10 * 1024 * 1024;
+  if (file.size > maxSize) {
+    const maxMB = isVideo ? 20 : 10;
+    return { dataUrl: "", error: `파일 크기가 ${maxMB}MB를 초과해요! (현재: ${(file.size / 1024 / 1024).toFixed(1)}MB)` };
+  }
+
+  const dataUrl = await fileToDataUrl(file);
+  return { dataUrl };
+}
+
 function platformOptions() {
   return [
     ["discord_server", "Discord 서버"],
@@ -139,8 +160,76 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
   const [handleError, setHandleError] = useState<string>("");
 
+  // Store original data for comparison
+  const originalDataRef = useRef<{
+    user: UserWithLinks;
+    links: DraftLink[];
+  }>({
+    user: initialUser,
+    links: initialUser.links as DraftLink[],
+  });
+
   const theme = useMemo(() => getThemeById(draftUser.theme), [draftUser.theme]);
   const isDark = useMemo(() => (draftUser.theme === "custom" ? false : getThemeById(draftUser.theme).isDark), [draftUser.theme]);
+
+  // Deep comparison to detect changes
+  const hasChanges = useMemo(() => {
+    // Compare user data (excluding links and computed fields)
+    const originalUserData = {
+      handle: originalDataRef.current.user.handle,
+      bio: originalDataRef.current.user.bio,
+      theme: originalDataRef.current.user.theme,
+      themeJson: originalDataRef.current.user.themeJson,
+      bannerUrl: originalDataRef.current.user.bannerUrl,
+      image: originalDataRef.current.user.image,
+      isPublic: originalDataRef.current.user.isPublic,
+      listPublic: originalDataRef.current.user.listPublic,
+      profileTag: originalDataRef.current.user.profileTag,
+      profileEffect: originalDataRef.current.user.profileEffect,
+    };
+
+    const currentUserData = {
+      handle: draftUser.handle,
+      bio: draftUser.bio,
+      theme: draftUser.theme,
+      themeJson: draftUser.themeJson,
+      bannerUrl: draftUser.bannerUrl,
+      image: draftUser.image,
+      isPublic: draftUser.isPublic,
+      listPublic: draftUser.listPublic,
+      profileTag: draftUser.profileTag,
+      profileEffect: draftUser.profileEffect,
+    };
+
+    // Compare links data (excluding handleInput which is derived)
+    const originalLinksData = originalDataRef.current.links.map(l => ({
+      id: l.id,
+      platform: l.platform,
+      title: l.title,
+      url: l.url,
+      subtitle: l.subtitle,
+      enabled: l.enabled,
+      order: l.order,
+      icon: l.icon,
+    }));
+
+    const currentLinksData = draftLinks.map(l => ({
+      id: l.id,
+      platform: l.platform,
+      title: l.title,
+      url: l.url,
+      subtitle: l.subtitle,
+      enabled: l.enabled,
+      order: l.order,
+      icon: l.icon,
+    }));
+
+    // Deep comparison using JSON.stringify
+    const userChanged = JSON.stringify(originalUserData) !== JSON.stringify(currentUserData);
+    const linksChanged = JSON.stringify(originalLinksData) !== JSON.stringify(currentLinksData);
+
+    return userChanged || linksChanged;
+  }, [draftUser, draftLinks]);
 
   // Toast
   const [toast, setToast] = useState<{ kind: ToastKind; message: string } | null>(null);
@@ -152,6 +241,13 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
   // 랜덤 추천 테마 버튼 피드백
   const [randomThemeDone, setRandomThemeDone] = useState(false);
+
+  // 이미지 크롭 상태
+  const [cropperState, setCropperState] = useState<{
+    src: string;
+    aspect: number;
+    type: "avatar" | "banner";
+  } | null>(null);
 
   // 끌어올리기
   const [bumpDone, setBumpDone] = useState(false);
@@ -263,8 +359,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   }
 
   function resetDraft() {
-    setDraftUser(savedUser);
-    setDraftLinks(savedUser.links as DraftLink[]);
+    setDraftUser(originalDataRef.current.user);
+    setDraftLinks(originalDataRef.current.links);
     setDirty(false);
     setHandleError("");
     showToast("info", "✅ 변경사항을 되돌렸어요!");
@@ -276,14 +372,20 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       .catch(() => null);
 
     if (refreshed?.user) {
+      const linksWithHandleInput = refreshed.user.links.map((l: DraftLink) => ({
+        ...l,
+        handleInput: deriveHandleInput(l.platform, l.url),
+      }));
+
       setSavedUser(refreshed.user);
       setDraftUser(refreshed.user);
-      setDraftLinks(
-        refreshed.user.links.map((l: DraftLink) => ({
-          ...l,
-          handleInput: deriveHandleInput(l.platform, l.url),
-        }))
-      );
+      setDraftLinks(linksWithHandleInput);
+
+      // Update original data reference
+      originalDataRef.current = {
+        user: refreshed.user,
+        links: linksWithHandleInput,
+      };
     }
   }
 
@@ -301,7 +403,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         ALLOWED_PROFILE_EFFECTS.has(String(draftUser.profileEffect))
           ? (draftUser.profileEffect as any)
           : null;
-      const userPatch: Partial<User> = {
+      const userPatch: Partial<User> & { birthday?: string | null } = {
         handle: draftUser.handle,
         bio: draftUser.bio,
         theme: draftUser.theme,
@@ -312,6 +414,10 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         listPublic: draftUser.listPublic,
         profileTag: draftUser.profileTag,
         profileEffect: effectValue,
+        showBirthday: draftUser.showBirthday,
+        birthday: draftUser.birthday
+          ? new Date(draftUser.birthday).toISOString()
+          : null,
       };
 
       const resU = await fetch("/api/profile", {
@@ -496,17 +602,38 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
   const uiSub = isDark ? "text-white/70" : "text-slate-700";
 
   async function onAvatarFile(file: File) {
-    const dataUrl = await resizeImageToDataUrl(file, 256, 256, 0.92);
-    setDraftUser((u) => ({ ...u, image: dataUrl }));
-    markDirty();
-    showToast("info", "✅ 프로필 이미지가 적용되었어요! 저장을 눌러 적용해주세요!");
+    const dataUrl = await fileToDataUrl(file);
+    setCropperState({ src: dataUrl, aspect: 1, type: "avatar" });
   }
 
   async function onBannerFile(file: File) {
-    const dataUrl = await resizeImageToDataUrl(file, 1400, 500, 0.9);
-    setDraftUser((u) => ({ ...u, bannerUrl: dataUrl }));
-    markDirty();
-    showToast("info", "✅ 배너가 적용되었어요! 저장을 눌러 적용해주세요!");
+    const dataUrl = await fileToDataUrl(file);
+    setCropperState({ src: dataUrl, aspect: 16 / 9, type: "banner" });
+  }
+
+  async function onCropComplete(croppedBlob: Blob) {
+    if (!cropperState) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result);
+
+      if (cropperState.type === "avatar") {
+        setDraftUser((u) => ({ ...u, image: dataUrl }));
+        showToast("info", "✅ 프로필 이미지가 적용되었어요! 저장을 눌러 적용해주세요!");
+      } else if (cropperState.type === "banner") {
+        setDraftUser((u) => ({ ...u, bannerUrl: dataUrl }));
+        showToast("info", "✅ 배너가 적용되었어요! 저장을 눌러 적용해주세요!");
+      }
+
+      markDirty();
+      setCropperState(null);
+    };
+    reader.readAsDataURL(croppedBlob);
+  }
+
+  function onCropCancel() {
+    setCropperState(null);
   }
 
   async function onThemeBgFile(file: File) {
@@ -542,6 +669,23 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
     setDraftUser((u) => ({ ...u, theme: "pastel", themeJson: "" }));
     markDirty();
     showToast("info", "✅ 사진 테마를 기본으로 변경했어요! 저장을 눌러 적용해주세요!");
+  }
+
+  async function onBackgroundMediaFile(file: File) {
+    const result = await validateAndConvertMedia(file);
+    if (result.error) {
+      showToast("error", result.error);
+      return;
+    }
+    setDraftUser((u) => ({ ...u, backgroundMedia: result.dataUrl }));
+    markDirty();
+    showToast("info", "✅ 배경 미디어가 적용되었어요! 저장을 눌러 적용해주세요!");
+  }
+
+  function resetBackgroundMedia() {
+    setDraftUser((u) => ({ ...u, backgroundMedia: null }));
+    markDirty();
+    showToast("info", "✅ 배경 미디어를 제거했어요! 저장을 눌러 적용해주세요!");
   }
 
   function applyRandomCustomTheme() {
@@ -603,11 +747,11 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         actions={
           <>
             <button
-              disabled={!dirty || saving}
+              disabled={!hasChanges || saving}
               onClick={saveAll}
               className={clsx(
                 "inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold shadow-soft transition-all active:scale-[0.98] hover:scale-[1.02]",
-                dirty
+                hasChanges
                   ? isDark
                     ? "bg-white text-slate-900 border-transparent hover:bg-slate-100 shadow-soft"
                     : "bg-slate-900 text-white border-transparent hover:bg-slate-800 shadow-soft"
@@ -616,26 +760,23 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     : "bg-white/60 text-slate-500 border border-white/60",
                 saving ? "opacity-70" : ""
               )}
-              title={dirty ? "저장" : "변경 사항 없음"}
+              title={hasChanges ? "저장" : "변경 사항 없음"}
             >
-              {saving ? "저장중.." : dirty ? "저장" : "저장됨"}
+              {saving ? "저장중.." : hasChanges ? "저장" : "저장됨"}
             </button>
 
-            <button
-              disabled={!dirty || saving}
-              onClick={resetDraft}
-              className={clsx(
-                "inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border transition-all active:scale-[0.98] hover:scale-[1.02]",
-                dirty
-                  ? isDark
+            {hasChanges && (
+              <button
+                disabled={saving}
+                onClick={resetDraft}
+                className={clsx(
+                  "inline-flex items-center justify-center rounded-full px-3 py-2 text-sm font-semibold border transition-all active:scale-[0.98] hover:scale-[1.02]",
+                  isDark
                     ? "border-white/20 bg-white/15 text-white hover:bg-white/20"
                     : "border-white/70 bg-white/80 text-slate-900 hover:bg-white"
-                  : isDark
-                    ? "border-white/10 bg-white/5 text-slate-500"
-                    : "border-white/40 bg-white/40 text-slate-400"
-              )}
-              title="되돌리기"
-            >
+                )}
+                title="되돌리기"
+              >
               <span className="sm:hidden" aria-hidden>↺</span>
               <span className="hidden sm:inline">되돌리기</span>
             </button>
@@ -733,7 +874,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         Reset
                       </button>
                     </div>
-                    <p className={clsx("mt-1 text-xs", uiSub)}>권장 사이즈는 256×256이에요!</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>1:1 비율로 크롭됩니다. 권장 사이즈는 256×256이에요!</p>
                   </Field>
 
                   <Field label="배너 이미지 (파일)" isDark={isDark}>
@@ -755,7 +896,51 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                         Reset
                       </button>
                     </div>
-                    <p className={clsx("mt-1 text-xs", uiSub)}>권장 사이즈는 1400×500이에요!</p>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>16:9 비율로 크롭됩니다. 권장 사이즈는 1400×500이에요!</p>
+                  </Field>
+
+                  <Field label="배경 미디어 (비디오/GIF)" isDark={isDark}>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="file"
+                        accept="video/mp4,video/webm,image/gif"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) onBackgroundMediaFile(f);
+                        }}
+                        className={clsx("w-full", uiText)}
+                      />
+                      <button
+                        type="button"
+                        onClick={resetBackgroundMedia}
+                        className={clsx("shrink-0 rounded-xl px-3 py-2 text-xs font-bold", isDark ? "bg-white/15 text-white hover:bg-white/20" : "bg-white/60 hover:bg-white/75")}
+                      >
+                        Reset
+                      </button>
+                    </div>
+                    <p className={clsx("mt-1 text-xs", uiSub)}>
+                      프로필 배경에 표시될 비디오 또는 GIF (비디오: 최대 20MB, GIF: 최대 10MB)
+                    </p>
+                    {draftUser.backgroundMedia && (
+                      <div className="mt-2 rounded-lg overflow-hidden max-w-xs">
+                        {draftUser.backgroundMedia.startsWith("data:video/") ? (
+                          <video
+                            src={draftUser.backgroundMedia}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="w-full h-auto"
+                          />
+                        ) : draftUser.backgroundMedia.startsWith("data:image/gif") ? (
+                          <img
+                            src={draftUser.backgroundMedia}
+                            alt="Background GIF"
+                            className="w-full h-auto"
+                          />
+                        ) : null}
+                      </div>
+                    )}
                   </Field>
 
                   <Field label="핸들 (@handle_name)" isDark={isDark}>
@@ -901,6 +1086,53 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     <p className={clsx("mt-1 text-xs", uiSub)}>
                       프로필 페이지에 스노우 / 색종이 조각 / 별빛 / 버블 효과를 1개 적용할 수 있어요. 대시보드 미리보기에는 표시되지 않아요
                     </p>
+                  </Field>
+
+                  <Field label="생일 디데이" isDark={isDark}>
+                    <div className="space-y-3">
+                      <label className={clsx("flex items-center gap-2 text-sm", uiSub)}>
+                        <input
+                          type="checkbox"
+                          checked={draftUser.showBirthday ?? false}
+                          onChange={(e) => {
+                            setDraftUser((u) => ({ ...u, showBirthday: e.target.checked }));
+                            markDirty();
+                          }}
+                        />
+                        생일 디데이 공개
+                      </label>
+
+                      {draftUser.showBirthday ? (
+                        <input
+                          type="date"
+                          value={
+                            draftUser.birthday
+                              ? new Date(draftUser.birthday).toISOString().split("T")[0]
+                              : ""
+                          }
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value) {
+                              setDraftUser((u) => ({ ...u, birthday: new Date(value) as any }));
+                            } else {
+                              setDraftUser((u) => ({ ...u, birthday: null as any }));
+                            }
+                            markDirty();
+                          }}
+                          className={clsx(
+                            "w-full rounded-xl border px-3 py-2",
+                            isDark
+                              ? "bg-white/10 text-white border-white/15"
+                              : "bg-white/60 border-white/50 text-black"
+                          )}
+                          style={{ colorScheme: isDark ? "dark" : "light" }}
+                        />
+                      ) : null}
+
+                      <p className={clsx("mt-1 text-xs", uiSub)}>
+                        생일을 설정하면 프로필 페이지에 디데이 카운터가 표시돼요 (윤년 고려됨)
+                      </p>
+                    </div>
                   </Field>
                 </div>
               ) : null}
@@ -1524,6 +1756,16 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                       </div>
                     ) : null}
 
+                    {draftUser.showBirthday && draftUser.birthday ? (
+                      <div
+                        className={`mt-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500/20 to-violet-500/20 px-3 py-1 text-xs font-bold border ${
+                          isDark ? "text-white border-white/20" : "text-slate-900 border-slate-900/20"
+                        }`}
+                      >
+                        🎂 {calculateBirthdayDday(draftUser.birthday)}
+                      </div>
+                    ) : null}
+
                     {draftUser.bio ? (
                       <p className={clsx("mt-1 text-sm whitespace-pre-wrap", uiSub)}>
                         {draftUser.bio}
@@ -1596,6 +1838,17 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
 
       {/* ChannelTalk inquiry widget */}
       <ChannelTalk />
+
+      {/* Image Cropper Modal */}
+      {cropperState && (
+        <ImageCropper
+          imageSrc={cropperState.src}
+          aspect={cropperState.aspect}
+          onCropComplete={onCropComplete}
+          onCancel={onCropCancel}
+          isDark={isDark}
+        />
+      )}
     </div>
   );
 }

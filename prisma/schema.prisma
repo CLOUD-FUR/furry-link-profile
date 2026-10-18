@@ -37,6 +37,21 @@ model User {
   /// "snow" | "confetti"
   profileEffect String?
 
+  /// 🔥 배경 미디어 (비디오/GIF)
+  /// null = 배경 없음
+  /// data URL 또는 hosted URL (video/mp4, video/webm, image/gif)
+  backgroundMedia String?
+
+  /// 🔥 생일 디데이
+  /// null = 선택 안함
+  /// 값 = 사용자의 생일 (DateTime)
+  birthday      DateTime?
+
+  /// 🔥 생일 디데이 공개 여부
+  /// false = 비공개 (기본값)
+  /// true = 프로필 페이지에 디데이 표시
+  showBirthday  Boolean  @default(false)
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -45,6 +60,7 @@ model User {
   logsAsActor     Log[]    @relation("ActorLogs")
   logsAsTarget    Log[]    @relation("TargetLogs")
   profileVisits   ProfileVisit[]
+  pushSubscriptions PushSubscription[]
 }
 
 model Account {
@@ -129,4 +145,33 @@ model Log {
   @@index([type, createdAt])
   @@index([actorUserId, createdAt])
   @@index([targetUserId, createdAt])
+}
+
+model PushSubscription {
+  id           String   @id @default(cuid())
+  userId       String
+  endpoint     String   @unique
+  p256dh       String
+  auth         String
+  userAgent    String   @default("")
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Notification {
+  id           String   @id @default(cuid())
+  userId       String
+  type         String   // "milestone" | "new_country"
+  title        String
+  body         String
+  icon         String   @default("/logo.png")
+  url          String   @default("")
+  read         Boolean  @default(false)
+  sentAt       DateTime @default(now())
+
+  @@index([userId, sentAt])
+  @@index([userId, read])
 }

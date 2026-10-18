@@ -42,6 +42,9 @@ const PatchSchema = z.object({
   // ⬇️ 프로필 이미지 (base64)
   image: z.string().max(300_000).optional(),
 
+  // ⬇️ 배경 미디어 (비디오/GIF base64)
+  backgroundMedia: z.string().max(20_000_000).optional().nullable(),
+
   isPublic: z.boolean().optional(),
   listPublic: z.boolean().optional(),
 
@@ -58,6 +61,10 @@ const PatchSchema = z.object({
     ])
     .optional()
     .nullable(),
+
+  // ⬇️ 생일 디데이
+  birthday: z.string().optional().nullable(),
+  showBirthday: z.boolean().optional(),
 });
 
 function normalizeHandleDisplay(handle: string) {
@@ -99,6 +106,9 @@ export async function GET(req: Request) {
       lastBumpedAt: true,
       profileTag: true,
       profileEffect: true,
+      backgroundMedia: true,
+      birthday: true,
+      showBirthday: true,
       links: {
         where: { enabled: true },
         orderBy: { order: "asc" },
@@ -183,6 +193,29 @@ export async function PUT(req: Request) {
   // 🔥 profileEffect 처리
   if ("profileEffect" in patch) {
     data.profileEffect = patch.profileEffect ?? null;
+  }
+
+  // 🔥 backgroundMedia 처리
+  if ("backgroundMedia" in patch) {
+    data.backgroundMedia = patch.backgroundMedia ?? null;
+  }
+
+  // 🔥 birthday 처리
+  if ("birthday" in patch) {
+    if (patch.birthday === null || patch.birthday === "") {
+      data.birthday = null;
+    } else {
+      try {
+        data.birthday = new Date(patch.birthday);
+      } catch {
+        return Response.json({ error: "잘못된 생일 형식이에요." }, { status: 400 });
+      }
+    }
+  }
+
+  // 🔥 showBirthday 처리
+  if ("showBirthday" in patch) {
+    data.showBirthday = patch.showBirthday;
   }
 
   const user = await prisma.user.update({

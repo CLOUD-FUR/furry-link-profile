@@ -7,6 +7,7 @@ import { ProfileVisitTracker } from "@/components/profile-visit-tracker";
 import { ProfileHandleShare } from "@/components/profile-handle-share";
 import { SafeAvatar } from "@/components/safe-avatar";
 import { ProfileParticles } from "@/components/profile-particles";
+import { calculateBirthdayDday } from "@/lib/birthday-utils";
 import Script from "next/script";
 import type { Metadata } from "next";
 
@@ -181,6 +182,10 @@ export default async function PublicProfile({
 
   const isFixedAvatarUser = handleLower === FIXED_AVATAR_HANDLE;
 
+  const birthdayDday = user.showBirthday && user.birthday
+    ? calculateBirthdayDday(user.birthday)
+    : null;
+
   // SEO: ProfilePage / Person 구조화 데이터
   const profileJsonLd = {
     "@context": "https://schema.org",
@@ -228,7 +233,7 @@ export default async function PublicProfile({
       ) : null}
 
       <div
-      className={`min-h-screen flex justify-center ${theme.bg}`}
+      className={`min-h-screen flex justify-center ${theme.bg} relative`}
       style={
         user.theme === "custom" && themeJson.bgImage
           ? {
@@ -239,7 +244,28 @@ export default async function PublicProfile({
           : undefined
       }
     >
-      <div className="relative mx-auto w-full max-w-md px-4 py-10">
+      {user.backgroundMedia && (
+        <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+          {user.backgroundMedia.startsWith("data:video/") || user.backgroundMedia.match(/\.(mp4|webm)$/i) ? (
+            <video
+              src={user.backgroundMedia}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          ) : user.backgroundMedia.startsWith("data:image/gif") || user.backgroundMedia.match(/\.gif$/i) ? (
+            <img
+              src={user.backgroundMedia}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          ) : null}
+          <div className="absolute inset-0 bg-black/20" />
+        </div>
+      )}
+      <div className="relative mx-auto w-full max-w-md px-4 py-10 z-10">
         <div
           className={`relative rounded-[2rem] border ${theme.card} backdrop-blur-glass shadow-soft overflow-hidden`}
         >
@@ -302,6 +328,17 @@ export default async function PublicProfile({
                 {activeTag.label}
               </div>
 
+            ) : null}
+
+            {/* Birthday D-day */}
+            {birthdayDday ? (
+              <div
+                className={`mt-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500/20 to-violet-500/20 px-3 py-1 text-xs font-bold border ${
+                  isDark ? "text-white border-white/20" : "text-slate-900 border-slate-900/20"
+                }`}
+              >
+                🎂 {birthdayDday}
+              </div>
             ) : null}
 
             {/* Bio */}
