@@ -990,103 +990,51 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                     </p>
                   </Field>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Field label="프로필 태그" isDark={isDark}>
-                      <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
-                        <select
-                          value={draftUser.profileTag ?? ""}
-                          onChange={(e) => {
-                            const v = e.target.value;
-                            setDraftUser((u) => ({
-                              ...u,
-                              profileTag: v === "" ? null : v,
-                            }));
-                            markDirty();
-                          }}
-                          style={{ colorScheme: isDark ? "dark" : "light" }}
-                          className={clsx(
-                            "w-full rounded-xl border px-3 py-2",
-                            isDark
-                              ? "bg-white/10 text-white border-white/15"
-                              : "bg-white/60 border-white/50 text-black"
-                          )}
+                  <Field label="프로필 태그" isDark={isDark}>
+                    <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                      <select
+                        value={draftUser.profileTag ?? ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setDraftUser((u) => ({
+                            ...u,
+                            profileTag: v === "" ? null : v,
+                          }));
+                          markDirty();
+                        }}
+                        style={{ colorScheme: isDark ? "dark" : "light" }}
+                        className={clsx(
+                          "w-full rounded-xl border px-3 py-2",
+                          isDark
+                            ? "bg-white/10 text-white border-white/15"
+                            : "bg-white/60 border-white/50 text-black"
+                        )}
+                      >
+                        <option
+                          value=""
+                          className={isDark ? "bg-slate-900 text-white" : ""}
                         >
+                          선택 안함
+                        </option>
+
+                        {PROFILE_TAGS.map((tag) => (
                           <option
-                            value=""
+                            key={tag.id}
+                            value={tag.id}
                             className={isDark ? "bg-slate-900 text-white" : ""}
                           >
-                            선택 안함
+                            {tag.label}
                           </option>
+                        ))}
+                      </select>
 
-                          {PROFILE_TAGS.map((tag) => (
-                            <option
-                              key={tag.id}
-                              value={tag.id}
-                              className={isDark ? "bg-slate-900 text-white" : ""}
-                            >
-                              {tag.label}
-                            </option>
-                          ))}
-                        </select>
+                      <p className={clsx("mt-2 text-xs", uiSub)}>
+                        프로필에 표시할 태그를 1개 선택할 수 있어요
+                      </p>
+                    </div>
+                  </Field>
 
-                        <p className={clsx("mt-2 text-xs", uiSub)}>
-                          프로필에 표시할 태그를 1개 선택할 수 있어요
-                        </p>
-                      </div>
-                    </Field>
-
-                    <Field label="생일 디데이" isDark={isDark}>
-                      <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
-                        <div className={clsx("flex items-center justify-between gap-3")}>
-                          <div>
-                            <div className={clsx("font-bold", uiText)}>생일 디데이 공개</div>
-                            <div className={clsx("text-xs", uiSub)}>프로필 페이지에 디데이 카운터를 표시해요</div>
-                          </div>
-                          <input
-                            id="birthday-toggle"
-                            type="checkbox"
-                            className="peer sr-only"
-                            checked={draftUser.showBirthday ?? false}
-                            onChange={(e) => {
-                              setDraftUser((u) => ({ ...u, showBirthday: e.target.checked }));
-                              markDirty();
-                            }}
-                          />
-                          <label
-                            htmlFor="birthday-toggle"
-                            className={clsx(
-                              "relative flex h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors duration-300 after:absolute after:left-0.5 after:top-0.5 after:h-7 after:w-7 after:rounded-full after:bg-white after:shadow-sm after:transition-[translate] after:duration-300 after:ease-[cubic-bezier(0.34,1.56,0.64,1)] after:content-['']",
-                              draftUser.showBirthday
-                                ? "bg-emerald-400 after:translate-x-6"
-                                : isDark ? "bg-white/25 after:translate-x-0" : "bg-slate-300 after:translate-x-0"
-                            )}
-                          />
-                        </div>
-
-                        {draftUser.showBirthday ? (
-                          <div className="mt-3">
-                            <label className={clsx("mb-2 block text-sm font-medium", uiText)}>
-                              생일 날짜
-                            </label>
-                            <input
-                              type="date"
-                              value={
-                                draftUser.birthday
-                                  ? new Date(draftUser.birthday).toISOString().split("T")[0]
-                                  : ""
-                              }
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                if (value) {
-                                  setDraftUser((u) => ({ ...u, birthday: new Date(value) as any }));
-                                } else {
-                                  setDraftUser((u) => ({ ...u, birthday: null as any }));
-                                }
-                                markDirty();
-                              }}
-                              className={clsx(
-                                "w-full rounded-xl border px-3 py-2",
-                                isDark
+                  <Field label="프로필 효과" isDark={isDark}>
                                   ? "bg-white/10 text-white border-white/15"
                                   : "bg-white/60 border-white/50 text-black"
                               )}

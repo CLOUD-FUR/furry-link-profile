@@ -315,7 +315,7 @@ export default async function PublicProfile({
 
             {/* Profile Tag and Birthday D-day in one row */}
             {(activeTag || birthdayDday) ? (
-              <div className={`mt-2 flex flex-wrap items-center gap-2 ${!activeTag && !birthdayDday ? "justify-center" : ""}`}>
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
                 {activeTag ? (
                   <div
                     className={`inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold ${
@@ -333,7 +333,7 @@ export default async function PublicProfile({
 
                 {birthdayDday ? (
                   <div
-                    className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500/20 to-violet-500/20 px-3 py-1 text-xs font-bold border ${
+                    className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500/20 to-violet-500/20 px-3 py-1 text-xs font-semibold border ${
                       isDark ? "text-white border-white/20" : "text-slate-900 border-slate-900/20"
                     }`}
                   >
@@ -366,8 +366,8 @@ export default async function PublicProfile({
                 >
                   <span className="flex items-center gap-3">
                     <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/35">
-                      {l.platform === "other" ? (
-                        <span className="inline-flex items-center justify-center text-xl leading-none">{getOtherLinkDisplayIcon(l.icon)}</span>
+                      {l.icon ? (
+                        <span className="inline-flex items-center justify-center text-xl leading-none">{l.icon}</span>
                       ) : PLATFORM_ICONS[l.platform] ? (
                         <img
                           src={PLATFORM_ICONS[l.platform]!}
