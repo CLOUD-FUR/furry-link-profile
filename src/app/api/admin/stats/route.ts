@@ -3,30 +3,31 @@ import { checkAdminAuth } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  const authResult = await checkAdminAuth();
-  if (!authResult.ok) {
-    return NextResponse.json(
-      { error: authResult.error },
-      { status: authResult.error === "unauthorized" ? 401 : 403 }
-    );
-  }
-  const actorId = authResult.actorId;
+  try {
+    const authResult = await checkAdminAuth();
+    if (!authResult.ok) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.error === "unauthorized" ? 401 : 403 }
+      );
+    }
+    const actorId = authResult.actorId;
 
-  // Fetch admin user profile
-  const adminUser = await prisma.user.findUnique({
-    where: { id: actorId },
-    select: {
-      id: true,
-      name: true,
-      handle: true,
-      image: true,
-      discordImage: true,
-    },
-  });
+    // Fetch admin user profile
+    const adminUser = await prisma.user.findUnique({
+      where: { id: actorId },
+      select: {
+        id: true,
+        name: true,
+        handle: true,
+        image: true,
+        discordImage: true,
+      },
+    });
 
-  // Core metrics
-  const [totalUsers, totalLinks, activeLinks, profileVisits, recentLogs] =
-    await Promise.all([
+    // Core metrics
+    const [totalUsers, totalLinks, activeLinks, profileVisits, recentLogs] =
+      await Promise.all([
       prisma.user.count(),
       prisma.link.count(),
       prisma.link.count({ where: { enabled: true } }),

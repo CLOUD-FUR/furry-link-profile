@@ -19,26 +19,27 @@ function timeAgo(date: Date): string {
 }
 
 export async function GET() {
-  const authResult = await checkAdminAuth();
-  if (!authResult.ok) {
-    return NextResponse.json(
-      { error: authResult.error },
-      { status: authResult.error === "unauthorized" ? 401 : 403 }
-    );
-  }
-  const actorId = authResult.actorId;
+  try {
+    const authResult = await checkAdminAuth();
+    if (!authResult.ok) {
+      return NextResponse.json(
+        { error: authResult.error },
+        { status: authResult.error === "unauthorized" ? 401 : 403 }
+      );
+    }
+    const actorId = authResult.actorId;
 
-  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
 
-  // 병렬로 최근 24시간 이벤트 집계
-  const [
-    newUsers24h,
-    newLinks24h,
-    disabledLinks,
-    recentLogs,
-    recentVisits,
-  ] = await Promise.all([
+    // 병렬로 최근 24시간 이벤트 집계
+    const [
+      newUsers24h,
+      newLinks24h,
+      disabledLinks,
+      recentLogs,
+      recentVisits,
+    ] = await Promise.all([
     // 최근 24시간 새 가입자
     prisma.user.findMany({
       where: { createdAt: { gte: oneDayAgo } },
