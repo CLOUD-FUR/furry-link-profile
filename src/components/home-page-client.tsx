@@ -72,7 +72,7 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
                 </svg>
               </ButtonLink>
               <ButtonLink href="/@CLOUD" variant="secondary" size="lg" className="w-full sm:w-auto">
-                * 실제 @CLOUD 프로필 화면이에요. 이거는 실제 플러피링크 제작자 프로필 화면이에요
+                실제 플러피링크 제작자 프로필 화면이에요.
               </ButtonLink>
             </div>
 
