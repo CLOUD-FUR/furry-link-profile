@@ -1090,20 +1090,37 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   </Field>
 
                   <Field label="생일 디데이" isDark={isDark}>
-                    <div className="space-y-3">
-                      <label className={clsx("flex items-center gap-2 text-sm", uiSub)}>
-                        <input
-                          type="checkbox"
-                          checked={draftUser.showBirthday ?? false}
-                          onChange={(e) => {
-                            setDraftUser((u) => ({ ...u, showBirthday: e.target.checked }));
-                            markDirty();
-                          }}
-                        />
-                        생일 디데이 공개
-                      </label>
+                    <div className={clsx("flex items-center justify-between gap-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                      <div>
+                        <div className={clsx("font-bold", uiText)}>생일 디데이 공개</div>
+                        <div className={clsx("text-xs", uiSub)}>프로필 페이지에 디데이 카운터를 표시해요 (윤년 고려됨)</div>
+                      </div>
+                      <input
+                        id="birthday-toggle"
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={draftUser.showBirthday ?? false}
+                        onChange={(e) => {
+                          setDraftUser((u) => ({ ...u, showBirthday: e.target.checked }));
+                          markDirty();
+                        }}
+                      />
+                      <label
+                        htmlFor="birthday-toggle"
+                        className={clsx(
+                          "relative flex h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors duration-300 after:absolute after:left-0.5 after:top-0.5 after:h-7 after:w-7 after:rounded-full after:bg-white after:shadow-sm after:transition-[translate] after:duration-300 after:ease-[cubic-bezier(0.34,1.56,0.64,1)] after:content-['']",
+                          draftUser.showBirthday
+                            ? "bg-emerald-400 after:translate-x-6"
+                            : isDark ? "bg-white/25 after:translate-x-0" : "bg-slate-300 after:translate-x-0"
+                        )}
+                      />
+                    </div>
 
-                      {draftUser.showBirthday ? (
+                    {draftUser.showBirthday ? (
+                      <div className={clsx("mt-3 rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                        <label className={clsx("mb-2 block text-sm font-medium", uiText)}>
+                          생일 날짜
+                        </label>
                         <input
                           type="date"
                           value={
@@ -1128,12 +1145,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                           )}
                           style={{ colorScheme: isDark ? "dark" : "light" }}
                         />
-                      ) : null}
-
-                      <p className={clsx("mt-1 text-xs", uiSub)}>
-                        생일을 설정하면 프로필 페이지에 디데이 카운터가 표시돼요 (윤년 고려됨)
-                      </p>
-                    </div>
+                      </div>
+                    ) : null}
                   </Field>
                 </div>
               ) : null}
