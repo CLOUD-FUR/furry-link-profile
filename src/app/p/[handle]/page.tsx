@@ -366,14 +366,14 @@ export default async function PublicProfile({
                 >
                   <span className="flex items-center gap-3">
                     <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/35">
-                      {l.icon ? (
-                        <span className="inline-flex items-center justify-center text-xl leading-none">{l.icon}</span>
-                      ) : PLATFORM_ICONS[l.platform] ? (
+                      {PLATFORM_ICONS[l.icon] || PLATFORM_ICONS[l.platform] ? (
                         <img
-                          src={PLATFORM_ICONS[l.platform]!}
+                          src={PLATFORM_ICONS[l.icon] || PLATFORM_ICONS[l.platform]!}
                           alt={l.platform}
                           className="h-5 w-5 object-contain"
                         />
+                      ) : l.icon ? (
+                        <span className="inline-flex items-center justify-center text-xl leading-none">{l.icon}</span>
                       ) : (
                         <span className="inline-flex items-center justify-center text-lg leading-none">🔗</span>
                       )}

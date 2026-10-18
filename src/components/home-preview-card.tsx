@@ -158,16 +158,16 @@ export function HomePreviewCard() {
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/35 dark:bg-white/10">
-                {link.icon ? (
-                  <span className="text-lg leading-none">
-                    {link.icon}
-                  </span>
-                ) : PLATFORM_ICONS[link.platform] ? (
+                {PLATFORM_ICONS[link.icon] || PLATFORM_ICONS[link.platform] ? (
                   <img
-                    src={PLATFORM_ICONS[link.platform]}
+                    src={PLATFORM_ICONS[link.icon] || PLATFORM_ICONS[link.platform]}
                     alt={link.platform}
                     className="h-5 w-5 object-contain"
                   />
+                ) : link.icon ? (
+                  <span className="text-lg leading-none">
+                    {link.icon}
+                  </span>
                 ) : (
                   <span className="text-lg leading-none">
                     🔗
