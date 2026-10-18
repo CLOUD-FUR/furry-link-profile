@@ -6,7 +6,6 @@ import { HomeFeatureList } from "@/components/home-feature-list";
 import { HomePreviewCard } from "@/components/home-preview-card";
 import { HomeUserCount } from "@/components/home-user-count";
 import ScrollReveal from "@/components/scroll-reveal";
-import { LanguageSelector } from "@/components/language-selector";
 
 export default function HomePageClient({ initialCount }: { initialCount: number | null }) {
   return (
@@ -28,7 +27,6 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
               </span>
             </a>
             <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-              <LanguageSelector />
               <ButtonLink href="/login" variant="ghost" size="sm" className="hidden sm:inline-flex rounded-full">
                 로그인
               </ButtonLink>
