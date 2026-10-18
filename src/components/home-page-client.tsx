@@ -31,7 +31,7 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
                 로그인
               </ButtonLink>
               <ButtonLink href="/user" variant="secondary" size="sm" className="rounded-full">
-                유저 목록
+                유저 리스트
               </ButtonLink>
             </nav>
           </div>
@@ -76,10 +76,6 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
               </ButtonLink>
             </div>
 
-            <p className="reveal mt-3 text-xs text-slate-600 dark:text-slate-400" data-reveal-delay="280">
-              * 실제 @CLOUD 프로필 화면이에요. 이거는 실제 플러피링크 제작자 프로필 화면이에요.
-            </p>
-
             <div className="mt-6 flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300">
               <div className="flex -space-x-2">
                 {["from-pink-400 to-rose-500", "from-sky-400 to-indigo-500", "from-amber-400 to-orange-500", "from-emerald-400 to-teal-500"].map((g, i) => (
@@ -101,7 +97,7 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
           <div className="reveal text-center max-w-2xl mx-auto" data-reveal-delay="0">
             <span className="inline-block text-xs font-bold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-300">Features</span>
             <h2 className="mt-2 text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }}>
-              강력한 기능들
+              플러피링크 기능들
             </h2>
             <p className="mt-3 text-slate-700 dark:text-slate-300" style={{ wordBreak: "keep-all" }}>
               프로필을 더욱 특별하게 만들어줄 다양한 기능
@@ -169,7 +165,7 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
                 나만의 프로필 페이지를 만들어보세요
               </h2>
               <p className="mt-4 text-white/85 text-base sm:text-lg" style={{ wordBreak: "keep-all" }}>
-                가입비 없이 지금 바로 무료로 시작하세요
+                깔끔하고 심플한 나만의 페이지를 만들어보세요!
               </p>
               <div className="mt-8 flex flex-col sm:flex-row sm:flex-wrap justify-center gap-3">
                 <ButtonLink

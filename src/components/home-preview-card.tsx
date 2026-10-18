@@ -158,7 +158,11 @@ export function HomePreviewCard() {
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/35 dark:bg-white/10">
-                {PLATFORM_ICONS[link.platform] ? (
+                {link.icon ? (
+                  <span className="text-lg leading-none">
+                    {link.icon}
+                  </span>
+                ) : PLATFORM_ICONS[link.platform] ? (
                   <img
                     src={PLATFORM_ICONS[link.platform]}
                     alt={link.platform}
@@ -166,7 +170,7 @@ export function HomePreviewCard() {
                   />
                 ) : (
                   <span className="text-lg leading-none">
-                    {link.icon || "🔗"}
+                    🔗
                   </span>
                 )}
               </span>
