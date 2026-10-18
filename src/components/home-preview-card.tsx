@@ -30,10 +30,6 @@ const PLATFORM_ICONS: Record<string, string> = {
   tiktok: "/icons/tiktok.svg",
 };
 
-const PLATFORM_EMOJI_FALLBACKS: Record<string, string> = {
-  discord_server: "💬",
-  other: "🔗",
-};
 
 export function HomePreviewCard() {
   const [mounted, setMounted] = useState(false);
@@ -166,7 +162,7 @@ export function HomePreviewCard() {
                   />
                 ) : (
                   <span className="text-lg leading-none">
-                    {PLATFORM_EMOJI_FALLBACKS[link.platform] || link.icon || "🔗"}
+                    {link.icon || "🔗"}
                   </span>
                 )}
               </span>
