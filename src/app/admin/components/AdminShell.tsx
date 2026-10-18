@@ -32,8 +32,17 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
       signIn("/login");
       return;
     }
-    // TODO: check if user is admin (ADMIN_DISCORD_IDS check)
-    // For now, allow any logged-in user to access admin
+
+    // Check admin privileges
+    fetch("/api/admin/check")
+      .then((res) => {
+        if (!res.ok) {
+          router.push("/?error=관리자 권한이 필요합니다");
+        }
+      })
+      .catch(() => {
+        router.push("/?error=관리자 권한 확인 실패");
+      });
   }, [session, status, router]);
 
   const toggleDark = useCallback(() => setDark((d) => !d), []);

@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { isAdminId } from "@/lib/admin";
+import { checkAdminAuth } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -21,14 +19,14 @@ function timeAgo(date: Date): string {
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const authResult = await checkAdminAuth();
+  if (!authResult.ok) {
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.error === "unauthorized" ? 401 : 403 }
+    );
   }
-  const actorId = (session.user as any).id as string;
-  if (!isAdminId(actorId)) {
-    return NextResponse.json({ error: "forbidden" }, { status: 403 });
-  }
+  const actorId = authResult.actorId;
 
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
@@ -148,10 +146,18 @@ export async function GET() {
     });
   }
 
-  return NextResponse.json({
-    notifications,
-    count: notifications.length,
-    // 배지용 읽지 않은 알림 수 (간단히 전체 알림 수 사용)
-    unreadCount: notifications.length,
-  });
+    return NextResponse.json({
+      ok: true,
+      notifications,
+      count: notifications.length,
+      // 배지용 읽지 않은 알림 수 (간단히 전체 알림 수 사용)
+      unreadCount: notifications.length,
+    });
+  } catch (error) {
+    console.error("[admin/notifications] Error fetching notifications:", error);
+    return NextResponse.json(
+      { ok: false, error: "알림 조회 중 오류가 발생했습니다." },
+      { status: 500 }
+    );
+  }
 }
