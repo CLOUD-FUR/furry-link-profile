@@ -1035,18 +1035,6 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   </Field>
 
                   <Field label="프로필 효과" isDark={isDark}>
-                                  ? "bg-white/10 text-white border-white/15"
-                                  : "bg-white/60 border-white/50 text-black"
-                              )}
-                              style={{ colorScheme: isDark ? "dark" : "light" }}
-                            />
-                          </div>
-                        ) : null}
-                      </div>
-                    </Field>
-                  </div>
-
-                  <Field label="프로필 효과" isDark={isDark}>
                     <select
                       value={
                         draftUser.profileEffect &&
