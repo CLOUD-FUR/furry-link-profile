@@ -45,18 +45,18 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
           <div>
             <div className="reveal inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/55 dark:border-white/15 dark:bg-white/10 px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 backdrop-blur" data-reveal-delay="0">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              퍼리·퍼슈터 전용
+              퍼리·퍼슈터를 위한 링크 모음 서비스
             </div>
 
             <h1 className="reveal mt-5 text-4xl sm:text-6xl font-black tracking-tight leading-[1.1] text-slate-900 dark:text-slate-50" style={{ wordBreak: "keep-all" }} data-reveal-delay="80">
-              여러 개의 링크를
+              모든 링크를
               <span className="block bg-gradient-to-r from-pink-500 via-violet-500 to-sky-500 bg-clip-text text-transparent">
-                하나로 쉽게 관리
+                하나의 링크로
               </span>
             </h1>
 
             <p className="reveal mt-5 max-w-md text-slate-700 dark:text-slate-200 text-base sm:text-lg leading-relaxed" style={{ wordBreak: "keep-all" }} data-reveal-delay="160">
-              Discord 로그인만으로 1분 만에 나만의 링크 프로필을 만들어보세요. 테마, 통계, 커스텀 컬러 등 다양한 기능을 지원합니다.
+              Discord로 간편하게 로그인하고, 나만의 프로필을 1분 안에 만들어 보세요. ✨
             </p>
 
             <div className="reveal mt-7 flex flex-col sm:flex-row gap-3" data-reveal-delay="240">
@@ -66,15 +66,19 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
                 variant="primary"
                 className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 border-transparent text-white hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 dark:from-indigo-500 dark:via-violet-500 dark:to-fuchsia-500 dark:text-white dark:border-transparent shadow-[0_15px_35px_-12px_rgba(124,58,237,0.55)]"
               >
-                플러피링크 시작하기
+                플러피링크 이용하기
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
                   <path fillRule="evenodd" d="M7.293 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 10 7.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
                 </svg>
               </ButtonLink>
               <ButtonLink href="/@CLOUD" variant="secondary" size="lg" className="w-full sm:w-auto">
-                실제 플러피링크 제작자 프로필 화면이에요.
+                개발자 프로필
               </ButtonLink>
             </div>
+
+            <p className="reveal mt-3 text-xs text-slate-600 dark:text-slate-400" data-reveal-delay="280">
+              * 실제 @CLOUD 프로필 화면이에요. 이거는 실제 플러피링크 제작자 프로필 화면이에요.
+            </p>
 
             <div className="mt-6 flex items-center gap-3 text-xs text-slate-600 dark:text-slate-300">
               <div className="flex -space-x-2">

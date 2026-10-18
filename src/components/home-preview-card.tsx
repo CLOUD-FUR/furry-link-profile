@@ -25,9 +25,13 @@ const PLATFORM_ICONS: Record<string, string> = {
   youtube: "/icons/youtube.svg",
   instagram: "/icons/instagram.svg",
   discord: "/icons/discord.svg",
+  discord_server: "/icons/discord.svg",
   github: "/icons/github.svg",
   twitch: "/icons/twitch.svg",
   tiktok: "/icons/tiktok.svg",
+  telegram: "/icons/telegram.svg",
+  website: "/icons/website.svg",
+  other: "/icons/link.svg",
 };
 
 
