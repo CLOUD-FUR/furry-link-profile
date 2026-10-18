@@ -4,6 +4,7 @@ import NextLink from "next/link";
 import NextImage from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import clsx from "clsx";
 
 const THEME_KEY = "fluffy-site-theme";
@@ -13,12 +14,6 @@ type NavItem = {
   label: string;
   match?: "exact" | "prefix";
 };
-
-const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "홈", match: "exact" },
-  { href: "/user", label: "유저", match: "prefix" },
-  { href: "/dashboard", label: "대시보드", match: "prefix" },
-];
 
 function getStoredTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
@@ -60,6 +55,7 @@ type Props = {
 
 export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideTheme = false, actions, forceDark }: Props) {
   const pathname = usePathname() ?? "/";
+  const { data: session } = useSession();
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -67,6 +63,15 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
   // When forceDark is provided, use it instead of OS/stored theme.
   // This makes the top bar follow the dashboard's selected theme.
   const useDark = forceDark != null ? forceDark : (mounted && theme === "dark");
+
+  // Dynamic nav items based on session state
+  const navItems: NavItem[] = [
+    { href: "/", label: "홈", match: "exact" },
+    { href: "/user", label: "유저", match: "prefix" },
+    session?.user
+      ? { href: "/dashboard", label: "대시보드", match: "prefix" }
+      : { href: "/login", label: "로그인", match: "exact" },
+  ];
 
   useEffect(() => {
     const t = getStoredTheme();
@@ -116,7 +121,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
           {/* Desktop nav */}
           {showNav ? (
             <nav className="hidden md:flex shrink-0 items-center gap-1.5">
-              {NAV_ITEMS.map((item) => {
+              {navItems.map((item) => {
                 const active = resolveActive(item);
                 return (
                   <NextLink
@@ -229,7 +234,7 @@ export function SiteTopBar({ activePage, userAvatarUrl, showNav = true, hideThem
         {/* Mobile dropdown */}
         {showNav && mobileOpen ? (
           <div className={clsx("md:hidden mt-2 mx-auto w-fit rounded-2xl border backdrop-blur-xl shadow-soft px-2 py-2 animate-fade-in", useDark ? "border-white/15 bg-slate-900/70" : "border-white/60 bg-white/70")}>
-            {NAV_ITEMS.map((item) => {
+            {navItems.map((item) => {
               const active = resolveActive(item);
               return (
                 <NextLink
