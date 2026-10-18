@@ -2,18 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { sendPushToUser, saveNotification } from '@/lib/push-notifications';
-import { isAdmin } from '@/lib/admin';
+import { checkAdminAuth } from '@/lib/admin';
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
-    }
-
-    // 관리자 권한 확인
-    if (!isAdmin(session.user.id)) {
-      return NextResponse.json({ error: '권한이 없습니다' }, { status: 403 });
+    const adminCheck = await checkAdminAuth();
+    if (!adminCheck.ok) {
+      const status = adminCheck.error === 'unauthorized' ? 401 : 403;
+      const message = adminCheck.error === 'unauthorized' ? '로그인이 필요합니다' : '권한이 없습니다';
+      return NextResponse.json({ error: message }, { status });
     }
 
     const body = await request.json();

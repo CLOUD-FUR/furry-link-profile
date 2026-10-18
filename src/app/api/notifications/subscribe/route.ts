@@ -6,7 +6,8 @@ import { prisma } from '@/lib/prisma';
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id;
+    if (!userId || !session) {
       return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
     }
 
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
     await prisma.pushSubscription.upsert({
       where: { endpoint },
       create: {
-        userId: session.user.id,
+        userId,
         endpoint,
         p256dh: keys.p256dh,
         auth: keys.auth,
@@ -49,7 +50,8 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const userId = (session?.user as any)?.id;
+    if (!userId) {
       return NextResponse.json({ error: '로그인이 필요합니다' }, { status: 401 });
     }
 
@@ -61,7 +63,7 @@ export async function DELETE(request: NextRequest) {
 
     await prisma.pushSubscription.deleteMany({
       where: {
-        userId: session.user.id,
+        userId,
         endpoint,
       },
     });

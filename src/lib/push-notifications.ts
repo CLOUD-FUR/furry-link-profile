@@ -90,15 +90,40 @@ export async function saveNotification(
 }
 
 /**
+ * 방문자 마일스톤 알림을 보내야 하는지 확인
+ * 50, 100, 300, 500, 1000명, 그 이후는 1000명 단위 (2000, 3000, 4000...)
+ */
+export function shouldNotifyVisitorMilestone(visitorCount: number): boolean {
+  const milestones = [50, 100, 300, 500, 1000];
+
+  // 기본 마일스톤 체크
+  if (milestones.includes(visitorCount)) {
+    return true;
+  }
+
+  // 1000명 이후는 1000명 단위로 체크
+  if (visitorCount >= 1000 && visitorCount % 1000 === 0) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * 방문자 마일스톤 알림
  */
 export async function notifyVisitorMilestone(
   userId: string,
-  milestoneCount: number
+  visitorCount: number
 ): Promise<void> {
+  // 마일스톤에 해당하지 않으면 알림 보내지 않음
+  if (!shouldNotifyVisitorMilestone(visitorCount)) {
+    return;
+  }
+
   const payload: PushNotificationPayload = {
     title: `축하합니다! 🎉`,
-    body: `프로필 방문자가 ${milestoneCount.toLocaleString()}명을 돌파했습니다!`,
+    body: `프로필 방문자가 ${visitorCount.toLocaleString()}명을 돌파했습니다!`,
     icon: '/logo.png',
     url: `/dashboard`,
   };
@@ -110,22 +135,34 @@ export async function notifyVisitorMilestone(
 }
 
 /**
- * 새 국가 방문 알림
+ * 국가 알림을 보내야 하는지 확인
+ * 3개 또는 5개 국가에 도달했을 때만 알림
  */
-export async function notifyNewCountry(
+export function shouldNotifyCountryMilestone(countryCount: number): boolean {
+  return countryCount === 3 || countryCount === 5;
+}
+
+/**
+ * 국가 마일스톤 알림
+ */
+export async function notifyCountryMilestone(
   userId: string,
-  countryCode: string,
-  countryName: string
+  countryCount: number
 ): Promise<void> {
+  // 3개 또는 5개가 아니면 알림 보내지 않음
+  if (!shouldNotifyCountryMilestone(countryCount)) {
+    return;
+  }
+
   const payload: PushNotificationPayload = {
-    title: `새로운 국가 방문! 🌍`,
-    body: `${countryName} (${countryCode})에서 처음으로 방문했습니다!`,
+    title: `새로운 국가 마일스톤! 🌍`,
+    body: `${countryCount}개 국가에서 프로필을 방문했습니다!`,
     icon: '/logo.png',
     url: `/dashboard`,
   };
 
   await Promise.all([
     sendPushToUser(userId, payload),
-    saveNotification(userId, 'new_country', payload),
+    saveNotification(userId, 'country_milestone', payload),
   ]);
 }

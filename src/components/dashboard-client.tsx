@@ -418,7 +418,7 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
         birthday: draftUser.birthday
           ? new Date(draftUser.birthday).toISOString()
           : null,
-      };
+      } as any;
 
       const resU = await fetch("/api/profile", {
         method: "PUT",
@@ -777,13 +777,14 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                 )}
                 title="되돌리기"
               >
-              <span className="sm:hidden" aria-hidden>↺</span>
-              <span className="hidden sm:inline">되돌리기</span>
-            </button>
+                <span className="sm:hidden" aria-hidden>↺</span>
+                <span className="hidden sm:inline">되돌리기</span>
+              </button>
+            )}
 
             <button
-              onClick={async () => {
-                await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
+              onClick={() => {
+                fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
                 signOut({ callbackUrl: "/" });
               }}
               className={clsx(
