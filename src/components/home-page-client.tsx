@@ -66,13 +66,13 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
                 variant="primary"
                 className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 border-transparent text-white hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 dark:from-indigo-500 dark:via-violet-500 dark:to-fuchsia-500 dark:text-white dark:border-transparent shadow-[0_15px_35px_-12px_rgba(124,58,237,0.55)]"
               >
-                무료로 시작하기
+                플러피링크 시작하기
                 <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
                   <path fillRule="evenodd" d="M7.293 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L11.586 10 7.293 5.707a1 1 0 0 1 0-1.414Z" clipRule="evenodd" />
                 </svg>
               </ButtonLink>
               <ButtonLink href="/@CLOUD" variant="secondary" size="lg" className="w-full sm:w-auto">
-                개발자 프로필 보기
+                * 실제 @CLOUD 프로필 화면이에요. 이거는 실제 플러피링크 제작자 프로필 화면이에요
               </ButtonLink>
             </div>
 
