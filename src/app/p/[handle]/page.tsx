@@ -313,32 +313,33 @@ export default async function PublicProfile({
               />
             </div>
 
-            {/* Profile Tag */}
-            <div className={activeTag ? "" : "flex justify-center"}>
-              {activeTag ? (
-                <div
-                  className={`mt-2 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold ${
-                    isDark ? "text-white" : "text-slate-900"
-                  }`}
-                >
-                  <img
-                    src={activeTag.image}
-                    alt={activeTag.label}
-                    className="h-4 w-4"
-                  />
-                  {activeTag.label}
-                </div>
-              ) : null}
-            </div>
+            {/* Profile Tag and Birthday D-day in one row */}
+            {(activeTag || birthdayDday) ? (
+              <div className={`mt-2 flex flex-wrap items-center gap-2 ${!activeTag && !birthdayDday ? "justify-center" : ""}`}>
+                {activeTag ? (
+                  <div
+                    className={`inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-semibold ${
+                      isDark ? "text-white" : "text-slate-900"
+                    }`}
+                  >
+                    <img
+                      src={activeTag.image}
+                      alt={activeTag.label}
+                      className="h-4 w-4"
+                    />
+                    {activeTag.label}
+                  </div>
+                ) : null}
 
-            {/* Birthday D-day */}
-            {birthdayDday ? (
-              <div
-                className={`mt-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500/20 to-violet-500/20 px-3 py-1 text-xs font-bold border ${
-                  isDark ? "text-white border-white/20" : "text-slate-900 border-slate-900/20"
-                }`}
-              >
-                🎂 {birthdayDday}
+                {birthdayDday ? (
+                  <div
+                    className={`inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-pink-500/20 to-violet-500/20 px-3 py-1 text-xs font-bold border ${
+                      isDark ? "text-white border-white/20" : "text-slate-900 border-slate-900/20"
+                    }`}
+                  >
+                    🎂 {birthdayDday}
+                  </div>
+                ) : null}
               </div>
             ) : null}
 
