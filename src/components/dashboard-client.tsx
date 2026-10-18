@@ -991,45 +991,47 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
                   </Field>
 
                   <Field label="프로필 태그" isDark={isDark}>
-                    <select
-                      value={draftUser.profileTag ?? ""}
-                      onChange={(e) => {
-                        const v = e.target.value;
-                        setDraftUser((u) => ({
-                          ...u,
-                          profileTag: v === "" ? null : v,
-                        }));
-                        markDirty();
-                      }}
-                      style={{ colorScheme: isDark ? "dark" : "light" }}
-                      className={clsx(
-                        "w-full rounded-xl border px-3 py-2",
-                        isDark
-                          ? "bg-white/10 text-white border-white/15"
-                          : "bg-white/60 border-white/50 text-black"
-                      )}
-                    >
-                      <option
-                        value=""
-                        className={isDark ? "bg-slate-900 text-white" : ""}
+                    <div className={clsx("rounded-2xl border p-4", isDark ? "border-white/15 bg-white/10" : "border-white/45 bg-white/40")}>
+                      <select
+                        value={draftUser.profileTag ?? ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setDraftUser((u) => ({
+                            ...u,
+                            profileTag: v === "" ? null : v,
+                          }));
+                          markDirty();
+                        }}
+                        style={{ colorScheme: isDark ? "dark" : "light" }}
+                        className={clsx(
+                          "w-full rounded-xl border px-3 py-2",
+                          isDark
+                            ? "bg-white/10 text-white border-white/15"
+                            : "bg-white/60 border-white/50 text-black"
+                        )}
                       >
-                        선택 안함
-                      </option>
-
-                      {PROFILE_TAGS.map((tag) => (
                         <option
-                          key={tag.id}
-                          value={tag.id}
+                          value=""
                           className={isDark ? "bg-slate-900 text-white" : ""}
                         >
-                          {tag.label}
+                          선택 안함
                         </option>
-                      ))}
-                    </select>
 
-                    <p className={clsx("mt-1 text-xs", uiSub)}>
-                      프로필에 표시할 태그를 1개 선택할 수 있어요
-                    </p>
+                        {PROFILE_TAGS.map((tag) => (
+                          <option
+                            key={tag.id}
+                            value={tag.id}
+                            className={isDark ? "bg-slate-900 text-white" : ""}
+                          >
+                            {tag.label}
+                          </option>
+                        ))}
+                      </select>
+
+                      <p className={clsx("mt-2 text-xs", uiSub)}>
+                        프로필에 표시할 태그를 1개 선택할 수 있어요
+                      </p>
+                    </div>
                   </Field>
 
                   <Field label="프로필 효과" isDark={isDark}>

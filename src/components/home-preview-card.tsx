@@ -30,6 +30,11 @@ const PLATFORM_ICONS: Record<string, string> = {
   tiktok: "/icons/tiktok.svg",
 };
 
+const PLATFORM_EMOJI_FALLBACKS: Record<string, string> = {
+  discord_server: "💬",
+  other: "🔗",
+};
+
 export function HomePreviewCard() {
   const [mounted, setMounted] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -153,14 +158,16 @@ export function HomePreviewCard() {
               style={{ animationDelay: `${i * 80}ms` }}
             >
               <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/35 dark:bg-white/10">
-                {link.platform !== "other" && PLATFORM_ICONS[link.platform] ? (
+                {PLATFORM_ICONS[link.platform] ? (
                   <img
                     src={PLATFORM_ICONS[link.platform]}
                     alt={link.platform}
                     className="h-5 w-5 object-contain"
                   />
                 ) : (
-                  <span className="text-lg leading-none">{link.icon || "🔗"}</span>
+                  <span className="text-lg leading-none">
+                    {PLATFORM_EMOJI_FALLBACKS[link.platform] || link.icon || "🔗"}
+                  </span>
                 )}
               </span>
               <span className="flex-1 min-w-0">
