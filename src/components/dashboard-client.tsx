@@ -186,6 +186,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       listPublic: originalDataRef.current.user.listPublic,
       profileTag: originalDataRef.current.user.profileTag,
       profileEffect: originalDataRef.current.user.profileEffect,
+      showBirthday: originalDataRef.current.user.showBirthday,
+      birthday: originalDataRef.current.user.birthday ? new Date(originalDataRef.current.user.birthday).toISOString() : null,
     };
 
     const currentUserData = {
@@ -199,6 +201,8 @@ export function DashboardClient({ initialUser }: { initialUser: UserWithLinks })
       listPublic: draftUser.listPublic,
       profileTag: draftUser.profileTag,
       profileEffect: draftUser.profileEffect,
+      showBirthday: draftUser.showBirthday,
+      birthday: draftUser.birthday ? new Date(draftUser.birthday).toISOString() : null,
     };
 
     // Compare links data (excluding handleInput which is derived)
