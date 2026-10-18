@@ -41,7 +41,7 @@ function createDiscordMessage(updates) {
 
   return {
     content: message,
-    username: 'Fluffy Link Deploy',
+    username: 'FLUFFY LINK',
   };
 }
 
