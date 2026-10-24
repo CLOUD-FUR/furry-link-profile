@@ -21,17 +21,11 @@ type UserProfile = {
 };
 
 const PLATFORM_ICONS: Record<string, string> = {
-  twitter: "/icons/twitter.svg",
-  youtube: "/icons/youtube.svg",
-  instagram: "/icons/instagram.svg",
-  discord: "/icons/discord.svg",
-  discord_server: "/icons/discord.svg",
-  github: "/icons/github.svg",
-  twitch: "/icons/twitch.svg",
-  tiktok: "/icons/tiktok.svg",
-  telegram: "/icons/telegram.svg",
-  website: "/icons/website.svg",
-  other: "/icons/link.svg",
+  x: "/icons/x.png",
+  instagram: "/icons/insta.gif",
+  youtube: "/icons/youtube.png",
+  discord: "/icons/discord.png",
+  discord_server: "/icons/discord.png",
 };
 
 
