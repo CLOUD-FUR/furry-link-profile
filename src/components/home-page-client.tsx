@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Container, GlassCard, ButtonLink } from "@/components/ui";
 import { HomeFeatureList } from "@/components/home-feature-list";
 import { HomePreviewCard } from "@/components/home-preview-card";
@@ -20,7 +19,7 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
           <div className="relative flex items-center justify-between gap-3 rounded-full border border-white/60 dark:border-white/15 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl shadow-soft px-3 py-2 sm:px-4 sm:py-2.5">
             <a href="/" className="group flex items-center gap-2.5 shrink-0 pl-1">
               <span className="relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/70 dark:ring-white/20 shadow-sm transition-transform group-hover:rotate-6">
-                <Image src="/logo.png" alt="Fluffy Link" width="36" height="36" className="h-full w-full object-cover" priority />
+                <img src="/logo.png" alt="Fluffy Link" width="36" height="36" className="h-full w-full object-cover" />
               </span>
               <span className="font-black tracking-tight text-lg sm:text-xl text-slate-900 dark:text-slate-50">
                 Fluffy Link
@@ -194,7 +193,7 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
           <footer className="reveal mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600 dark:text-slate-400" data-reveal-delay="100">
             <div className="flex items-center gap-2">
               <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15">
-                <Image src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover" />
+                <img src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover" />
               </span>
               <span className="font-bold text-slate-700 dark:text-slate-200">Fluffy Link</span>
               <span className="text-slate-500">© {new Date().getFullYear()}</span>

@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: "https",
@@ -12,6 +13,7 @@ const nextConfig: NextConfig = {
         hostname: "*.cdninstagram.com",
       },
     ],
+    formats: ['image/avif', 'image/webp'],
   },
   async headers() {
     return [
