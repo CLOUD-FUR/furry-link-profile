@@ -18,8 +18,11 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
         <Container>
           <div className="relative flex items-center justify-between gap-3 rounded-full border border-white/60 dark:border-white/15 bg-white/60 dark:bg-slate-900/50 backdrop-blur-xl shadow-soft px-3 py-2 sm:px-4 sm:py-2.5">
             <a href="/" className="group flex items-center gap-2.5 shrink-0 pl-1">
-              <span className="relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/70 dark:ring-white/20 shadow-sm transition-transform group-hover:rotate-6 bg-white">
-                <img src="/logo.png" alt="Fluffy Link" width="36" height="36" className="h-full w-full object-cover brightness-110 contrast-125 saturate-150" />
+              <span className="relative inline-flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-2 ring-white/70 dark:ring-white/20 shadow-sm transition-transform group-hover:rotate-6 bg-gradient-to-br from-indigo-500 to-purple-600">
+                <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5 text-white" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
               </span>
               <span className="font-black tracking-tight text-lg sm:text-xl text-slate-900 dark:text-slate-50">
                 Fluffy Link
@@ -192,8 +195,11 @@ export default function HomePageClient({ initialCount }: { initialCount: number 
 
           <footer className="reveal mt-16 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600 dark:text-slate-400" data-reveal-delay="100">
             <div className="flex items-center gap-2">
-              <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15 bg-white">
-                <img src="/logo.png" alt="Fluffy Link" width="28" height="28" className="h-full w-full object-cover brightness-110 contrast-125 saturate-150" />
+              <span className="relative inline-flex h-7 w-7 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/60 dark:ring-white/15 bg-gradient-to-br from-indigo-500 to-purple-600">
+                <svg viewBox="0 0 24 24" fill="none" className="h-4 w-4 text-white" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
               </span>
               <span className="font-bold text-slate-700 dark:text-slate-200">Fluffy Link</span>
               <span className="text-slate-500">© {new Date().getFullYear()}</span>
